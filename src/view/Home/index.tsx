@@ -9,6 +9,7 @@ import CMK from "../../assets/icon/ic-cmk.svg";
 import DEX from "../../assets/icon/ic-dex.svg";
 import MEXC from "../../assets/icon/ic-mexc.svg";
 import { Link } from "react-router-dom";
+import { screenUp } from "../../utils/styles";
 
 const Home: React.FC = () => {
     return (
@@ -104,9 +105,14 @@ const Home: React.FC = () => {
      display: flex;
      padding-bottom: 80px;
     .left{
+          ${screenUp('lg')`
+          padding-left: 15%;
+          max-width: 500px;
+
+        `}
+      max-width: 100%;
+      padding-left: 5%;
       padding-top: 70px;
-      padding-left: 15%;
-      max-width: 500px;
       .title{
         font-family: "Seymour One";
         text-align: center;
@@ -152,17 +158,28 @@ const Home: React.FC = () => {
 
   const StyledWrapBlock = styled.div`
        display: flex;
-       justify-content: space-between;
-       padding-left: 15%;
-       padding-right: 15%;
-       padding-bottom: 20px;
+       ${screenUp('lg')`
+        justify-content: space-between;
+        padding-left: 15%;
+        padding-right: 15%;
+        padding-bottom: 20px;
+        flex-direction:row;
+     `}
+      flex-direction:column;
+      gap:20px;
   `; 
 
   const StyledBlock1 = styled.div`
-     width: 500px;
-     height: 300px;
+      width: 95%;
+     height: 320px;
      background-color:  #a82424;
-     clip-path: polygon(0% 0%, 80% 0%, 100% 100%, 0% 100%);
+     margin-left: 2%;
+     ${screenUp('lg')`
+       width: 520px;
+     height: 310px;
+      margin-left: 0;
+      clip-path: polygon(0% 0%, 80% 0%, 100% 100%, 0% 100%);
+     `}
      border-radius: 5px;
      box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
      
@@ -176,11 +193,17 @@ const Home: React.FC = () => {
     
   `; 
   const StyledBlock2 = styled.div`
-      width: 500px;
-      height: 300px;
+      width: 95%;
+      height: 360px;
      background-color: #a82424;
-     clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 20% 100%);
      border-radius: 5px;
+     margin-left: 2%;
+     ${screenUp('lg')`
+       width: 520px;
+      height: 310px;
+       margin-left: 0;
+       clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 20% 100%);
+     `}
      box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
      img{
               height: 120px;

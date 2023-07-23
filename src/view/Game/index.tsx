@@ -7,6 +7,7 @@ import Car3 from "../../assets/image/car3.png";
 import Car4 from "../../assets/image/car4.png";
 import Car5 from "../../assets/image/car5.png";
 import { useState } from "react";
+import { screenUp } from "../../utils/styles";
 const Game: React.FC = () => {
     const [take,setTake] = useState(0);
     return (
@@ -74,8 +75,12 @@ const Game: React.FC = () => {
     
   `;
   const State1 = styled.div`
+    ${screenUp('lg')`
+      
+      width: 70%;
+     `}
      margin-top: 50px;
-     width: 70%;
+     width: 95%;
      height: 320px;
      background-color: rgba(12, 11, 11, 0.8);
      border-radius: 5px;
@@ -86,30 +91,42 @@ const Game: React.FC = () => {
      }
   `;
   const State2 = styled.div`
+   ${screenUp('lg')`
+      
+      width: 70%;
+     `}
     padding-left: 10px;
     padding-right: 10px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
      margin-top: 50px;
-     width: 70%;
+     width: 95%;
      align-items: center;
      height: 100px;
      background-color: rgba(12, 11, 11, 0.8);
      border-radius: 5px;
      box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
      img{
-        width: 120px;
+         width: 80px;
+         ${screenUp('lg')`
+         width: 120px;
+     `}
         transform: scalex(-1);
      }
  `;
   const State3 = styled.div`
+    
      padding: 40px;
      width: 60%;
      display: flex;
      align-items: center;
      justify-content: space-between;
-
+     flex-direction: column;
+     ${screenUp('lg')`
+      flex-direction: row;
+      
+     `}
      font-family: "Seymour One";
      text-align: center;
     font-size: 20px;

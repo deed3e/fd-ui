@@ -2,7 +2,7 @@ import styled from "styled-components";
 import logo from '../../../assets/icon/logo-tab-3.png';
 import tw from "../../../assets/icon/ic-tw.svg";
 import tg from "../../../assets/icon/ic-tg.svg";
-
+import { screenUp } from "../../../utils/styles";
 const Footer: React.FC = () => {
     return (
         <>
@@ -52,11 +52,15 @@ const StyledTop = styled.div`
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     .left img{
           height: 100px;
           padding-left: 50px;
     }
+    ${screenUp('lg')`
+         justify-content: space-between;
+         flex-direction:row;
+    `}
+    flex-direction:column;
 `;
 
 const StyledLinks = styled.div`

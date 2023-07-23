@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { ethers} from 'ethers'
 import logo from '../../../assets/icon/logo-tab-3.png';
 import { useState } from "react";
+import { screenUp } from "../../../utils/styles";
 const Header: React.FC = () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const [connect, setConnect] = useState<boolean>(false);
@@ -81,8 +82,11 @@ const StyledContainer = styled.div`
      padding: 10px;
      background-color: black;
      display: grid;
-     grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
      color: #fff;
+    ${screenUp('lg')`
+     grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+    `}
+     grid-template-rows: auto;
   `;
 
 const StyledButton = styled.div`
