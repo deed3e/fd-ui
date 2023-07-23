@@ -1,6 +1,34 @@
 import styled from "styled-components";
+import { ethers} from 'ethers'
 import logo from '../../../assets/icon/logo-tab-3.png';
+import { useState } from "react";
 const Header: React.FC = () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const [connect, setConnect] = useState<boolean>(false);
+    const [address,setAddress] = useState<string>("");
+    const handleConnect = async () => {
+        const [address] = await provider.send('eth_requestAccounts', [])
+        setAddress(address)
+        localStorage.setItem('address',address)
+        try {
+            const { chainId } = await provider.getNetwork()
+            setConnect(true)
+            if (chainId !== 1) throw 'Error network'
+            console.log('chainId', chainId)
+        } catch (error) {
+            await window.ethereum.request({
+                id: 1,
+                jsonrpc: '2.0',
+                method: 'wallet_switchEthereumChain',
+                params: [
+                    {
+                        chainId: '0x1',
+                    },
+                ],
+            })
+        }
+    }
+ 
     return (
         <>
             <StyledContainer>
@@ -29,11 +57,14 @@ const Header: React.FC = () => {
                 <StyledButton>
                 </StyledButton>
                 <StyledContainerButtonWallet>
-                    <StyledButtonConnect>
-                            <div>
+                        <StyledButtonConnect>
+                            <div onClick={handleConnect}>
                             Connect Wallet
                             </div>
-                    </StyledButtonConnect>
+                       </StyledButtonConnect>
+               
+                
+                   
                 </StyledContainerButtonWallet>
                
 
@@ -69,6 +100,7 @@ const StyledContainerButtonWallet = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 60px;
 `;
 
 const StyledButtonConnect= styled.div`
@@ -76,6 +108,12 @@ const StyledButtonConnect= styled.div`
     padding: 9px 15px;
     border-radius: 12px;
     color: black;
+`;
+const StyledButtonConnected= styled.div`
+    background-color: #fff;
+    padding: 9px 15px;
+    border-radius: 12px;
+    color: #f4efef;
 `;
 
 

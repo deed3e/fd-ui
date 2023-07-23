@@ -8,6 +8,7 @@ import COIN from "../../assets/icon/ic-cgc.svg";
 import CMK from "../../assets/icon/ic-mexc.svg";
 import DEX from "../../assets/icon/ic-dex.svg";
 import MEXC from "../../assets/icon/ic-mexc.svg";
+import { Link } from "react-router-dom";
 
 const Home: React.FC = () => {
     return (
@@ -23,7 +24,7 @@ const Home: React.FC = () => {
               The core gameplay of Milady Races revolves around exciting races between adorable and humorous milady. Each milady is represented by a unique ERC20 token with distinct colors and personalities. Players can select their favorite milady to compete in the race. The outcome is determined by a mix of random factors and individual milady characteristics, creating thrilling and dramatic races.
               </div>
               <div className="play">
-                PLAY GAME
+                <LinkCustome to="/game">PLAY GAME</LinkCustome>
               </div>
             </div>
         </StyledIntro>
@@ -118,7 +119,6 @@ const Home: React.FC = () => {
       }
       .play{
         cursor: pointer;
-        padding-top: 30px;
         font-family: "Seymour One";
         text-align: center;
         font-size: 18px;
@@ -234,7 +234,7 @@ const Home: React.FC = () => {
       }
 
   `;
-  const  StyleWrap = styled.div`
+  const StyleWrap = styled.div`
       display: flex;
       flex-direction: row;
       justify-content: center;
@@ -243,3 +243,11 @@ const Home: React.FC = () => {
       }
       
   `;
+
+  const LinkCustome = styled(Link)`
+     color: white;
+     text-decoration-line:none;
+     :hover{
+      color: #e39c9c;
+     }
+  `
