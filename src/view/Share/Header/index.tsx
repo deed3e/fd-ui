@@ -1,13 +1,17 @@
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import logo from '../../../assets/icon/logo-tab-3.png';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { screenUp } from '../../../utils/styles';
 const Header: React.FC = () => {
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
   const [connect, setConnect] = useState<boolean>(false);
   const [address, setAddress] = useState<string>('');
+
   const handleConnect = async () => {
+    if (typeof window.ethereum === 'undefined') {
+      alert('Metamask is not installed or not available.');
+    }
+    const provider =new ethers.providers.Web3Provider(window.ethereum); 
     const [address] = await provider.send('eth_requestAccounts', []);
     setAddress(address);
     localStorage.setItem('address', address);
