@@ -26,13 +26,10 @@ const Footer: React.FC = () => {
                 </StyledTop>
                 <StyledBody>
                       <div>
-                      0xa611ea82cf9cd4cd0a4117139c3f61fd1e43a135
+                      owner@miladyraces.bnb
                       </div>
                       <div>
-                      owner@turtleraces.top
-                      </div>
-                      <div>
-                      Copyright TURTLERACES
+                      Copyright Milady
                       </div>
                 </StyledBody>
 

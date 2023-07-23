@@ -5,7 +5,7 @@ import Car1 from "../../assets/image/car1.png";
 import Car2 from "../../assets/image/car2.png";
 import Car3 from "../../assets/image/car3.png";
 import COIN from "../../assets/icon/ic-cgc.svg";
-import CMK from "../../assets/icon/ic-mexc.svg";
+import CMK from "../../assets/icon/ic-cmk.svg";
 import DEX from "../../assets/icon/ic-dex.svg";
 import MEXC from "../../assets/icon/ic-mexc.svg";
 import { Link } from "react-router-dom";
@@ -39,10 +39,10 @@ const Home: React.FC = () => {
               </div>
               <StyleWrapContent>
                   <div className="title">
-                  Turtle Betting:
+                  Milady Betting:
                   </div>
                   <div className="body">
-                  Before the race starts, players have the option to place bets on the turtle they believe will win. They can wager their $TURTLE tokens to winning bets and earn rewards proportional to the bet amount. The "Bet" feature adds extra excitement and encourages strategic thinking among players, fostering a competitive and engaging environment.
+                  Before the race starts, players have the option to place bets on the milady they believe will win. They can wager their $milady tokens to winning bets and earn rewards proportional to the bet amount. The "Bet" feature adds extra excitement and encourages strategic thinking among players, fostering a competitive and engaging environment.
                   </div>
               </StyleWrapContent>
             </StyledBlock1>
@@ -52,10 +52,10 @@ const Home: React.FC = () => {
               </div>
               <StyleWrapContent>
                   <div className="title">
-                  Turtle Race:
+                  Milady Race:
                   </div>
                   <div className="body2">
-                  Participants will be able to choose their turtle contender from a variety of lovable and creatively designed turtles, each with its own unique attributes and characteristics. These traits may include endurance, determination, agility, and more, all of which will influence the turtle's performance during the race.
+                  Participants will be able to choose their milady contender from a variety of lovable and creatively designed turtles, each with its own unique attributes and characteristics. These traits may include endurance, determination, agility, and more, all of which will influence the turtle's performance during the race.
                   </div>
               </StyleWrapContent>
             </StyledBlock2>
@@ -231,6 +231,9 @@ const Home: React.FC = () => {
           color: #a82424;
           text-shadow: 2px 2px 2px rgba(0,0,0,0.3), 
     0px -2px 3px rgba(255,255,255,0.3);
+      }
+      div{
+        padding: 10px;
       }
 
   `;
