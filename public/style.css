@@ -1,0 +1,276 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'IBM Plex Mono', monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  color: #fff;
+  background: #161618;
+}
+
+input {
+  font-family: inherit;
+}
+
+input:focus {
+  outline: none;
+}
+
+a,
+a:visited {
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: transparent;
+}
+
+button:not([disabled]) {
+  cursor: pointer;
+}
+
+button:active,
+button:focus {
+  outline: none;
+}
+
+button:disabled {
+  pointer-events: none;
+}
+
+.react-datepicker {
+  font-family: 'IBM Plex Mono', monospace;
+  background-color: #29292c !important;
+  color: #fff !important;
+  border: 1px solid #363636 !important;
+}
+.react-datepicker ::-webkit-scrollbar {
+  width: 10px;
+  background-color: #d8d8d808;
+}
+
+.react-datepicker ::-webkit-scrollbar-thumb {
+  background-color: #d8d8d8;
+  border-radius: 3px;
+}
+
+.react-datepicker__day {
+  color: #fff !important;
+}
+.react-datepicker__time {
+  background-color: #29292c !important;
+}
+.react-datepicker__time-list-item:hover {
+  background-color: #d8d8d808 !important;
+  color: #d8d8d8 !important;
+}
+.react-datepicker__header {
+  background-color: #29292c !important;
+  color: #fff !important;
+  border-bottom: 1px solid #363636 !important;
+}
+.react-datepicker__time-container {
+  border-left: 1px solid #363636 !important;
+}
+.react-datepicker__day-name,
+.react-datepicker__current-month,
+.react-datepicker-time__header {
+  color: #fff !important;
+}
+.react-datepicker__triangle::before,
+.react-datepicker__triangle::after {
+  border-bottom-color: #29292c !important;
+  border-top-color: #29292c !important;
+}
+.react-datepicker__day:hover,
+.react-datepicker__month-text:hover,
+.react-datepicker__quarter-text:hover,
+.react-datepicker__year-text:hover {
+  background-color: #d8d8d808 !important;
+  color: #d8d8d8 !important;
+}
+.react-datepicker__day--keyboard-selected,
+.react-datepicker__month-text--keyboard-selected,
+.react-datepicker__quarter-text--keyboard-selected,
+.react-datepicker__year-text--keyboard-selected {
+  background-color: #ffb313 !important;
+}
+.react-datepicker__day--selected,
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--in-range,
+.react-datepicker__month-text--selected,
+.react-datepicker__month-text--in-selecting-range,
+.react-datepicker__month-text--in-range,
+.react-datepicker__quarter-text--selected,
+.react-datepicker__quarter-text--in-selecting-range,
+.react-datepicker__quarter-text--in-range,
+.react-datepicker__year-text--selected,
+.react-datepicker__year-text--in-selecting-range,
+.react-datepicker__year-text--in-range {
+  background-color: #ffb313 !important;
+}
+
+.recharts-wrapper {
+  font-size: 14px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.recharts-legend-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.recharts-legend-item-text {
+  display: inline-block;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  font-size: 12px;
+}
+
+.recharts-cartesian-axis-tick-value {
+  fill: #adabab;
+  font-size: 12px;
+}
+
+.recharts-cartesian-grid-horizontal line, .recharts-cartesian-grid-vertical line {
+  stroke: #363636;
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+  border: 1px solid #363636;
+}
+
+@keyframes dots {
+  0% {
+    content: '.';
+  }
+  20% {
+    content: '.';
+  }
+  40% {
+    content: '..';
+  }
+  60% {
+    content: '...';
+  }
+  90% {
+    content: '';
+  }
+  100% {
+    content: '';
+  }
+}
+
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes zoom-in-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}
+
+@keyframes zoom-in-zoom-out {
+  0% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1, 1.1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+}
+
+@keyframes swipe-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes swipe-down {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

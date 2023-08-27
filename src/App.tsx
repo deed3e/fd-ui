@@ -1,13 +1,12 @@
-import Home from "./view/Home"
-import Game from "./view/Game";
+import Liquidity from "./view/Liquidity";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="game" element={<Game />} />
+        <Route path="/" element={<Liquidity />}></Route>
+        <Route path="/liquidity" element={<Liquidity />} />
       </Routes>
     </BrowserRouter>
     </div>
