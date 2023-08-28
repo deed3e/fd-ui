@@ -1,20 +1,15 @@
-import { legacy_createStore } from 'redux';
-
 export interface TypeUser {
   wallet: string | undefined;
-  chain: string | undefined;
-  balance: string | undefined;
+  connected: boolean
 }
 
 let initState: TypeUser = {
   wallet: undefined,
-  chain: undefined,
-  balance: undefined,
+  connected: false
 };
 
 // REDUCER
 export const userReducer = (state = initState, action: any) => {
-  console.log('userReducer', action);
   switch (action.type) {
     case 'SETWALLET':
       return action.payload;
@@ -24,13 +19,12 @@ export const userReducer = (state = initState, action: any) => {
 };
 
 // ACTIONS
-export const setWallet = (address: string | undefined) => {
+export const setWallet = (address: any) => {
   return {
-    type:'SETWALLET',
+    type: 'SETWALLET',
     payload: {
       wallet: address,
-      chain: undefined,
-      balance: undefined,
+      connected: true
     },
   };
 };

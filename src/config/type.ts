@@ -1,5 +1,3 @@
-export type ConnectorName = 'network' | 'injected' | 'walletconnect';
-
 export type ChainConfig = {
   testnet: boolean;
   chainId: number;

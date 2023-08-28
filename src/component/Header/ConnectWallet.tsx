@@ -4,15 +4,16 @@ import userIcon from '../../assets/image/user-icon.png';
 import logo from '../../assets/svg/logo-token-fdex.svg';
 import { shortenAddress } from '../../utils/addresses';
 import { screenUp } from '../../utils/styles';
-import { ethers } from 'ethers';
 import injectedModule from '@web3-onboard/injected-wallets';
 import { useConnectWallet, init } from '@web3-onboard/react';
-import { useState, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setWallet, TypeUser } from '../../stores';
+import { store } from '../../utils/store';
+import { getRpcUrl } from '../../config';
 
 const injected = injectedModule();
-const rpcUrl = 'https://api.zan.top/node/v1/bsc/testnet/public';
+const rpcUrl = getRpcUrl();
 
 const appMetadata = {
   name: 'FDex',
@@ -43,27 +44,16 @@ init({
   ],
 });
 
-enum Status {
-  Connected,
-  NotConnect,
-  WrongChain,
-}
-
 const ConnectWallet: React.FC = () => {
   const [{ wallet }, connect] = useConnectWallet();
-  const [status, setStatus] = useState<Status>(Status.NotConnect);
-
   const userRedux = useSelector((state: TypeUser) => state);
   const dispatch = useDispatch();
 
-  let ethersProvider;
-  if (wallet) {
-    ethersProvider = new ethers.BrowserProvider(wallet.provider, 'any');
-  }
-
   const handleConnectWallet = useCallback(async () => {
     const info = await connect();
-    dispatch(setWallet(info[0]?.accounts[0].address));
+    const _wallet = info[0]?.accounts[0].address;
+    dispatch(setWallet(_wallet));
+    store.set('wallet', _wallet);
     await window.ethereum.request({
       id: 97,
       jsonrpc: '2.0',
@@ -74,9 +64,13 @@ const ConnectWallet: React.FC = () => {
         },
       ],
     });
-    setStatus(Status.Connected);
-  }, []);
-  console.log(userRedux);
+  }, [connect, dispatch]);
+
+  useEffect(() => {
+    //const _wallet = store.get('wallet');
+    //dispatch(setWallet(_wallet));
+  }, [dispatch]);
+
   return (
     <>
       {!userRedux?.wallet && (
