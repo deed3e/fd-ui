@@ -24,3 +24,4 @@ yarn-error.log*
 **/typechain
 yarn.lock
 package-lock.json
+pnpm-lock.yaml
