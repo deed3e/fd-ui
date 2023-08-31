@@ -6,9 +6,9 @@ import loadingIcon from '../../assets/image/ic-loading.png';
 import styled from 'styled-components';
 import './index.css';
 import { useEffect, useMemo } from 'react';
-import { useTransaction } from 'wagmi'
+import { useTransaction } from 'wagmi';
 import { config } from '../../config';
-import { getAddress } from 'viem'
+import { getAddress } from 'viem';
 export const TransactionToast: React.FC<{ hash: string }> = ({ hash }) => {
   const transaction = useTransaction({hash: getAddress(hash)});
 

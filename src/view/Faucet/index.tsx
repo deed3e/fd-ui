@@ -9,18 +9,21 @@ import {
   useBalance,
   useAccount,
 } from 'wagmi';
+import { getAddress } from 'viem';
 import { useShowToast } from '../../hooks/useShowToast';
 
 const Faucet: React.FC = () => {
   const usdcAddress = getAdreessUsdc();
   const { address } = useAccount();
   const showToast = useShowToast();
+
   const balance = useBalance({
     address: address,
-    token: '0x93406E1a043eE311246Ef8F6870194dB9Fe14832',
+    token: getAddress(usdcAddress),
   });
+
   const { config } = usePrepareContractWrite({
-    address: '0x93406E1a043eE311246Ef8F6870194dB9Fe14832',
+    address: getAddress(usdcAddress),
     abi: MockERC20,
     functionName: 'mint',
     args: [1000000000000000000],
