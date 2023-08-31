@@ -1,44 +1,39 @@
-import Header from '../../component/Header';
 import styled from 'styled-components';
 import { getAdreessUsdc } from '../../config';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { mockERC20Interface } from '../../abis';
-import { ethers, formatEther } from 'ethers';
-import { useSelector } from 'react-redux';
-import { TypeUser } from '../../stores';
+import { useCallback, useEffect } from 'react';
+import MockERC20 from '../../abis/MockERC20.json';
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useWaitForTransaction,
+  useBalance,
+  useAccount,
+} from 'wagmi';
+import { useShowToast } from '../../hooks/useShowToast';
 
 const Faucet: React.FC = () => {
-  const [balance, setBalance] = useState<BigInt>(BigInt(0));
-  const [input, setInput] = useState<string>('0');
-  const usdcAdress = getAdreessUsdc();
-  const userRedux = useSelector((state: TypeUser) => state);
+  const usdcAddress = getAdreessUsdc();
+  const { address } = useAccount();
+  const showToast = useShowToast();
+  const balance = useBalance({
+    address: address,
+    token: '0x93406E1a043eE311246Ef8F6870194dB9Fe14832',
+  });
+  const { config } = usePrepareContractWrite({
+    address: '0x93406E1a043eE311246Ef8F6870194dB9Fe14832',
+    abi: MockERC20,
+    functionName: 'mint',
+    args: [1000000000000000000],
+  });
 
-  const provider = useMemo(() => {
-    return new ethers.BrowserProvider(window.ethereum);
-  }, []);
+  const { data, write } = useContractWrite(config);
 
-  const contractFaucet = useMemo(() => {
-    return new ethers.Contract(usdcAdress, mockERC20Interface, provider);
-  }, [provider, usdcAdress]);
-
-  const handleFaucet = async () => {
-    if (!userRedux?.connected) {
-      alert('Please, connect wallet');
-      return;
-    }
-    const signer = await provider.getSigner();
-    const contractFaucetWithSigner = contractFaucet.connect(signer);
-
-    if (contractFaucetWithSigner) {
-      const tx = await contractFaucetWithSigner?.mint(BigInt(input) * BigInt(1e18));
-      await tx.wait();
-      fetchBalance();
-      setInput('0');
-    }
-  };
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: data?.hash,
+  });
 
   const addTokenintoWallet = useCallback(async () => {
-    const tokenAddress = usdcAdress;
+    const tokenAddress = usdcAddress;
     const tokenSymbol = 'FDex';
     const tokenDecimals = 18;
     const tokenImage = 'https://i.ibb.co/ykR7C2N/Group-267.png';
@@ -59,31 +54,34 @@ const Faucet: React.FC = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [usdcAdress]);
-
-  const fetchBalance = useCallback(async () => {
-    if (userRedux?.wallet) {
-      const balance = await contractFaucet?.balanceOf(userRedux?.wallet);
-      setBalance(balance);
-    }
-  }, [contractFaucet, userRedux?.wallet]);
+  }, [usdcAddress]);
 
   useEffect(() => {
-    fetchBalance();
-  }, [fetchBalance]);
+    if (isSuccess) {
+      balance.refetch();
+    }
+  }, [balance, isSuccess]);
+
+  useEffect(() => {
+    if (isLoading) {
+      showToast('Waiting for transection', '', 'warning');
+    }
+  }, [isLoading, showToast]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      showToast('Success faucet 1 usdc', '', 'success');
+    }
+  }, [isSuccess, showToast]);
 
   return (
     <>
-      <Header />
       <StyledContainer>
         <StyledBox>
-          <div>Balance: {formatEther(balance.toString()).toString()} FDex</div>
-
+          <div>Balance: {balance.data?.formatted} usdc</div>
           <StyleButton onClick={addTokenintoWallet}>Add token into wallet</StyleButton>
-          <div>
-            <input onChange={(e: any) => setInput(e?.target.value)}></input>
-          </div>
-          <StyleButton onClick={handleFaucet}>FAUCET</StyleButton>
+          <br />
+          <StyleButton onClick={() => write?.()}>FAUCET</StyleButton>
         </StyledBox>
       </StyledContainer>
     </>

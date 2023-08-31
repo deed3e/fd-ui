@@ -6,7 +6,7 @@ export const Config: ChainConfig = {
   testnet: true,
   etherscanName: 'BscScan',
   rpcUrl: 'https://goerli.infura.io/v3/4ed2417b078e4209b3da3370f760d098',
-  explorerUrl: 'https://goerli.etherscan.io',
+  explorerUrl: 'https://testnet.bscscan.com/',
   multicall: '0xb95116B35DdF7B9492891Cc079d0d784350b8dAA',
   oracle: '0x9C0c55813E6e5461db60955Be79000e56F4F8730',
   nativeToken: 'tBNB',

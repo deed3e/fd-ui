@@ -1,14 +1,7 @@
-import Header from '../../component/Header';
-import { useSelector } from 'react-redux';
-import { TypeUser } from '../../stores';
+import { useAccount } from 'wagmi';
 const Liquidity: React.FC = () => {
-  const userRedux = useSelector((state: TypeUser) => state);
-  return (
-    <>
-      <Header />
-      {userRedux?.wallet}
-    </>
-  );
+  const { address } = useAccount();
+  return <>{address}</>;
 };
 
 export default Liquidity;

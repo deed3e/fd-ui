@@ -1,11 +1,5 @@
-import Header from '../../component/Header';
 const Swap: React.FC = () => {
-  return (
-    <>
-      <Header />
-      swap
-    </>
-  );
+  return <>swap</>;
 };
 
 export default Swap;
