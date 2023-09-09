@@ -265,12 +265,12 @@ export default function Liquidity() {
                             aria-label="basic tabs example"
                         >
                             <Tab
-                                label="Item One"
+                                label="ADD"
                                 {...a11yProps(0)}
                                 className={value == 1 ? 'is-Active' : ''}
                             />
                             <Tab
-                                label="Item Two"
+                                label="REMOVE"
                                 {...a11yProps(1)}
                                 className={value == 0 ? 'is-Active' : ''}
                             />
