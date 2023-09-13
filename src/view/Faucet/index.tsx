@@ -87,8 +87,8 @@ const Faucet: React.FC = () => {
     }, []);
 
     const handleAddToken = useCallback(() => {
-        addToken(getAddress(configSelectToken?.address ?? ''));
-    }, [addToken, configSelectToken?.address]);
+        addToken(configSelectToken?.symbol);
+    }, [addToken, configSelectToken?.symbol]);
 
     return (
         <>
@@ -138,7 +138,7 @@ const Faucet: React.FC = () => {
                             </StyledBodyBtn>
                         </div>
                         <StyledWrapButton>
-                            <StyleButton onClick={() => write?.()}>
+                            <StyleButton onClick={() => (amount ? write?.() : alert('Input not true'))}>
                                 <div>Request</div>
                             </StyleButton>
                         </StyledWrapButton>
@@ -270,8 +270,8 @@ const StyleButton = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    :hover{
-      background: #5552a9;
+    :hover {
+        background: #5552a9;
     }
 `;
 
