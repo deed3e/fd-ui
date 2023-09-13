@@ -25,17 +25,18 @@
     }
 
     p {
-        font-size: 12px;
+        font-size: 14px;
         font-style: normal;
         font-weight: 400;
         line-height: normal;
         color: rgba(255, 255, 255, 0.6);
-        margin-bottom: 5px;
+        margin-bottom: 10px;
+        margin-top: 10px;
     }
 }
 
 .money-header {
-    font-size: 12px;
+    font-size: 15px;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
@@ -232,9 +233,14 @@ button.MuiButtonBase-root.MuiButton-root.MuiButton-contained {
         font-style: normal;
         font-weight: 700;
         line-height: normal;
-        width: 90%;
+        width: 100%;
         padding: 11px 0px;
         border-radius: 10px;
+        margin-top: 30px;
         background: var(--primary-color, #6763e3);
     }
+}
+
+span.MuiTabs-indicator.css-1aquho2-MuiTabs-indicator {
+    display: none;
 }

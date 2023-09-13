@@ -290,7 +290,6 @@ export default function Liquidity() {
                                 <div className="table-content">$34.234124</div>
                                 <div className="table-content">26%</div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -437,13 +436,13 @@ export default function Liquidity() {
                             <p className="title-detail">Fees</p>
                             <p className="info-detail">-</p>
                         </div>
+                        <div className="button-container">
+                            <button className="btn-add">ADD</button>
+                        </div>
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={1}>
                         Item Two
                     </CustomTabPanel>
-                    <div className="button-container">
-                        <button className="btn-add">ADD</button>
-                    </div>
                 </Box>
             </div>
         </div>
