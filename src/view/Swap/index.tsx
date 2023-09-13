@@ -160,7 +160,7 @@ export default function Swap() {
                         </div>
                         <div className="detail-icon">
                             <p>BTC/ETH</p>
-                            <img src="../src/assets/image/Refresh_2_light@2x.png" alt="" />
+                            <img src="../src/assets/image/Refresh_2_light.png" alt="" />
                         </div>
                     </div>
                     <div className="right-time-container">
@@ -192,7 +192,7 @@ export default function Swap() {
                 </div>
             </div>
             <div className="right-content-container">
-                <div className="from-container">
+                <div className="from-container from-container-1">
                     <div className="content-right-header">
                         <p className="title">From</p>
                         <p className="balance">Balance: 0 BTC</p>
@@ -286,8 +286,11 @@ export default function Swap() {
                         {/* End Select */}
                     </Box>
                 </div>
+                <div className="icon-swap">
+                <img src="../src/assets/image/Transger_light.png" alt="" />
+                </div>
                 <div className="from-container">
-                    <div className="content-right-header">
+                    <div className="content-right-header content-right-header2">
                         <p className="title">To</p>
                         <p className="balance">Balance: 0 BTC</p>
                     </div>

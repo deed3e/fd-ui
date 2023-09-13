@@ -48,6 +48,7 @@
         align-items: center;
         p {
             margin-right: 5px;
+            font-size: 14px;
         }
     }
 }
@@ -60,6 +61,7 @@
     cursor: pointer;
     .time-select {
         padding: 6px;
+        user-select: none;
     }
 
     .is-active {
@@ -138,5 +140,21 @@
         font-style: normal;
         font-weight: 400;
         line-height: normal;
+    }
+}
+
+.icon-swap {
+    text-align: center;
+}
+
+.from-container-1 {
+    margin-bottom: 20px;
+}
+
+.from-container {
+    .content-right-header2 {
+        p {
+            margin-top: 0px;
+        }
     }
 }

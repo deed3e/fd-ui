@@ -224,9 +224,9 @@ export default function Liquidity() {
                         <img src="../src/assets/image/liquidity-bank.svg" alt="bank" />
                         <p>Assets Under Management</p>
                     </div>
-                    <p className="money-header">$ 7,2223,12312</p>
+                    <p className="money-header">$7,2223,12312</p>
                 </div>
-                <TableContainer component={Paper}>
+                {/* <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 700 }} aria-label="customized table">
                         <TableHead>
                             <TableRow>
@@ -253,7 +253,47 @@ export default function Liquidity() {
                             ))}
                         </TableBody>
                     </Table>
-                </TableContainer>
+                </TableContainer> */}
+
+                <div className="bottom-left-container">
+                    <div className="table-container-detail">
+                        <div className="header-table-liquid">
+                            <div className="table-head">Asset</div>
+                            <div className="table-head">Amount</div>
+                            <div className="table-head">Value</div>
+                            <div className="table-head">Utilization</div>
+                        </div>
+                        <div className="body-content-lq">
+                            <div className="body-table-liquid">
+                                <div className="table-content">
+                                    <img src="../src/assets/image/icon3.svg" alt="bank" />
+                                </div>
+                                <div className="table-content">46.2312</div>
+                                <div className="table-content">$34.234124</div>
+                                <div className="table-content">26%</div>
+                            </div>
+
+                            <div className="body-table-liquid">
+                                <div className="table-content">
+                                    <img src="../src/assets/image/icon2.svg" alt="bank" />
+                                </div>
+                                <div className="table-content">46.2312</div>
+                                <div className="table-content">$34.234124</div>
+                                <div className="table-content">26%</div>
+                            </div>
+
+                            <div className="body-table-liquid">
+                                <div className="table-content">
+                                    <img src="../src/assets/image/btclq1.svg" alt="bank" />
+                                </div>
+                                <div className="table-content">46.2312</div>
+                                <div className="table-content">$34.234124</div>
+                                <div className="table-content">26%</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div className="right-containert">
@@ -401,6 +441,9 @@ export default function Liquidity() {
                     <CustomTabPanel value={value} index={1}>
                         Item Two
                     </CustomTabPanel>
+                    <div className="button-container">
+                        <button className="btn-add">ADD</button>
+                    </div>
                 </Box>
             </div>
         </div>

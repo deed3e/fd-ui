@@ -29,6 +29,8 @@
         font-style: normal;
         font-weight: 400;
         line-height: normal;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 5px;
     }
 }
 
@@ -44,6 +46,7 @@
     flex: 1;
     background: rgba(54, 54, 54, 0.5);
     margin-left: 20px;
+    max-height: 425px;
 }
 
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.MuiTableContainer-root.css-11xur9t-MuiPaper-root-MuiTableContainer-root {
@@ -182,4 +185,56 @@ button.MuiButtonBase-root.MuiButton-root.MuiButton-contained {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     background: #000;
+}
+
+.bottom-left-container {
+    padding: 10px 20px;
+    padding-bottom: 20px;
+}
+
+.table-container-detail {
+    border-radius: 15px 15px 0px 0px;
+}
+
+.header-table-liquid {
+    display: flex;
+    text-align: center;
+    background: #231844;
+    padding: 10px 0px;
+    border-radius: 15px 15px 0px 0px;
+    .table-head {
+        flex: 1;
+    }
+}
+
+.body-content-lq {
+    border-radius: 0px 0px 15px 15px;
+    background: rgba(54, 54, 54, 0.6);
+}
+
+.body-table-liquid {
+    display: flex;
+    align-items: center;
+    padding: 20px 0px;
+
+    .table-content {
+        flex: 1;
+    }
+}
+
+.button-container {
+    text-align: center;
+    padding-bottom: 20px;
+    .btn-add {
+        color: var(--d-9-d-9-d-9, #d9d9d9);
+        font-family: IBM Plex Mono;
+        font-size: 19px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        width: 90%;
+        padding: 11px 0px;
+        border-radius: 10px;
+        background: var(--primary-color, #6763e3);
+    }
 }
