@@ -1,16 +1,38 @@
-import { get } from 'lodash';
+import { get, keys } from 'lodash';
 import { Config } from './bnbtest';
+import { TokenInfo, TokenInfoProps } from './type';
 
 export const config = Config;
 
 export const getRpcUrl = () => {
-  return get(config, ['rpcUrl']);
+    return get(config, ['rpcUrl']);
+};
+
+export const getTokenConfig = (tokenSymbol: string) => {
+    if (!tokenSymbol) {
+        return undefined;
+    }
+    const tokenConfig = get(config, ['tokens', tokenSymbol]) as TokenInfo;
+
+    return { ...(tokenConfig || {}), symbol: tokenSymbol } as TokenInfoProps;
 };
 
 export const getAdreessUsdc = () => {
-  return get(config, ['usdc']);
+    return get(config, ['usdc']);
 };
 
 export const getExplorerUrl = () => {
-  return get(config, ['explorerUrl']);
+    return get(config, ['explorerUrl']);
+};
+
+export const getNativeTokenSymbol = () => {
+    return get(config, ['nativeToken']);
+};
+
+export const getWrapNativeTokenSymbol = () => {
+    return get(config, ['wrapNativeToken']);
+};
+
+export const getAllTokenSymbol = () => {
+    return keys(get(config, ['tokens']));
 };

@@ -1,15 +1,45 @@
 import { ChainConfig } from './type';
 
 export const Config: ChainConfig = {
-  chainId: 97,
-  chainName: 'Bnb testnet',
-  testnet: true,
-  etherscanName: 'BscScan',
-  rpcUrl: 'https://goerli.infura.io/v3/4ed2417b078e4209b3da3370f760d098',
-  explorerUrl: 'https://testnet.bscscan.com/',
-  multicall: '0xb95116B35DdF7B9492891Cc079d0d784350b8dAA',
-  oracle: '0x9C0c55813E6e5461db60955Be79000e56F4F8730',
-  nativeToken: 'tBNB',
-  wrapNativeToken: 'wtBNB',
-  usdc:'0x93406E1a043eE311246Ef8F6870194dB9Fe14832'
-}
+    chainId: 97,
+    chainName: 'Bnb testnet',
+    testnet: true,
+    etherscanName: 'BscScan',
+    rpcUrl: 'https://goerli.infura.io/v3/4ed2417b078e4209b3da3370f760d098',
+    explorerUrl: 'https://testnet.bscscan.com/',
+    multicall: '0xb95116B35DdF7B9492891Cc079d0d784350b8dAA',
+    oracle: '0x1e7c44872570115CC7C47466205F7831343cDfb5',
+    nativeToken: 'tBNB',
+    wrapNativeToken: 'WETH',
+    usdc: '0x93406E1a043eE311246Ef8F6870194dB9Fe14832',
+    tokens: {
+        USDC: {
+            address: '0x0ebE956E651ab4483bD9E294708bf9FB3388C45f',
+            decimals: 6,
+            fractionDigits: 2,
+            priceFractionDigits: 3,
+            threshold: 0.01,
+        },
+        WETH: {
+            address: '0x248e1dd106d84969FEa5d55e6d7Ad503ed615D19',
+            decimals: 18,
+            fractionDigits: 4,
+            priceFractionDigits: 2,
+            threshold: 0.0001,
+        },
+        BTC: {
+            address: '0xf812e205AbdA71c679efCEBF44254f7A59D0211d',
+            decimals: 8,
+            fractionDigits: 5,
+            priceFractionDigits: 2,
+            threshold: 0.00001,
+        },
+        ETH: {
+            address: '0x5E1277fbde1cF35f236ef9bcCafeC1593E603906',
+            decimals: 18,
+            fractionDigits: 4,
+            priceFractionDigits: 2,
+            threshold: 0.0001,
+        },
+    },
+};
