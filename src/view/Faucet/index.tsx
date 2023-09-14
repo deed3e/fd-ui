@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { getAdreessUsdc } from '../../config';
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import MockERC20 from '../../abis/MockERC20.json';
 import { DropdownSelectToken } from './components/DropdownSelectToken';
@@ -18,14 +17,21 @@ import { TokenSymbol } from '../../component/TokenSymbol';
 import { getAllTokenSymbol, getWrapNativeTokenSymbol, getTokenConfig } from '../../config';
 import { useAddTokenMetamask } from '../../hooks/useAddTokenMetamask';
 
+enum ButtonStatus {
+    notConnect,
+    notInput,
+    loading,
+    ready,
+}
+
 const Faucet: React.FC = () => {
     const { address } = useAccount();
     const showToast = useShowToast();
-    const [isShowMax, setShowMax] = useState(false);
+    const [isShowMax] = useState(false);
     const [selectToken, setSelectToken] = useState('BTC');
     const configSelectToken = getTokenConfig(selectToken);
     const [amount, setAmount] = useState('');
-    const [subValue, setSubValue] = useState(0);
+    const [subValue] = useState(0);
     const addToken = useAddTokenMetamask();
 
     const balance = useBalance({
@@ -40,7 +46,7 @@ const Faucet: React.FC = () => {
         args: [parseUnits(amount, configSelectToken?.decimals ?? 1)],
     });
 
-    const { data, write } = useContractWrite(config);
+    const { data, write, reset } = useContractWrite(config);
 
     const { isLoading, isSuccess } = useWaitForTransaction({
         hash: data?.hash,
@@ -55,15 +61,17 @@ const Faucet: React.FC = () => {
             const tmp = ev.target.value;
             const slip = tmp.split('.');
             const check =
-                parseUnits(tmp.replace('.', ''), configSelectToken?.decimals ?? 1) &&
-                slip.length <= 2
+                (parseUnits(tmp.replace('.', ''), configSelectToken?.decimals ?? 1) ||
+                    +tmp === 0) &&
+                slip.length <= 2 &&
+                !tmp.includes(' ')
                     ? true
                     : false;
-            if (check || +ev.target.value === 0.0) setAmount(ev.target.value);
+            if (check) setAmount(ev.target.value);
         },
         [configSelectToken?.decimals],
     );
-
+    console.log(amount);
     useEffect(() => {
         if (isSuccess) {
             balance.refetch();
@@ -72,23 +80,50 @@ const Faucet: React.FC = () => {
 
     useEffect(() => {
         if (isLoading) {
-            showToast('Waiting for transaction', '', 'warning');
+            showToast(
+                `Waiting request for ${amount} ${configSelectToken?.symbol}`,
+                '',
+                'warning',
+            );
         }
-    }, [isLoading, showToast]);
+    }, [amount, configSelectToken?.symbol, isLoading, showToast]);
 
     useEffect(() => {
         if (isSuccess) {
             showToast(`Success faucet ${amount} ${configSelectToken?.symbol}`, '', 'success');
         }
-    }, [amount, configSelectToken?.symbol, isSuccess, showToast]);
+        reset();
+    }, [amount, configSelectToken?.symbol, isSuccess, reset, showToast]);
 
     const onDropDownItemClick = useCallback((symbol: string) => {
         setSelectToken(symbol);
     }, []);
 
     const handleAddToken = useCallback(() => {
-        addToken(configSelectToken?.symbol);
+        addToken(configSelectToken?.symbol ?? '');
     }, [addToken, configSelectToken?.symbol]);
+
+    const status = useMemo(() => {
+        if (!address) {
+            return ButtonStatus.notConnect;
+        } else if (isLoading) {
+            return ButtonStatus.loading;
+        } else if (!amount) {
+            return ButtonStatus.notInput;
+        }
+        return ButtonStatus.ready;
+    }, [address, amount, isLoading]);
+
+    const buttonText = useMemo(() => {
+        switch (status) {
+            case ButtonStatus.notConnect:
+                return `Connect wallet`;
+            case ButtonStatus.notInput:
+                return `Enter an amount`;
+            default:
+                return `Request`;
+        }
+    }, [status]);
 
     return (
         <>
@@ -138,8 +173,11 @@ const Faucet: React.FC = () => {
                             </StyledBodyBtn>
                         </div>
                         <StyledWrapButton>
-                            <StyleButton onClick={() => (amount ? write?.() : alert('Input not true'))}>
-                                <div>Request</div>
+                            <StyleButton
+                                onClick={() => write?.()}
+                                disabled={!amount || isLoading}
+                            >
+                                <div>{buttonText}</div>
                             </StyleButton>
                         </StyledWrapButton>
                     </StyledBox>
@@ -259,10 +297,8 @@ const StyledWrapButton = styled.div`
     margin-top: 18px;
     margin-bottom: 5px;
 `;
-const StyleButton = styled.div`
-    cursor: pointer;
+const StyleButton = styled.button`
     color: #fff;
-    font-weight: 700;
     width: 257px;
     height: 37px;
     border-radius: 10px;
@@ -272,6 +308,13 @@ const StyleButton = styled.div`
     align-items: center;
     :hover {
         background: #5552a9;
+    }
+    :disabled {
+        background: #2a2a38;
+    }
+    div {
+        font-weight: 700;
+        font-size: 15px;
     }
 `;
 
