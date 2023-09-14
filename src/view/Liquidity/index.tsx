@@ -28,6 +28,8 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 
+import BankImage from '../../assets/image/liquidity-bank.svg';
+
 const options = [
     {
         name: 'BTC',
@@ -221,7 +223,7 @@ export default function Liquidity() {
             <div className="table-container">
                 <div className="header-container">
                     <div className="header-content">
-                        <img src="../src/assets/image/liquidity-bank.svg" alt="bank" />
+                        <img src={BankImage} alt="bank" />
                         <p>Assets Under Management</p>
                     </div>
                     <p className="money-header">$7,2223,12312</p>
