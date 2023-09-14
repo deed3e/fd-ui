@@ -17,8 +17,9 @@ export const getTokenConfig = (tokenSymbol: string) => {
     return { ...(tokenConfig || {}), symbol: tokenSymbol } as TokenInfoProps;
 };
 
-export const getAdreessUsdc = () => {
-    return get(config, ['usdc']);
+
+export const getAdreessOracle = () => {
+    return get(config, ['oracle']);
 };
 
 export const getExplorerUrl = () => {

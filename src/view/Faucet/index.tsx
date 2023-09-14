@@ -16,6 +16,7 @@ import { ReactComponent as IconAddToken } from '../../assets/svg/ic-add-token.sv
 import { TokenSymbol } from '../../component/TokenSymbol';
 import { getAllTokenSymbol, getWrapNativeTokenSymbol, getTokenConfig } from '../../config';
 import { useAddTokenMetamask } from '../../hooks/useAddTokenMetamask';
+import { useOracle } from '../../hooks/useOracle';
 
 enum ButtonStatus {
     notConnect,
@@ -31,9 +32,18 @@ const Faucet: React.FC = () => {
     const [selectToken, setSelectToken] = useState('BTC');
     const configSelectToken = getTokenConfig(selectToken);
     const [amount, setAmount] = useState('');
-    const [subValue] = useState(0);
+    const [subValue, setSubValue] = useState(0);
     const addToken = useAddTokenMetamask();
 
+    const tokens = useMemo(() => {
+        console.log('render tokens');
+        return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
+    }, []);
+    const getPrice = useOracle(tokens);
+
+    useEffect(() => {
+        console.log(getPrice);
+    }, [getPrice]);
     const balance = useBalance({
         address: address,
         token: getAddress(configSelectToken?.address ?? ''),
@@ -52,26 +62,25 @@ const Faucet: React.FC = () => {
         hash: data?.hash,
     });
 
-    const tokens = useMemo(() => {
-        return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
-    }, []);
-
     const handleInputHandle = useCallback(
         (ev: ChangeEvent<HTMLInputElement>) => {
             const tmp = ev.target.value;
-            const slip = tmp.split('.');
+            var regExp = /^0[0-9].*$/;
+            const splipDot = tmp.split('.');
             const check =
-                (parseUnits(tmp.replace('.', ''), configSelectToken?.decimals ?? 1) ||
+                ((parseUnits(tmp.replace('.', ''), configSelectToken?.decimals ?? 1) ||
                     +tmp === 0) &&
-                slip.length <= 2 &&
-                !tmp.includes(' ')
-                    ? true
-                    : false;
-            if (check) setAmount(ev.target.value);
+                    splipDot.length <= 2 &&
+                    !tmp.includes(' ') &&
+                    !regExp.test(tmp)) ??
+                false;
+            if (check) {
+                setAmount(tmp);
+            }
         },
         [configSelectToken?.decimals],
     );
-    console.log(amount);
+
     useEffect(() => {
         if (isSuccess) {
             balance.refetch();
@@ -98,6 +107,10 @@ const Faucet: React.FC = () => {
     const onDropDownItemClick = useCallback((symbol: string) => {
         setSelectToken(symbol);
     }, []);
+
+    useEffect(()=>{
+        setSubValue(+amount * getPrice[configSelectToken?.symbol]);
+    },[amount, configSelectToken?.symbol, getPrice])
 
     const handleAddToken = useCallback(() => {
         addToken(configSelectToken?.symbol ?? '');
@@ -146,14 +159,16 @@ const Faucet: React.FC = () => {
                             </StyledHeaderBtn>
                             <StyledBodyBtn>
                                 <StyledContainerInput>
-                                    <div>
+                                    <StyledWrapInputAndSubValue>
                                         <StyledInput
                                             placeholder={amount ? '0' : '0.0'}
                                             value={amount}
                                             onChange={handleInputHandle}
                                         ></StyledInput>
-                                        <StyledSubValue>~ ${subValue}</StyledSubValue>
-                                    </div>
+                                        <StyledSubValue show={status !== ButtonStatus.notInput}>
+                                            ~ ${subValue}
+                                        </StyledSubValue>
+                                    </StyledWrapInputAndSubValue>
                                     {isShowMax && <StyledMaxValue>Max</StyledMaxValue>}
                                     <StyledSelectToken>
                                         <DropdownSelectToken
@@ -202,9 +217,13 @@ const StyledInput = styled.input`
         color: #fff6;
     }
 `;
-const StyledSubValue = styled.div`
+const StyledSubValue = styled.div<{ show: boolean }>`
+    height: ${({ show }) => (show ? 'auto' : '0px')};
+    opacity: ${({ show }) => (show ? 1 : 0)};
     font-size: 11px;
     color: rgba(255, 255, 255, 0.5);
+    transition: all 0.2s linear;
+    word-break: break-word;
 `;
 const StyledMaxValue = styled.div`
     position: absolute;
@@ -224,7 +243,17 @@ const StyledSelectToken = styled.div`
     align-items: center;
 `;
 
+const StyledWrapInputAndSubValue = styled.div`
+    width: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: self-start;
+    overflow: hidden;
+`;
+
 const StyledAmount = styled.div``;
+
 const StyledBalance = styled.div`
     color: rgba(255, 255, 255, 0.6);
     font-size: 12px;
@@ -238,6 +267,7 @@ const StyledContainerInput = styled.div`
     display: flex;
     justify-content: space-between;
     padding: 8px 10px 6px 10px;
+    gap: 5px;
 `;
 const StyledBodyBtn = styled.div`
     margin-top: 4.4px;
