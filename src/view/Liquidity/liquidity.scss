@@ -135,6 +135,8 @@ input#formatted-numberformat-input {
     border-radius: 10px;
     background: #000;
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .select-type-btc {

@@ -14,35 +14,43 @@ import MenuList from '@mui/material/MenuList';
 import { NumericFormat, NumericFormatProps } from 'react-number-format';
 import Paper from '@mui/material/Paper';
 
+
+import BTCRight from '../../assets/image/btc-right.svg';
+import btcIcon2 from '../../assets/image/btc-icon-2.svg';
+import etcIcon from '../../assets/image/eth-icon.svg';
+import refreshIcon from '../../assets/image/Refresh_2_light.png';
+import iconSwap from '../../assets/image/Transger_light.png';
+
 const options1 = ['24H', '1W', '1M', '1Y'];
+
 
 const options = [
     {
         name: 'BTC',
-        icon: '../src/assets/image/btc-right.svg',
+        icon: BTCRight,
     },
     {
         name: 'USDT',
-        icon: '../src/assets/image/btc-right.svg',
+        icon: BTCRight,
     },
     {
         name: 'ETH',
-        icon: '../src/assets/image/btc-right.svg',
+        icon: BTCRight,
     },
 ];
 
 const options2 = [
     {
         name: 'BTC',
-        icon: '../src/assets/image/btc-right.svg',
+        icon: BTCRight,
     },
     {
         name: 'USDT',
-        icon: '../src/assets/image/btc-right.svg',
+        icon: BTCRight,
     },
     {
         name: 'ETH',
-        icon: '../src/assets/image/btc-right.svg',
+        icon: BTCRight,
     },
 ];
 
@@ -155,12 +163,12 @@ export default function Swap() {
                 <div className="top-left-content-container">
                     <div className="left-swap-icon-container">
                         <div className="image-icon">
-                            <img src="../src/assets/image/btc-icon-2.svg" alt="" />
-                            <img src="../src/assets/image/eth-icon.svg" alt="" />
+                            <img src={btcIcon2} alt="" />
+                            <img src={etcIcon} alt="" />
                         </div>
                         <div className="detail-icon">
                             <p>BTC/ETH</p>
-                            <img src="../src/assets/image/Refresh_2_light.png" alt="" />
+                            <img src={refreshIcon} alt="" />
                         </div>
                     </div>
                     <div className="right-time-container">
@@ -287,7 +295,7 @@ export default function Swap() {
                     </Box>
                 </div>
                 <div className="icon-swap">
-                <img src="../src/assets/image/Transger_light.png" alt="" />
+                <img src={iconSwap} alt="" />
                 </div>
                 <div className="from-container">
                     <div className="content-right-header content-right-header2">

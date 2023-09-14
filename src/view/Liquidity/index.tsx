@@ -29,19 +29,23 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 
 import BankImage from '../../assets/image/liquidity-bank.svg';
+import icon3 from '../../assets/image/icon3.svg';
+import icon2 from '../../assets/image/icon2.svg';
+import TIcon from '../../assets/image/btclq1.svg';
+import BTCRight from '../../assets/image/btc-right.svg'
 
 const options = [
     {
         name: 'BTC',
-        icon: '../src/assets/image/btc-right.svg',
+        icon: BTCRight,
     },
     {
         name: 'USDT',
-        icon: '../src/assets/image/btc-right.svg',
+        icon: BTCRight,
     },
     {
         name: 'ETH',
-        icon: '../src/assets/image/btc-right.svg',
+        icon: BTCRight,
     },
 ];
 
@@ -268,7 +272,7 @@ export default function Liquidity() {
                         <div className="body-content-lq">
                             <div className="body-table-liquid">
                                 <div className="table-content">
-                                    <img src="../src/assets/image/icon3.svg" alt="bank" />
+                                    <img src={icon3} alt="bank" />
                                 </div>
                                 <div className="table-content">46.2312</div>
                                 <div className="table-content">$34.234124</div>
@@ -277,7 +281,7 @@ export default function Liquidity() {
 
                             <div className="body-table-liquid">
                                 <div className="table-content">
-                                    <img src="../src/assets/image/icon2.svg" alt="bank" />
+                                    <img src={icon2} alt="bank" />
                                 </div>
                                 <div className="table-content">46.2312</div>
                                 <div className="table-content">$34.234124</div>
@@ -286,7 +290,7 @@ export default function Liquidity() {
 
                             <div className="body-table-liquid">
                                 <div className="table-content">
-                                    <img src="../src/assets/image/btclq1.svg" alt="bank" />
+                                    <img src={TIcon} alt="bank" />
                                 </div>
                                 <div className="table-content">46.2312</div>
                                 <div className="table-content">$34.234124</div>
