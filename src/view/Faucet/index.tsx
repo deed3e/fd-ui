@@ -28,7 +28,7 @@ enum ButtonStatus {
 }
 
 const Faucet: React.FC = () => {
-    const { address } = useAccount();
+    const { address ,isConnected } = useAccount();
     const showToast = useShowToast();
     const [isShowMax] = useState(false);
     const [selectToken, setSelectToken] = useState('BTC');
@@ -144,6 +144,8 @@ const Faucet: React.FC = () => {
         }
     }, [status]);
 
+
+
     return (
         <>
             <StyledContainer>
@@ -215,7 +217,7 @@ const Faucet: React.FC = () => {
                         <StyledWrapButton>
                             <StyleButton
                                 onClick={() => write?.()}
-                                disabled={!amount || isLoading}
+                                disabled={!amount || isLoading || !isConnected}
                             >
                                 <div>{buttonText}</div>
                                 <img
