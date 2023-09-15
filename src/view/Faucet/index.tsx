@@ -160,7 +160,13 @@ const Faucet: React.FC = () => {
                             <StyledHeaderBtn>
                                 <StyledAmount>Amount</StyledAmount>
                                 <StyledBalance>
-                                    Balance: {balance.data?.formatted}{' '}
+                                    Balance:{' '}
+                                    <BigintDisplay
+                                        value={balance.data?.value as BigInt}
+                                        decimals={configSelectToken?.decimals ?? 1}
+                                        threshold={configSelectToken?.threshold}
+                                        fractionDigits={configSelectToken?.fractionDigits}
+                                    />{' '}
                                     {configSelectToken?.symbol}
                                 </StyledBalance>
                             </StyledHeaderBtn>
@@ -214,7 +220,11 @@ const Faucet: React.FC = () => {
                                 disabled={!amount || isLoading}
                             >
                                 <div>{buttonText}</div>
-                                <img hidden={status !== ButtonStatus.loading} src={IcLoading} alt=""></img>
+                                <img
+                                    hidden={status !== ButtonStatus.loading}
+                                    src={IcLoading}
+                                    alt=""
+                                ></img>
                             </StyleButton>
                         </StyledWrapButton>
                     </StyledBox>
@@ -368,7 +378,7 @@ const StyleButton = styled.button`
         font-weight: 700;
         font-size: 15px;
     }
-    img{
+    img {
         height: 15px;
         animation: loading 1.5s linear infinite;
     }
