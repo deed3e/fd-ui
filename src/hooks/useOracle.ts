@@ -2,21 +2,9 @@ import { useContractRead } from 'wagmi';
 import abiOracle from '../abis/Oracle.json';
 import { useMemo } from 'react';
 import { getTokenConfig, getAdreessOracle } from '../config';
-import { getAddress, formatUnits } from 'viem';
-import { watchBlockNumber } from '@wagmi/core';
+import { getAddress, formatUnits, parseUnits } from 'viem';
 
-export const useOracle = (tokens: string[]) => {
-    //need refactor watch block because that start many instance
-    watchBlockNumber(
-        {
-            chainId: 97,
-            listen: true,
-        },
-        (blockNumber) => {
-            contractRead.refetch();
-            console.log('useOracle::', blockNumber);
-        },
-    );
+export const useOracle = (tokens: string[]): Record<string, BigInt> => {
     const addresss = useMemo(() => {
         return tokens.map((e) => getAddress(getTokenConfig(e)?.address ?? ''));
     }, [tokens]);
@@ -29,11 +17,11 @@ export const useOracle = (tokens: string[]) => {
     });
 
     return useMemo(() => {
-        const rs: Record<string, string> = {};
+        const rs: Record<string, BigInt> = {};
         tokens.forEach((e, index) => {
-            rs[e] = formatUnits(
-                contractRead.data[index],
-                30 - (getTokenConfig(e)?.decimals ?? 0),
+            rs[e] = parseUnits(
+                formatUnits(contractRead.data[index], 30 - (getTokenConfig(e)?.decimals ?? 0)),
+                8,
             );
         });
         return rs;

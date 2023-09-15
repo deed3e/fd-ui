@@ -17,6 +17,8 @@ import { TokenSymbol } from '../../component/TokenSymbol';
 import { getAllTokenSymbol, getWrapNativeTokenSymbol, getTokenConfig } from '../../config';
 import { useAddTokenMetamask } from '../../hooks/useAddTokenMetamask';
 import { useOracle } from '../../hooks/useOracle';
+import { BigintDisplay } from '../../component/BigintDisplay';
+import IcLoading from '../../assets/image/ic-loading.png';
 
 enum ButtonStatus {
     notConnect,
@@ -32,13 +34,13 @@ const Faucet: React.FC = () => {
     const [selectToken, setSelectToken] = useState('BTC');
     const configSelectToken = getTokenConfig(selectToken);
     const [amount, setAmount] = useState('');
-    const [subValue, setSubValue] = useState(0);
+    const [subValue, setSubValue] = useState<BigInt>();
     const addToken = useAddTokenMetamask();
 
     const tokens = useMemo(() => {
-        console.log('render tokens');
         return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
     }, []);
+
     const getPrice = useOracle(tokens);
 
     useEffect(() => {
@@ -53,7 +55,7 @@ const Faucet: React.FC = () => {
         address: getAddress(configSelectToken?.address ?? ''),
         abi: MockERC20,
         functionName: 'mint',
-        args: [parseUnits(amount, configSelectToken?.decimals ?? 1)],
+        args: [parseUnits(amount, configSelectToken?.decimals ?? 0)],
     });
 
     const { data, write, reset } = useContractWrite(config);
@@ -68,7 +70,7 @@ const Faucet: React.FC = () => {
             var regExp = /^0[0-9].*$/;
             const splipDot = tmp.split('.');
             const check =
-                ((parseUnits(tmp.replace('.', ''), configSelectToken?.decimals ?? 1) ||
+                ((parseUnits(tmp.replace('.', ''), configSelectToken?.decimals ?? 0) ||
                     +tmp === 0) &&
                     splipDot.length <= 2 &&
                     !tmp.includes(' ') &&
@@ -108,9 +110,12 @@ const Faucet: React.FC = () => {
         setSelectToken(symbol);
     }, []);
 
-    useEffect(()=>{
-        setSubValue(+amount * getPrice[configSelectToken?.symbol]);
-    },[amount, configSelectToken?.symbol, getPrice])
+    useEffect(() => {
+        setSubValue(
+            parseUnits(amount, configSelectToken?.decimals ?? 0) *
+                getPrice[configSelectToken?.symbol],
+        );
+    }, [amount, configSelectToken?.decimals, configSelectToken?.symbol, getPrice]);
 
     const handleAddToken = useCallback(() => {
         addToken(configSelectToken?.symbol ?? '');
@@ -133,6 +138,8 @@ const Faucet: React.FC = () => {
                 return `Connect wallet`;
             case ButtonStatus.notInput:
                 return `Enter an amount`;
+            case ButtonStatus.loading:
+                return ``;
             default:
                 return `Request`;
         }
@@ -165,8 +172,22 @@ const Faucet: React.FC = () => {
                                             value={amount}
                                             onChange={handleInputHandle}
                                         ></StyledInput>
-                                        <StyledSubValue show={status !== ButtonStatus.notInput}>
-                                            ~ ${subValue}
+                                        <StyledSubValue
+                                            show={
+                                                status !== ButtonStatus.notInput &&
+                                                +amount !== 0
+                                            }
+                                        >
+                                            ~&nbsp;
+                                            <BigintDisplay
+                                                value={subValue}
+                                                decimals={
+                                                    (configSelectToken?.decimals ?? 0) + 8
+                                                }
+                                                currency="USD"
+                                                threshold={0.1}
+                                                fractionDigits={2}
+                                            />
                                         </StyledSubValue>
                                     </StyledWrapInputAndSubValue>
                                     {isShowMax && <StyledMaxValue>Max</StyledMaxValue>}
@@ -193,6 +214,7 @@ const Faucet: React.FC = () => {
                                 disabled={!amount || isLoading}
                             >
                                 <div>{buttonText}</div>
+                                <img hidden={status !== ButtonStatus.loading} src={IcLoading} alt=""></img>
                             </StyleButton>
                         </StyledWrapButton>
                     </StyledBox>
@@ -345,6 +367,10 @@ const StyleButton = styled.button`
     div {
         font-weight: 700;
         font-size: 15px;
+    }
+    img{
+        height: 15px;
+        animation: loading 1.5s linear infinite;
     }
 `;
 

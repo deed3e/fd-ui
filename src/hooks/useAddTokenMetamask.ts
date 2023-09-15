@@ -24,7 +24,6 @@ export const useAddTokenMetamask = () => {
 
     return useCallback(async (symbol: string, useName?: boolean) => {
         const token = getTokenConfig(symbol);
-        console.log(token);
         await addToken(
             token?.address,
             useName ? token?.name : token?.symbol,
