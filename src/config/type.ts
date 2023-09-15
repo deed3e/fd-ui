@@ -9,6 +9,8 @@ export type ChainConfig = {
     oracle: string;
     nativeToken: string;
     wrapNativeToken: string;
+    pool: string;
+    router: string;
     usdc: string;
     tokens: {
         [symbol: string]: TokenInfo;
@@ -28,4 +30,3 @@ export type TokenInfo = {
 export type TokenInfoProps = TokenInfo & {
     symbol: string;
 };
-

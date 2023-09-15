@@ -22,6 +22,14 @@ export const getAdreessOracle = () => {
     return get(config, ['oracle']);
 };
 
+export const getAdreessPool = () => {
+    return get(config, ['pool']);
+};
+
+export const getAdreessRouter = () => {
+    return get(config, ['router']);
+};
+
 export const getExplorerUrl = () => {
     return get(config, ['explorerUrl']);
 };

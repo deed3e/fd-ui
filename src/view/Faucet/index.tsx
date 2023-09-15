@@ -17,7 +17,7 @@ import { TokenSymbol } from '../../component/TokenSymbol';
 import { getAllTokenSymbol, getWrapNativeTokenSymbol, getTokenConfig } from '../../config';
 import { useAddTokenMetamask } from '../../hooks/useAddTokenMetamask';
 import { useOracle } from '../../hooks/useOracle';
-import { BigintDisplay } from '../../component/BigintDisplay';
+import { BigintDisplay } from '../../component/BigIntDisplay';
 import IcLoading from '../../assets/image/ic-loading.png';
 
 enum ButtonStatus {
@@ -70,12 +70,11 @@ const Faucet: React.FC = () => {
             var regExp = /^0[0-9].*$/;
             const splipDot = tmp.split('.');
             const check =
-                ((parseUnits(tmp.replace('.', ''), configSelectToken?.decimals ?? 0) ||
+                (parseUnits(tmp.replace('.', ''), configSelectToken?.decimals ?? 0) ||
                     +tmp === 0) &&
                     splipDot.length <= 2 &&
                     !tmp.includes(' ') &&
-                    !regExp.test(tmp)) ??
-                false;
+                    !regExp.test(tmp)
             if (check) {
                 setAmount(tmp);
             }
@@ -180,7 +179,6 @@ const Faucet: React.FC = () => {
                                         ></StyledInput>
                                         <StyledSubValue
                                             show={
-                                                status !== ButtonStatus.notInput &&
                                                 +amount !== 0
                                             }
                                         >

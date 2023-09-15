@@ -19,8 +19,9 @@ export const useOracle = (tokens: string[]): Record<string, BigInt> => {
     return useMemo(() => {
         const rs: Record<string, BigInt> = {};
         tokens.forEach((e, index) => {
+            console.log("rs",getTokenConfig(e))
             rs[e] = parseUnits(
-                formatUnits(contractRead.data[index], 30 - (getTokenConfig(e)?.decimals ?? 0)),
+                formatUnits(contractRead.data[index], 30 - (getTokenConfig(e)?.decimals ?? 1)),
                 8,
             );
         });

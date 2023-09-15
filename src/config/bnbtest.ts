@@ -9,6 +9,8 @@ export const Config: ChainConfig = {
     explorerUrl: 'https://testnet.bscscan.com/',
     multicall: '0xb95116B35DdF7B9492891Cc079d0d784350b8dAA',
     oracle: '0x1e7c44872570115CC7C47466205F7831343cDfb5',
+    pool:'0xee23330d055162348eAFdEd363f5f12a2d338d7c',
+    router:'0x65870ceCFB6725939C1321E055224eA405504A52',
     nativeToken: 'tBNB',
     wrapNativeToken: 'WETH',
     usdc: '0x93406E1a043eE311246Ef8F6870194dB9Fe14832',
