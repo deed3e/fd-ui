@@ -1,15 +1,11 @@
 import './liquidity.scss';
 import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { BigintDisplay } from '../../component/BigIntDisplay';
 
 import * as React from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
@@ -33,7 +29,10 @@ import BankImage from '../../assets/image/liquidity-bank.svg';
 import icon3 from '../../assets/image/icon3.svg';
 import icon2 from '../../assets/image/icon2.svg';
 import TIcon from '../../assets/image/btclq1.svg';
+import WETH from '../../assets/tokens/WETH2.png';
 import BTCRight from '../../assets/image/btc-right.svg';
+
+import { useOracle } from '../../hooks/useOracle';
 
 import {
     getAllTokenSymbol,
@@ -44,11 +43,8 @@ import {
     getAdreessOracle,
 } from '../../config';
 
-import OracleAbi from '../../abis/Oracle.json';
-
-import { useContractRead } from 'wagmi';
+import { useBalance, useContractRead } from 'wagmi';
 import { formatUnits, getAddress, parseUnits } from 'viem';
-import { log } from 'console';
 
 const options = [
     {
@@ -192,6 +188,7 @@ interface State {
 
 export default function Liquidity() {
     const [value, setValue] = React.useState(0);
+    const [btcValue, setBtcValue] = React.useState(0);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -239,37 +236,71 @@ export default function Liquidity() {
         setOpen(false);
     };
 
-    const tokenETHConfig = getTokenConfig('ETH');
+    const getPrice = useOracle(['BTC', 'ETH', 'USDC', 'WETH']); //['BTC','ETH']
+
     const tokenBTCConfig = getTokenConfig('BTC');
+    const tokenETHConfig = getTokenConfig('ETH');
     const tokenUSDCConfig = getTokenConfig('USDC');
     const tokenWethConfig = getTokenConfig('WETH');
 
-    const { data } = useContractRead({
-        address: getAddress(getAdreessOracle()),
-        abi: OracleAbi,
-        functionName: 'getMultiplePrices',
-        args: [
-            [
-                tokenBTCConfig?.address,
-                tokenETHConfig?.address,
-                tokenUSDCConfig?.address,
-                tokenWethConfig?.address,
-            ],
-        ],
+    const balanceBTC = useBalance({
+        address: getAddress(getAdreessPool()),
+        token: getAddress(tokenBTCConfig?.address ?? ''),
     });
 
-    const outValue = useMemo(() => {
-        if (data) {
-            data[0] = formatUnits(data[0], tokenBTCConfig?.decimals);
-            data[1] = formatUnits(data[0], tokenETHConfig?.decimals);
-            data[2] = formatUnits(data[0], tokenUSDCConfig?.decimals);
-            data[3] = formatUnits(data[0], tokenWethConfig?.decimals);
-            return data;
-        }
-        return [];
-    }, [data]);
+    const balanceETH = useBalance({
+        address: getAddress(getAdreessPool()),
+        token: getAddress(tokenETHConfig?.address ?? ''),
+    });
 
-    console.log('token btc', tokenBTCConfig?.address);
+    const balanceUSDC = useBalance({
+        address: getAddress(getAdreessPool()),
+        token: getAddress(tokenUSDCConfig?.address ?? ''),
+    });
+
+    const balanceWeth = useBalance({
+        address: getAddress(getAdreessPool()),
+        token: getAddress(tokenWethConfig?.address ?? ''),
+    });
+
+    const valueETH = ((getPrice.ETH as bigint) * balanceETH?.data?.value) as bigint;
+    const valueBTC = ((getPrice.BTC as bigint) * balanceBTC?.data?.value) as bigint;
+    const valueUSDT = ((getPrice.USDC as bigint) * balanceUSDC?.data?.value) as bigint;
+    const valueWeth = ((getPrice.WETH as bigint) * balanceWeth?.data?.value) as bigint;
+
+    console.log('value', balanceUSDC);
+
+    // const tokenETHConfig = getTokenConfig('ETH');
+    // const tokenBTCConfig = getTokenConfig('BTC');
+    // const tokenUSDCConfig = getTokenConfig('USDC');
+    // const tokenWethConfig = getTokenConfig('WETH');
+
+    // const { data } = useContractRead({
+    //     address: getAddress(getAdreessOracle()),
+    //     abi: OracleAbi,
+    //     functionName: 'getMultiplePrices',
+    //     args: [
+    //         [
+    //             tokenBTCConfig?.address,
+    //             tokenETHConfig?.address,
+    //             tokenUSDCConfig?.address,
+    //             tokenWethConfig?.address,
+    //         ],
+    //     ],
+    // });
+
+    // const outValue = useMemo(() => {
+    //     if (data) {
+    //         data[0] = formatUnits(data[0],30 - tokenBTCConfig?.decimals);
+    //         data[1] = formatUnits(data[0], tokenETHConfig?.decimals);
+    //         data[2] = formatUnits(data[0], tokenUSDCConfig?.decimals);
+    //         data[3] = formatUnits(data[0], tokenWethConfig?.decimals);
+    //         return data;
+    //     }
+    //     return [];
+    // }, [data]);
+
+    // console.log('token btc', tokenBTCConfig?.address);
 
     return (
         <div className="content-container">
@@ -323,8 +354,21 @@ export default function Liquidity() {
                                 <div className="table-content">
                                     <img src={icon3} alt="bank" />
                                 </div>
-                                <div className="table-content">46.2312</div>
-                                <div className="table-content">${data[0].toString()}</div>
+                                <div className="table-content">
+                                    {
+                                        <BigintDisplay
+                                            value={balanceBTC.data?.value as BigInt}
+                                            decimals={8 + tokenBTCConfig?.decimals}
+                                        />
+                                    }
+                                </div>
+                                <div className="table-content">
+                                    <BigintDisplay
+                                        value={valueBTC as BigInt}
+                                        decimals={tokenBTCConfig?.decimals}
+                                        currency="USD"
+                                    />
+                                </div>
                                 <div className="table-content">26%</div>
                             </div>
 
@@ -332,8 +376,21 @@ export default function Liquidity() {
                                 <div className="table-content">
                                     <img src={icon2} alt="bank" />
                                 </div>
-                                <div className="table-content">46.2312</div>
-                                <div className="table-content">${data[1].toString()}</div>
+                                <div className="table-content">
+                                    {
+                                        <BigintDisplay
+                                            value={balanceETH.data?.value as BigInt}
+                                            decimals={tokenETHConfig?.decimals}
+                                        />
+                                    }
+                                </div>
+                                <div className="table-content">
+                                    <BigintDisplay
+                                        value={valueETH as BigInt}
+                                        decimals={8 + tokenETHConfig?.decimals}
+                                        currency="USD"
+                                    />
+                                </div>
                                 <div className="table-content">26%</div>
                             </div>
 
@@ -341,8 +398,43 @@ export default function Liquidity() {
                                 <div className="table-content">
                                     <img src={TIcon} alt="bank" />
                                 </div>
-                                <div className="table-content">46.2312</div>
-                                <div className="table-content">${data[2].toString()}</div>
+                                <div className="table-content">
+                                    {
+                                        <BigintDisplay
+                                            value={balanceUSDC.data?.value as BigInt}
+                                            decimals={tokenUSDCConfig?.decimals}
+                                        />
+                                    }
+                                </div>
+                                <div className="table-content">
+                                    <BigintDisplay
+                                        value={valueUSDT as BigInt}
+                                        decimals={8 + tokenUSDCConfig?.decimals}
+                                        currency="USD"
+                                    />
+                                </div>
+                                <div className="table-content">26%</div>
+                            </div>
+
+                            <div className="body-table-liquid">
+                                <div className="table-content">
+                                    <img style={{ width: '32px' }} src={WETH} alt="bank" />
+                                </div>
+                                <div className="table-content">
+                                    {
+                                        <BigintDisplay
+                                            value={balanceWeth.data?.value as BigInt}
+                                            decimals={tokenWethConfig?.decimals}
+                                        />
+                                    }
+                                </div>
+                                <div className="table-content">
+                                    <BigintDisplay
+                                        value={valueWeth as BigInt}
+                                        decimals={8 + tokenWethConfig?.decimals}
+                                        currency="USD"
+                                    />
+                                </div>
                                 <div className="table-content">26%</div>
                             </div>
                         </div>
