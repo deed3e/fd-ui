@@ -9,7 +9,7 @@ export const useOracle = (tokens: string[]): Record<string, BigInt> => {
         return tokens.map((e) => getAddress(getTokenConfig(e)?.address ?? ''));
     }, [tokens]);
 
-    const contractRead = useContractRead({
+    const contractRead: any = useContractRead({
         address: getAddress(getAdreessOracle() ?? ''),
         abi: abiOracle,
         functionName: 'getMultiplePrices',
@@ -18,13 +18,17 @@ export const useOracle = (tokens: string[]): Record<string, BigInt> => {
 
     return useMemo(() => {
         const rs: Record<string, BigInt> = {};
-        tokens.forEach((e, index) => {
-            console.log("rs",getTokenConfig(e))
-            rs[e] = parseUnits(
-                formatUnits(contractRead.data[index], 30 - (getTokenConfig(e)?.decimals ?? 1)),
-                8,
-            );
-        });
+        if (contractRead) {
+            tokens.forEach((e, index) => {
+                rs[e] = parseUnits(
+                    formatUnits(
+                        contractRead.data[index],
+                        30 - (getTokenConfig(e)?.decimals ?? 1),
+                    ),
+                    8,
+                );
+            });
+        }
         return rs;
-    }, [contractRead.data, tokens]);
+    }, [contractRead, tokens]);
 };

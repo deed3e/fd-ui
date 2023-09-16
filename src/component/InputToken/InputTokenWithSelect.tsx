@@ -1,6 +1,6 @@
 import { DropdownSelectToken } from '../../view/Faucet/components/DropdownSelectToken';
 import styled from 'styled-components';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { ReactComponent as IconArrowDown } from '../../assets/svg/ic-arrow-down.svg';
 import { useBalance, useAccount } from 'wagmi';
 import { getAddress, parseUnits } from 'viem';
@@ -15,14 +15,14 @@ interface InputTokenWithSelectProps {
     title: string;
     disable?: boolean;
     value?: string;
-    amountChange: (amount: BigInt) => unknown;
-    tokenChange: (symbol: string) => unknown;
+    amountChange?: (amount: BigInt) => unknown;
+    tokenChange?: (symbol: string) => unknown;
 }
 
 const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     refresh,
     tokens,
-    title,
+    title = 'Amount',
     disable = false,
     value,
     amountChange,
@@ -37,13 +37,16 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
 
     const getPrice = useOracle(tokens); //['BTC','ETH']
 
-    useEffect(() => {
-        console.log(getPrice);
-    }, [getPrice]);
     const balance = useBalance({
         address: address,
         token: getAddress(configSelectToken?.address ?? ''),
     });
+
+    useEffect(() => {
+        if (tokenChange) {
+            tokenChange(selectToken);
+        }
+    }, [selectToken, tokenChange]);
 
     const handleInputHandle = useCallback(
         (ev: ChangeEvent<HTMLInputElement>) => {
@@ -58,34 +61,36 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
                 !regExp.test(tmp);
             if (check) {
                 setAmount(tmp);
-                amountChange(
-                    parseUnits(tmp.replace('.', ''), configSelectToken?.decimals ?? 0),
-                );
+                const value = parseUnits(tmp, configSelectToken?.decimals ?? 0);
+                if (amountChange) {
+                    amountChange(value as BigInt);
+                }
             }
         },
         [amountChange, configSelectToken?.decimals],
     );
 
     useEffect(() => {
-        if (refresh) {
-            balance.refetch();
-        }
+        balance.refetch();
     }, [balance, refresh]);
 
-    const onDropDownItemClick = useCallback(
-        (symbol: string) => {
-            setSelectToken(symbol);
-            tokenChange(symbol);
-        },
-        [tokenChange],
-    );
+    const onDropDownItemClick = useCallback((symbol: string) => {
+        setSelectToken(symbol);
+    }, []);
 
     useEffect(() => {
-        setSubValue(
-            parseUnits(amount, configSelectToken?.decimals ?? 0) *
-                getPrice[configSelectToken?.symbol], // getPrice['BTC']
-        );
+        if (configSelectToken?.symbol) {
+            const amountTmp = parseUnits(amount, configSelectToken?.decimals ?? 0) as BigInt;
+            setSubValue(getPrice[configSelectToken?.symbol] * amountTmp);
+        }
     }, [amount, configSelectToken?.decimals, configSelectToken?.symbol, getPrice]);
+
+    const overBalance = useMemo(() => {
+        if (balance.data?.value) {
+            return parseUnits(amount, configSelectToken?.decimals ?? 0) > balance.data?.value;
+        }
+        return false;
+    }, [amount, balance, configSelectToken?.decimals]);
 
     return (
         <div>
@@ -110,6 +115,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
                             value={value ?? amount}
                             onChange={handleInputHandle}
                             disabled={disable}
+                            isOverBalance={overBalance}
                         ></StyledInput>
                         <StyledSubValue show={+amount !== 0}>
                             ~&nbsp;
@@ -145,11 +151,11 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
 
 export default InputTokenWithSelect;
 
-const StyledInput = styled.input`
+const StyledInput = styled.input<{ isOverBalance?: boolean }>`
     flex: 1;
     width: 100%;
     border: none;
-    color: #fff;
+    color: ${({ isOverBalance }) => (isOverBalance ? '#c42020' : '#fff')};
     padding: 0;
     font-weight: bold;
     font-size: 16px;
