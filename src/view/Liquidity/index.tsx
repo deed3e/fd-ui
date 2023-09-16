@@ -9,6 +9,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 import * as React from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
@@ -32,7 +33,22 @@ import BankImage from '../../assets/image/liquidity-bank.svg';
 import icon3 from '../../assets/image/icon3.svg';
 import icon2 from '../../assets/image/icon2.svg';
 import TIcon from '../../assets/image/btclq1.svg';
-import BTCRight from '../../assets/image/btc-right.svg'
+import BTCRight from '../../assets/image/btc-right.svg';
+
+import {
+    getAllTokenSymbol,
+    getWrapNativeTokenSymbol,
+    getAdreessRouter,
+    getAdreessPool,
+    getTokenConfig,
+    getAdreessOracle,
+} from '../../config';
+
+import OracleAbi from '../../abis/Oracle.json';
+
+import { useContractRead } from 'wagmi';
+import { formatUnits, getAddress, parseUnits } from 'viem';
+import { log } from 'console';
 
 const options = [
     {
@@ -197,6 +213,7 @@ export default function Liquidity() {
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef<HTMLDivElement>(null);
     const [selectedIndex, setSelectedIndex] = React.useState(1);
+    const [dataValue, setDataValue] = React.useState([]);
 
     const handleClick = () => {
         console.info(`You clicked ${options[selectedIndex]}`);
@@ -221,6 +238,38 @@ export default function Liquidity() {
 
         setOpen(false);
     };
+
+    const tokenETHConfig = getTokenConfig('ETH');
+    const tokenBTCConfig = getTokenConfig('BTC');
+    const tokenUSDCConfig = getTokenConfig('USDC');
+    const tokenWethConfig = getTokenConfig('WETH');
+
+    const { data } = useContractRead({
+        address: getAddress(getAdreessOracle()),
+        abi: OracleAbi,
+        functionName: 'getMultiplePrices',
+        args: [
+            [
+                tokenBTCConfig?.address,
+                tokenETHConfig?.address,
+                tokenUSDCConfig?.address,
+                tokenWethConfig?.address,
+            ],
+        ],
+    });
+
+    const outValue = useMemo(() => {
+        if (data) {
+            data[0] = formatUnits(data[0], tokenBTCConfig?.decimals);
+            data[1] = formatUnits(data[0], tokenETHConfig?.decimals);
+            data[2] = formatUnits(data[0], tokenUSDCConfig?.decimals);
+            data[3] = formatUnits(data[0], tokenWethConfig?.decimals);
+            return data;
+        }
+        return [];
+    }, [data]);
+
+    console.log('token btc', tokenBTCConfig?.address);
 
     return (
         <div className="content-container">
@@ -275,7 +324,7 @@ export default function Liquidity() {
                                     <img src={icon3} alt="bank" />
                                 </div>
                                 <div className="table-content">46.2312</div>
-                                <div className="table-content">$34.234124</div>
+                                <div className="table-content">${data[0].toString()}</div>
                                 <div className="table-content">26%</div>
                             </div>
 
@@ -284,7 +333,7 @@ export default function Liquidity() {
                                     <img src={icon2} alt="bank" />
                                 </div>
                                 <div className="table-content">46.2312</div>
-                                <div className="table-content">$34.234124</div>
+                                <div className="table-content">${data[1].toString()}</div>
                                 <div className="table-content">26%</div>
                             </div>
 
@@ -293,7 +342,7 @@ export default function Liquidity() {
                                     <img src={TIcon} alt="bank" />
                                 </div>
                                 <div className="table-content">46.2312</div>
-                                <div className="table-content">$34.234124</div>
+                                <div className="table-content">${data[2].toString()}</div>
                                 <div className="table-content">26%</div>
                             </div>
                         </div>
