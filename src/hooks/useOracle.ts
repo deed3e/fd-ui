@@ -20,13 +20,15 @@ export const useOracle = (tokens: string[]): Record<string, BigInt> => {
         const rs: Record<string, BigInt> = {};
         if (contractRead) {
             tokens.forEach((e, index) => {
-                rs[e] = parseUnits(
-                    formatUnits(
-                        contractRead.data[index],
-                        30 - (getTokenConfig(e)?.decimals ?? 1),
-                    ),
-                    8,
-                );
+                if (contractRead?.data?.[index]) {
+                    rs[e] = parseUnits(
+                        formatUnits(
+                            contractRead.data[index],
+                            30 - (getTokenConfig(e)?.decimals ?? 1),
+                        ),
+                        8,
+                    );
+                }
             });
         }
         return rs;

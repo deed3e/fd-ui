@@ -165,16 +165,7 @@ export default function Swap() {
         } else if (waitingTransaction?.isError) {
             showToast(`Can not swap`, '', 'error');
         }
-    }, [
-        showToast,
-        waitingTransaction?.isLoading,
-        inputFromAmount,
-        tokenFromConfig?.symbol,
-        waitingTransaction?.isSuccess,
-        contractRouterWrite,
-        waitingTransaction?.isError,
-        tokenFromConfig?.decimals,
-    ]);
+    }, [showToast, waitingTransaction?.isLoading, inputFromAmount, tokenFromConfig?.symbol, waitingTransaction?.isSuccess, contractRouterWrite, waitingTransaction?.isError, tokenFromConfig?.decimals, refresh]);
 
     useEffect(() => {
         if (waitingTransactionApprove?.isLoading) {
@@ -193,14 +184,12 @@ export default function Swap() {
         inputFromAmount,
         tokenFromConfig?.symbol,
         waitingTransaction.isSuccess,
-        contractRouterWrite,
         waitingTransaction.isError,
         waitingTransactionApprove?.isLoading,
         waitingTransactionApprove?.isSuccess,
         waitingTransactionApprove?.isError,
         contractApproveWrite,
         contracInfoRead,
-        refresh,
         tokenFromConfig?.decimals,
     ]);
 
