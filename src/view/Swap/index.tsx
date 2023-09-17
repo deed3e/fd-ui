@@ -164,8 +164,10 @@ export default function Swap() {
             setRefesh(!refresh);
         } else if (waitingTransaction?.isError) {
             showToast(`Can not swap`, '', 'error');
+            contracInfoRead?.refetch();
+            contractRouterWrite?.reset();
         }
-    }, [showToast, waitingTransaction?.isLoading, inputFromAmount, tokenFromConfig?.symbol, waitingTransaction?.isSuccess, contractRouterWrite, waitingTransaction?.isError, tokenFromConfig?.decimals, refresh]);
+    }, [contracInfoRead, contractRouterWrite, inputFromAmount, refresh, showToast, tokenFromConfig?.decimals, tokenFromConfig?.symbol, waitingTransaction?.isError, waitingTransaction?.isLoading, waitingTransaction?.isSuccess]);
 
     useEffect(() => {
         if (waitingTransactionApprove?.isLoading) {
@@ -174,24 +176,11 @@ export default function Swap() {
             showToast(`Success approve`, '', 'success');
             contractApproveWrite?.reset();
             contracInfoRead?.refetch();
-           
         } else if (waitingTransactionApprove?.isError) {
             showToast(`Can not approve`, '', 'error');
+            contractApproveWrite?.reset();
         }
-    }, [
-        showToast,
-        waitingTransaction.isLoading,
-        inputFromAmount,
-        tokenFromConfig?.symbol,
-        waitingTransaction.isSuccess,
-        waitingTransaction.isError,
-        waitingTransactionApprove?.isLoading,
-        waitingTransactionApprove?.isSuccess,
-        waitingTransactionApprove?.isError,
-        contractApproveWrite,
-        contracInfoRead,
-        tokenFromConfig?.decimals,
-    ]);
+    }, [contracInfoRead, contractApproveWrite, showToast, tokenFromConfig?.symbol, waitingTransactionApprove?.isError, waitingTransactionApprove?.isLoading, waitingTransactionApprove?.isSuccess]);
 
     const status = useMemo(() => {
         if (!isConnected) {
