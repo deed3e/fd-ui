@@ -17,6 +17,7 @@ interface InputTokenWithSelectProps {
     value?: string;
     amountChange?: (amount: BigInt) => unknown;
     tokenChange?: (symbol: string) => unknown;
+    valueChange?: (symbol: number) => unknown;
 }
 
 const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
@@ -27,6 +28,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     value,
     amountChange,
     tokenChange,
+    valueChange,
 }) => {
     const { address } = useAccount();
     const [isShowMax] = useState(false);
@@ -81,9 +83,13 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     useEffect(() => {
         if (configSelectToken?.symbol) {
             const amountTmp = parseUnits(amount, configSelectToken?.decimals ?? 0) as BigInt;
-            setSubValue(getPrice[configSelectToken?.symbol] * amountTmp);
+            const valueTmp = getPrice[configSelectToken?.symbol] * amountTmp;
+            setSubValue(valueTmp);
+            if (valueChange) {
+                valueChange(valueTmp);
+            }
         }
-    }, [amount, configSelectToken?.decimals, configSelectToken?.symbol, getPrice]);
+    }, [amount, configSelectToken?.decimals, configSelectToken?.symbol, getPrice, valueChange]);
 
     const overBalance = useMemo(() => {
         if (balance.data?.value) {

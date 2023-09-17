@@ -8,9 +8,6 @@ const Dashboard: React.FC = () => {
         return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
     }, []);
 
-    const amountChange = useCallback((e: BigInt) => {
-        console.log('dash', formatUnits(e as bigint, 0));
-    }, []);
     return (
         <StyledContainer>
             <InputTokenWithSelect tokens={tokens} amountChange={amountChange} />
