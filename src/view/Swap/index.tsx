@@ -109,7 +109,7 @@ export default function Swap() {
     const outValue = useMemo(() => {
         if (contracInfoRead?.isSuccess && contracInfoRead?.data) {
             if (contracInfoRead?.data[0]?.status === 'success') {
-                if (contracInfoRead?.data[0]?.result) {
+                if (contracInfoRead?.data[0]?.result[0]) {
                     return formatUnits(
                         contracInfoRead?.data[0]?.result[0],
                         tokenToConfig?.decimals ?? 0,
@@ -161,6 +161,7 @@ export default function Swap() {
         } else if (waitingTransaction?.isSuccess) {
             showToast(`Success swap`, '', 'success');
             contractRouterWrite?.reset();
+            setRefesh(!refresh);
         } else if (waitingTransaction?.isError) {
             showToast(`Can not swap`, '', 'error');
         }
@@ -182,7 +183,7 @@ export default function Swap() {
             showToast(`Success approve`, '', 'success');
             contractApproveWrite?.reset();
             contracInfoRead?.refetch();
-            setRefesh(!refresh);
+           
         } else if (waitingTransactionApprove?.isError) {
             showToast(`Can not approve`, '', 'error');
         }

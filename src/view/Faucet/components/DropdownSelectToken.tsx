@@ -70,7 +70,7 @@ export const DropdownSelectToken: React.FC<DropdownSelectTokenProps> = ({
 };
 
 const StyledDropdownMenu = styled(DropdownMenu)`
-    width: 110px;
+    width: 90px;
     min-width: auto;
     overflow-x: auto;
     max-height: 200px;
