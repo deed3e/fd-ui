@@ -19,7 +19,7 @@ import iconSwap from '../../assets/image/Transger_light.png';
 import { useShowToast } from '../../hooks/useShowToast';
 import {
     useAccount,
-    useContractRead,
+    useBalance,
     useContractReads,
     useContractWrite,
     usePrepareContractWrite,
@@ -28,6 +28,8 @@ import {
 import { formatUnits, getAddress, maxUint256, parseUnits } from 'viem';
 import IcLoading from '../../assets/image/ic-loading.png';
 import MockErc20 from '../../abis/MockERC20.json';
+import { BigintDisplay } from '../../component/BigIntDisplay';
+import { useOracle } from '../../hooks/useOracle';
 
 const options1 = ['24H', '1W', '1M', '1Y'];
 
@@ -39,6 +41,8 @@ enum ButtonStatus {
     ready,
     insufficient,
     sameToken,
+    overBalance,
+    minInput, // min 10 u
 }
 
 const contractPool = {
@@ -51,16 +55,19 @@ const contractRouter = {
     abi: RouterAbi,
 };
 
+const MIN_VALUE_INPUT = 10; // 10u
+
 export default function Swap() {
     const [timeSelect, setTimeSelect] = useState(options1[0]);
     const [inputFromAmount, setInputFromAmount] = useState<BigInt>(BigInt(0));
-    const [tokenFrom, setTokenFrom] = useState<string>('');
-    const [tokenTo, setTokenTo] = useState<string>('');
+    const [tokenFrom, setTokenFrom] = useState<string>('BTC');
+    const [tokenTo, setTokenTo] = useState<string>('BTC');
+    const [valueInput, setValueInput] = useState<number>(0);
     const [refresh, setRefesh] = useState<boolean>();
     const showToast = useShowToast();
-
     const tokenFromConfig = getTokenConfig(tokenFrom);
     const tokenToConfig = getTokenConfig(tokenTo);
+    const getPrice = useOracle([tokenFromConfig?.symbol ?? '', tokenToConfig?.symbol ?? '']);
 
     const { address, isConnected } = useAccount();
 
@@ -74,6 +81,11 @@ export default function Swap() {
             abi: MockErc20,
         };
     }, [tokenFromConfig?.address]);
+
+    const balancePool = useBalance({
+        address: getAddress(getAdreessPool()),
+        token: getAddress(tokenToConfig?.address ?? ''),
+    });
 
     const contracInfoRead = useContractReads({
         contracts: [
@@ -122,7 +134,7 @@ export default function Swap() {
         return undefined;
     }, [contracInfoRead?.data, contracInfoRead?.isSuccess, tokenToConfig?.decimals]);
 
-    const amountToChange = useCallback((value: BigInt) => {}, []);
+    const amountToChange = useCallback((value: BigInt) => { }, []);
 
     const { config } = usePrepareContractWrite({
         ...contractRouter,
@@ -151,7 +163,7 @@ export default function Swap() {
     useEffect(() => {
         if (waitingTransaction?.isLoading) {
             showToast(
-                `Waiting swap from ${formatUnits(
+                `Waiting Swap from ${formatUnits(
                     inputFromAmount as bigint,
                     tokenFromConfig?.decimals ?? 0,
                 )} ${tokenFromConfig?.symbol}`,
@@ -159,39 +171,53 @@ export default function Swap() {
                 'warning',
             );
         } else if (waitingTransaction?.isSuccess) {
-            showToast(`Success swap`, '', 'success');
+            showToast(`Success Swap`, '', 'success');
             contractRouterWrite?.reset();
             setRefesh(!refresh);
         } else if (waitingTransaction?.isError) {
-            showToast(`Can not swap`, '', 'error');
+            showToast(`Can not Swap`, '', 'error');
+            contracInfoRead?.refetch();
+            contractRouterWrite?.reset();
         }
-    }, [showToast, waitingTransaction?.isLoading, inputFromAmount, tokenFromConfig?.symbol, waitingTransaction?.isSuccess, contractRouterWrite, waitingTransaction?.isError, tokenFromConfig?.decimals, refresh]);
+    }, [
+        contracInfoRead,
+        contractRouterWrite,
+        inputFromAmount,
+        refresh,
+        showToast,
+        tokenFromConfig?.decimals,
+        tokenFromConfig?.symbol,
+        waitingTransaction?.isError,
+        waitingTransaction?.isLoading,
+        waitingTransaction?.isSuccess,
+    ]);
 
     useEffect(() => {
         if (waitingTransactionApprove?.isLoading) {
-            showToast(`Waiting approve from token ${tokenFromConfig?.symbol}`, '', 'warning');
+            showToast(`Waiting Approve from token ${tokenFromConfig?.symbol}`, '', 'warning');
         } else if (waitingTransactionApprove?.isSuccess) {
-            showToast(`Success approve`, '', 'success');
+            showToast(`Success Approve`, '', 'success');
             contractApproveWrite?.reset();
             contracInfoRead?.refetch();
-           
         } else if (waitingTransactionApprove?.isError) {
-            showToast(`Can not approve`, '', 'error');
+            showToast(`Can not Approve`, '', 'error');
+            contractApproveWrite?.reset();
         }
     }, [
+        contracInfoRead,
+        contractApproveWrite,
         showToast,
-        waitingTransaction.isLoading,
-        inputFromAmount,
         tokenFromConfig?.symbol,
-        waitingTransaction.isSuccess,
-        waitingTransaction.isError,
+        waitingTransactionApprove?.isError,
         waitingTransactionApprove?.isLoading,
         waitingTransactionApprove?.isSuccess,
-        waitingTransactionApprove?.isError,
-        contractApproveWrite,
-        contracInfoRead,
-        tokenFromConfig?.decimals,
     ]);
+
+    const handleValueInput = useCallback((value: number) => {
+        setValueInput(formatUnits(value, tokenFromConfig?.decimals + 8));
+    }, [tokenFromConfig?.decimals]);
+
+    console.log('valueInput', valueInput)
 
     const status = useMemo(() => {
         if (!isConnected) {
@@ -202,6 +228,8 @@ export default function Swap() {
             return ButtonStatus.insufficient;
         } else if (!inputFromAmount) {
             return ButtonStatus.notInput;
+        } else if (valueInput < MIN_VALUE_INPUT) {
+            return ButtonStatus.minInput;
         } else if (waitingTransactionApprove?.isLoading || waitingTransaction?.isLoading) {
             return ButtonStatus.loading;
         } else if (
@@ -220,6 +248,7 @@ export default function Swap() {
         outValue,
         tokenFrom,
         tokenTo,
+        valueInput,
         waitingTransaction?.isLoading,
         waitingTransactionApprove?.isLoading,
     ]);
@@ -232,6 +261,8 @@ export default function Swap() {
                 return 'Not same token';
             case ButtonStatus.notInput:
                 return 'Enter an amount';
+            case ButtonStatus.minInput:
+                return 'Min amount 10 USD';
             case ButtonStatus.insufficient:
                 return 'Insufficient Pool';
             case ButtonStatus.loading:
@@ -260,6 +291,48 @@ export default function Swap() {
         }
     }, [contractApproveWrite, contractRouterWrite, status]);
 
+
+    const feeAmount = useMemo(() => {
+        if (
+            contracInfoRead?.data &&
+            contracInfoRead?.data[0]?.status === 'success' &&
+            getPrice[tokenFromConfig?.symbol ?? '']
+        ) {
+            return (
+                contracInfoRead?.data[0]?.result[1] * getPrice[tokenFromConfig?.symbol ?? '']
+            );
+        }
+        return undefined;
+    }, [contracInfoRead?.data, getPrice, tokenFromConfig?.symbol]);
+
+    const minAmountOut = useMemo(() => {
+        if (
+            (status === ButtonStatus.ready || status === ButtonStatus.notApprove) &&
+            outValue &&
+            BigInt(outValue * 1e30)
+        ) {
+            return (BigInt(outValue * 1e30) * BigInt(999)) / BigInt(1000);
+        }
+        return undefined;
+    }, [outValue, status]);
+
+
+    const priceRatio = useMemo(() => {
+        if (
+            tokenToConfig?.symbol &&
+            tokenFromConfig?.symbol &&
+            getPrice[tokenToConfig?.symbol] &&
+            getPrice[tokenFromConfig?.symbol]
+        ) {
+            return parseUnits(
+                (
+                    getPrice[tokenFromConfig?.symbol] * BigInt(1e8) / getPrice[tokenToConfig?.symbol]
+                ).toString(),
+                10,
+            );
+        }
+        return undefined;
+    }, [getPrice, tokenFromConfig?.symbol, tokenToConfig?.symbol]);
     return (
         <div className="container">
             <div className="left-content-container">
@@ -310,6 +383,7 @@ export default function Swap() {
                         tokenChange={handleTokenFromChange}
                         title="From"
                         refresh={refresh}
+                        valueChange={handleValueInput}
                     />
                 </StyledContainerDiv>
                 <div className="icon-swap">
@@ -331,15 +405,25 @@ export default function Swap() {
                 <div className="content-detail content-detail-first">
                     <p className="title-detail">Price</p>
                     <p className="info-detail">
-                        1 <span className="title-detail">USDT</span> = 0.0046{' '}
-                        <span className="title-detail">BNB</span>
+                        1 <span className="title-detail">{tokenFromConfig?.symbol}</span> ={' '}
+                        <BigintDisplay value={priceRatio} decimals={18}
+                            fractionDigits={tokenToConfig?.fractionDigits + 2}
+                            threshold={tokenToConfig?.threshold}
+                        ></BigintDisplay>{' '}
+                        <span className="title-detail">{tokenToConfig?.symbol}</span>
                     </p>
                 </div>
 
                 <div className="content-detail">
                     <p className="title-detail">Available Liquidity</p>
                     <p className="info-detail">
-                        1,567.22 <span className="title-detail">BNB</span>
+                        <BigintDisplay
+                            value={balancePool?.data?.value}
+                            decimals={tokenToConfig?.decimals ?? 0}
+                            fractionDigits={tokenToConfig?.fractionDigits}
+                            threshold={tokenToConfig?.threshold}
+                        ></BigintDisplay>{' '}
+                        <span className="title-detail">{tokenToConfig?.symbol}</span>
                     </p>
                 </div>
 
@@ -350,12 +434,26 @@ export default function Swap() {
 
                 <div className="content-detail">
                     <p className="title-detail">Minimum Receive</p>
-                    <p className="info-detail">0 ETH</p>
+                    <p className="info-detail">
+                        <BigintDisplay
+                            value={minAmountOut}
+                            decimals={30}
+                            fractionDigits={tokenToConfig?.fractionDigits + 2}
+                            threshold={tokenToConfig?.threshold}
+                        ></BigintDisplay>{' '}
+                        {tokenToConfig?.symbol}
+                    </p>
                 </div>
 
                 <div className="content-detail">
                     <p className="title-detail">Fees</p>
-                    <p className="info-detail">-</p>
+                    <p className="info-detail">
+                        <BigintDisplay
+                            value={feeAmount}
+                            decimals={8 + tokenFromConfig?.decimals}
+                            currency="USD"
+                        ></BigintDisplay>
+                    </p>
                 </div>
 
                 <StyledWrapButton>
