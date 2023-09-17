@@ -2,8 +2,8 @@ import './liquidity.scss';
 import { styled } from '@mui/material/styles';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import { BigintDisplay } from '../../component/BigIntDisplay';
+import style from 'styled-components';
 
 import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
@@ -13,17 +13,6 @@ import Box from '@mui/material/Box';
 
 import { IMaskInput } from 'react-imask';
 import { NumericFormat, NumericFormatProps } from 'react-number-format';
-import TextField from '@mui/material/TextField';
-
-// select
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Grow from '@mui/material/Grow';
-import Popper from '@mui/material/Popper';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
 
 import BankImage from '../../assets/image/liquidity-bank.svg';
 import icon3 from '../../assets/image/icon3.svg';
@@ -33,6 +22,8 @@ import WETH from '../../assets/tokens/WETH2.png';
 import BTCRight from '../../assets/image/btc-right.svg';
 
 import { useOracle } from '../../hooks/useOracle';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import InputTokenWithSelect from '../../component/InputToken/InputTokenWithSelect';
 
 import {
     getAllTokenSymbol,
@@ -43,8 +34,18 @@ import {
     getAdreessOracle,
 } from '../../config';
 
-import { useBalance, useContractRead } from 'wagmi';
+import {
+    useBalance,
+    useContractRead,
+    useAccount,
+    usePrepareContractWrite,
+    useContractWrite,
+    useWaitForTransaction,
+} from 'wagmi';
 import { formatUnits, getAddress, parseUnits } from 'viem';
+import IER from '../../abis/IERC20.json';
+import Router from '../../abis/Router.json';
+import { useShowToast } from '../../hooks/useShowToast';
 
 const options = [
     {
@@ -189,6 +190,7 @@ interface State {
 export default function Liquidity() {
     const [value, setValue] = React.useState(0);
     const [btcValue, setBtcValue] = React.useState(0);
+    const showToast = useShowToast();
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -268,39 +270,118 @@ export default function Liquidity() {
     const valueUSDT = ((getPrice.USDC as bigint) * balanceUSDC?.data?.value) as bigint;
     const valueWeth = ((getPrice.WETH as bigint) * balanceWeth?.data?.value) as bigint;
 
-    console.log('value', balanceUSDC);
+    const [inputFromAmount, setInputFromAmount] = useState<BigInt>(BigInt(0));
+    const [tokenFrom, setTokenFrom] = useState<string>('BTC');
 
-    // const tokenETHConfig = getTokenConfig('ETH');
-    // const tokenBTCConfig = getTokenConfig('BTC');
-    // const tokenUSDCConfig = getTokenConfig('USDC');
-    // const tokenWethConfig = getTokenConfig('WETH');
+    const tokens = useMemo(() => {
+        return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
+    }, []);
 
-    // const { data } = useContractRead({
-    //     address: getAddress(getAdreessOracle()),
-    //     abi: OracleAbi,
-    //     functionName: 'getMultiplePrices',
-    //     args: [
-    //         [
-    //             tokenBTCConfig?.address,
-    //             tokenETHConfig?.address,
-    //             tokenUSDCConfig?.address,
-    //             tokenWethConfig?.address,
-    //         ],
-    //     ],
-    // });
+    const amountFromChange = useCallback((value: BigInt) => {
+        if (value) {
+            setInputFromAmount(value);
+        } else {
+            setInputFromAmount(BigInt(0));
+        }
+    }, []);
 
-    // const outValue = useMemo(() => {
-    //     if (data) {
-    //         data[0] = formatUnits(data[0],30 - tokenBTCConfig?.decimals);
-    //         data[1] = formatUnits(data[0], tokenETHConfig?.decimals);
-    //         data[2] = formatUnits(data[0], tokenUSDCConfig?.decimals);
-    //         data[3] = formatUnits(data[0], tokenWethConfig?.decimals);
-    //         return data;
-    //     }
-    //     return [];
-    // }, [data]);
+    const handleTokenFromChange = useCallback((symbol: string) => {
+        setTokenFrom(symbol);
+    }, []);
 
-    // console.log('token btc', tokenBTCConfig?.address);
+    const { address, isConnected } = useAccount();
+
+    const tokenConfig = getTokenConfig(tokenFrom);
+    const addressRouter = getAddress(getAdreessRouter());
+    const [refresh, setRefesh] = useState<boolean>();
+
+    const dataAlowance = useContractRead({
+        address: getAddress(tokenConfig?.address ?? ''),
+        abi: IER,
+        functionName: 'allowance',
+        args: [address, addressRouter],
+    });
+
+    const contractWriteApprove = useContractWrite({
+        address: getAddress(tokenConfig?.address ?? ''),
+        abi: IER,
+        functionName: 'approve',
+        args: [addressRouter, inputFromAmount],
+    });
+
+    const contractWriteAddLiquidity = useContractWrite({
+        address: getAddress(getAdreessRouter()),
+        abi: Router,
+        functionName: 'addLiquidity',
+        args: [tokenConfig?.address, inputFromAmount, 0],
+    });
+
+    const handleAddLiquid = useCallback(() => {
+        if (dataAlowance?.data < inputFromAmount) {
+            contractWriteApprove.write();
+            setRefesh(!refresh);
+        } else {
+            contractWriteAddLiquidity.write();
+            setRefesh(!refresh);
+        }
+    }, [tokenFrom, inputFromAmount, dataAlowance.data]);
+
+    const { isLoading, isSuccess } = useWaitForTransaction({
+        hash: contractWriteAddLiquidity.data?.hash,
+    });
+
+    const useForApprove = useWaitForTransaction({
+        hash: contractWriteApprove.data?.hash,
+    });
+
+    useEffect(() => {
+        if (useForApprove.isLoading) {
+            showToast(
+                `Waiting request for ${inputFromAmount} ${tokenConfig?.symbol}`,
+                '',
+                'warning',
+            );
+        }
+    }, [inputFromAmount, tokenConfig?.symbol, contractWriteApprove.isLoading, showToast]);
+
+    useEffect(() => {
+        if (useForApprove.isSuccess) {
+            showToast(
+                `Success approve ${inputFromAmount} ${tokenConfig?.symbol}`,
+                '',
+                'success',
+            );
+            dataAlowance.refetch();
+            contractWriteApprove.reset();
+        }
+    }, [inputFromAmount, tokenConfig?.symbol, useForApprove.isSuccess, showToast]);
+
+    useEffect(() => {
+        if (isLoading) {
+            showToast(
+                `Waiting request for ${inputFromAmount} ${tokenConfig?.symbol}`,
+                '',
+                'warning',
+            );
+        }
+    }, [inputFromAmount, tokenConfig?.symbol, isLoading, showToast]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            showToast(`Success add ${inputFromAmount} ${tokenConfig?.symbol}`, '', 'success');
+            dataAlowance.refetch();
+            contractWriteAddLiquidity.reset();
+        }
+    }, [inputFromAmount, tokenConfig?.symbol, isSuccess, showToast]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            balanceBTC.refetch();
+            balanceETH.refetch();
+            balanceUSDC.refetch();
+            balanceWeth.refetch();
+        }
+    }, [balanceBTC, balanceETH, balanceUSDC, balanceWeth, isSuccess]);
 
     return (
         <div className="content-container">
@@ -312,34 +393,6 @@ export default function Liquidity() {
                     </div>
                     <p className="money-header">$7,2223,12312</p>
                 </div>
-                {/* <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                        <TableHead>
-                            <TableRow>
-                                <StyledTableCell>Asset</StyledTableCell>
-                                <StyledTableCell align="center">Amount</StyledTableCell>
-                                <StyledTableCell align="center">Value</StyledTableCell>
-                                <StyledTableCell align="center">Utilization</StyledTableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {rows.map((row) => (
-                                <StyledTableRow key={row.id}>
-                                    <StyledTableCell component="th" scope="row">
-                                        <img src="../src/assets/image/bc.svg" alt="bank" />
-                                    </StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        {row.calories}
-                                    </StyledTableCell>
-                                    <StyledTableCell align="center">{row.fat}</StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        {row.carbs}
-                                    </StyledTableCell>
-                                </StyledTableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer> */}
 
                 <div className="bottom-left-container">
                     <div className="table-container-detail">
@@ -358,14 +411,14 @@ export default function Liquidity() {
                                     {
                                         <BigintDisplay
                                             value={balanceBTC.data?.value as BigInt}
-                                            decimals={8 + tokenBTCConfig?.decimals}
+                                            decimals={tokenBTCConfig?.decimals}
                                         />
                                     }
                                 </div>
                                 <div className="table-content">
                                     <BigintDisplay
                                         value={valueBTC as BigInt}
-                                        decimals={tokenBTCConfig?.decimals}
+                                        decimals={8 + tokenBTCConfig?.decimals}
                                         currency="USD"
                                     />
                                 </div>
@@ -463,106 +516,15 @@ export default function Liquidity() {
                         </Tabs>
                     </Box>
                     <CustomTabPanel value={value} index={0}>
-                        <div className="content-right-header">
-                            <p className="title">Amount</p>
-                            <p className="balance">Balance: 0 BTC</p>
-                        </div>
-                        <Box
-                            sx={{
-                                '& > :not(style)': {
-                                    m: 1,
-                                },
-                            }}
-                        >
-                            <TextField
-                                value={values.numberformat}
-                                onChange={handleChange2}
-                                name="numberformat"
-                                id="formatted-numberformat-input"
-                                InputProps={{
-                                    inputComponent: NumericFormatCustom as any,
-                                }}
-                                variant="standard"
+                        <StyledContainerDiv>
+                            <InputTokenWithSelect
+                                tokens={tokens}
+                                amountChange={amountFromChange}
+                                tokenChange={handleTokenFromChange}
+                                title="From"
+                                refresh={refresh}
                             />
-
-                            {/* Select */}
-                            <React.Fragment>
-                                <ButtonGroup
-                                    variant="contained"
-                                    ref={anchorRef}
-                                    aria-label="split button"
-                                >
-                                    <img src={options[selectedIndex].icon} alt="bank" />
-                                    <Button onClick={handleClick}>
-                                        {options[selectedIndex].name}
-                                    </Button>
-                                    <Button
-                                        size="small"
-                                        aria-controls={open ? 'split-button-menu' : undefined}
-                                        aria-expanded={open ? 'true' : undefined}
-                                        aria-label="select merge strategy"
-                                        aria-haspopup="menu"
-                                        onClick={handleToggle}
-                                    >
-                                        <ArrowDropDownIcon />
-                                    </Button>
-                                </ButtonGroup>
-                                <Popper
-                                    sx={{
-                                        zIndex: 1,
-                                    }}
-                                    open={open}
-                                    anchorEl={anchorRef.current}
-                                    role={undefined}
-                                    transition
-                                    disablePortal
-                                >
-                                    {({ TransitionProps, placement }) => (
-                                        <Grow
-                                            {...TransitionProps}
-                                            style={{
-                                                transformOrigin:
-                                                    placement === 'bottom'
-                                                        ? 'center top'
-                                                        : 'center bottom',
-                                            }}
-                                        >
-                                            <Paper>
-                                                <ClickAwayListener onClickAway={handleClose}>
-                                                    <MenuList
-                                                        id="split-button-menu"
-                                                        autoFocusItem
-                                                    >
-                                                        {options.map((option, index) => (
-                                                            <MenuItem
-                                                                key={option.name}
-                                                                disabled={index === 2}
-                                                                selected={
-                                                                    index === selectedIndex
-                                                                }
-                                                                onClick={(event) =>
-                                                                    handleMenuItemClick(
-                                                                        event,
-                                                                        index,
-                                                                    )
-                                                                }
-                                                            >
-                                                                {option.name}
-                                                                <img
-                                                                    src={option.icon}
-                                                                    alt="bank"
-                                                                />
-                                                            </MenuItem>
-                                                        ))}
-                                                    </MenuList>
-                                                </ClickAwayListener>
-                                            </Paper>
-                                        </Grow>
-                                    )}
-                                </Popper>
-                            </React.Fragment>
-                            {/* End Select */}
-                        </Box>
+                        </StyledContainerDiv>
 
                         <div className="content-detail content-detail-first">
                             <p className="title-detail">Receive</p>
@@ -584,7 +546,9 @@ export default function Liquidity() {
                             <p className="info-detail">-</p>
                         </div>
                         <div className="button-container">
-                            <button className="btn-add">ADD</button>
+                            <button onClick={handleAddLiquid} className="btn-add">
+                                ADD
+                            </button>
                         </div>
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={1}>
@@ -595,3 +559,7 @@ export default function Liquidity() {
         </div>
     );
 }
+
+const StyledContainerDiv = style.div`
+    margin-bottom: 20px;
+`;
