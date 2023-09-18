@@ -526,7 +526,7 @@ export default function Liquidity() {
                                 tokens={tokens}
                                 amountChange={amountFromChange}
                                 tokenChange={handleTokenFromChange}
-                                title="From"
+                                title="Amount"
                                 refresh={refresh}
                             />
                         </StyledContainerDiv>
