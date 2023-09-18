@@ -265,10 +265,15 @@ export default function Liquidity() {
         token: getAddress(tokenWethConfig?.address ?? ''),
     });
 
-    const valueETH = ((getPrice.ETH as bigint) * balanceETH?.data?.value) as bigint;
-    const valueBTC = ((getPrice.BTC as bigint) * balanceBTC?.data?.value) as bigint;
-    const valueUSDT = ((getPrice.USDC as bigint) * balanceUSDC?.data?.value) as bigint;
-    const valueWeth = ((getPrice.WETH as bigint) * balanceWeth?.data?.value) as bigint;
+    // const valueETH = ((getPrice.ETH as bigint) * balanceETH?.data?.value) as bigint;
+    // const valueBTC = ((getPrice.BTC as bigint) * balanceBTC?.data?.value) as bigint;
+    // const valueUSDT = ((getPrice.USDC as bigint) * balanceUSDC?.data?.value) as bigint;
+    // const valueWeth = ((getPrice.WETH as bigint) * balanceWeth?.data?.value) as bigint;
+
+    const valueETH = (BigInt(getPrice.ETH ?? 0) * BigInt(balanceETH?.data?.value ?? 0)) as bigint;
+    const valueBTC = (BigInt(getPrice.BTC ?? 0) * BigInt(balanceBTC?.data?.value ?? 0)) as bigint;
+    const valueUSDT = (BigInt(getPrice.USDC ?? 0) * BigInt(balanceUSDC?.data?.value ?? 0)) as bigint;
+    const valueWeth = (BigInt(getPrice.WETH ?? 0) * BigInt(balanceWeth?.data?.value ?? 0)) as bigint;
 
     const [inputFromAmount, setInputFromAmount] = useState<BigInt>(BigInt(0));
     const [tokenFrom, setTokenFrom] = useState<string>('BTC');
