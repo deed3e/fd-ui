@@ -14,6 +14,7 @@ interface InputTokenWithSelectProps {
     tokens: string[];
     title: string;
     disable?: boolean;
+    disableSelect?: boolean;
     value?: string;
     amountChange?: (amount: BigInt) => unknown;
     tokenChange?: (symbol: string) => unknown;
@@ -25,6 +26,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     tokens,
     title = 'Amount',
     disable = false,
+    disableSelect = false,
     value,
     amountChange,
     tokenChange,
@@ -95,7 +97,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
         if (balance.data?.value) {
             return parseUnits(amount, configSelectToken?.decimals ?? 0) > balance.data?.value;
         }
-        return false;
+        return true;
     }, [amount, balance, configSelectToken?.decimals]);
 
     return (
@@ -141,6 +143,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
                             tokens={tokens}
                             position={'right'}
                             onSelect={onDropDownItemClick}
+                            disable={disableSelect}
                         >
                             <StyledTokenSelect pointer={tokens?.length >= 0}>
                                 <TokenSymbol symbol={selectToken} size={24} />

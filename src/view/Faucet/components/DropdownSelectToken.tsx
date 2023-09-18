@@ -12,6 +12,7 @@ export type DropdownSelectTokenProps = {
     onSelect?: (token: string) => void;
     children: ReactElement;
     position?: 'right' | 'left';
+    disable?: boolean;
 };
 
 export const DropdownSelectToken: React.FC<DropdownSelectTokenProps> = ({
@@ -20,6 +21,7 @@ export const DropdownSelectToken: React.FC<DropdownSelectTokenProps> = ({
     onSelect,
     children,
     position,
+    disable = false,
 }) => {
     const tokenConfigs = useMemo(() => {
         if (!tokens) return [];
@@ -39,7 +41,7 @@ export const DropdownSelectToken: React.FC<DropdownSelectTokenProps> = ({
     const onSelectToken = useCallback(
         (ev: React.MouseEvent<HTMLDivElement>) => {
             const symbol = ev.currentTarget.dataset.symbol;
-            if (symbol && onSelect) {
+            if (!disable && symbol && onSelect) {
                 onSelect(symbol);
             }
         },
@@ -58,9 +60,7 @@ export const DropdownSelectToken: React.FC<DropdownSelectTokenProps> = ({
                             active={token?.symbol === selectedToken}
                         >
                             <TokenSymbol symbol={token.symbol} size={28} />
-                            <div className="info">
-                                {token?.symbol}
-                            </div>
+                            <div className="info">{token?.symbol}</div>
                         </StyleDropdownItem>
                     ))}
                 </StyleDropdownList>

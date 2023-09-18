@@ -12,9 +12,6 @@ import {
 import PoolAbi from '../../abis/Pool.json';
 import RouterAbi from '../../abis/Router.json';
 
-import btcIcon2 from '../../assets/image/btc-icon-2.svg';
-import etcIcon from '../../assets/image/eth-icon.svg';
-import refreshIcon from '../../assets/image/Refresh_2_light.png';
 import iconSwap from '../../assets/image/Transger_light.png';
 import { useShowToast } from '../../hooks/useShowToast';
 import {
@@ -30,6 +27,11 @@ import IcLoading from '../../assets/image/ic-loading.png';
 import MockErc20 from '../../abis/MockERC20.json';
 import { BigintDisplay } from '../../component/BigIntDisplay';
 import { useOracle } from '../../hooks/useOracle';
+import { store } from '../../utils/store';
+import {
+    IHistoryTransaction,
+    StatusHistoryTransaction,
+} from '../../component/TransactionHistory';
 
 const options1 = ['24H', '1W', '1M', '1Y'];
 
@@ -134,7 +136,7 @@ export default function Swap() {
         return undefined;
     }, [contracInfoRead?.data, contracInfoRead?.isSuccess, tokenToConfig?.decimals]);
 
-    const amountToChange = useCallback((value: BigInt) => { }, []);
+    const amountToChange = useCallback((value: BigInt) => {}, []);
 
     const { config } = usePrepareContractWrite({
         ...contractRouter,
@@ -161,6 +163,23 @@ export default function Swap() {
     });
 
     useEffect(() => {
+        const handleStore = () => {
+            const localStore: IHistoryTransaction[] | undefined = store.get(address ?? 'guest');
+            const current = {
+                hash: contractRouterWrite?.data?.hash,
+                title: `Swap ${formatUnits(
+                    inputFromAmount as bigint,
+                    tokenFromConfig?.decimals ?? 0,
+                )} ${tokenFromConfig?.symbol} to ${tokenToConfig?.symbol}`,
+                status: waitingTransaction?.isSuccess
+                    ? StatusHistoryTransaction.success
+                    : StatusHistoryTransaction.false,
+            };
+            const newLocalStore = localStore ? [...localStore, current] : [current];
+            store.set(address ?? 'guest', newLocalStore);
+            contractRouterWrite?.reset();
+        };
+
         if (waitingTransaction?.isLoading) {
             showToast(
                 `Waiting Swap from ${formatUnits(
@@ -170,14 +189,15 @@ export default function Swap() {
                 '',
                 'warning',
             );
-        } else if (waitingTransaction?.isSuccess) {
-            showToast(`Success Swap`, '', 'success');
-            contractRouterWrite?.reset();
-            setRefesh(!refresh);
-        } else if (waitingTransaction?.isError) {
-            showToast(`Can not Swap`, '', 'error');
-            contracInfoRead?.refetch();
-            contractRouterWrite?.reset();
+        } else {
+            if (waitingTransaction?.isSuccess) {
+                showToast(`Success Swap`, '', 'success');
+                handleStore();
+                setRefesh(!refresh);
+            } else if (waitingTransaction?.isError) {
+                showToast(`Can not Swap`, '', 'error');
+                handleStore();
+            }
         }
     }, [
         contracInfoRead,
@@ -193,15 +213,34 @@ export default function Swap() {
     ]);
 
     useEffect(() => {
+        const handleStore = () => {
+            const localStore: IHistoryTransaction[] | undefined = store.get(address ?? 'guest');
+            const current = {
+                hash: contractRouterWrite?.data?.hash,
+                title: `Approve ${formatUnits(
+                    inputFromAmount as bigint,
+                    tokenFromConfig?.decimals ?? 0,
+                )} ${tokenFromConfig?.symbol} to ${tokenToConfig?.symbol}`,
+                status: waitingTransactionApprove?.isSuccess
+                    ? StatusHistoryTransaction.success
+                    : StatusHistoryTransaction.false,
+            };
+            const newLocalStore = localStore ? [...localStore, current] : [current];
+            store.set(address ?? 'guest', newLocalStore);
+            contractApproveWrite?.reset();
+        };
+
         if (waitingTransactionApprove?.isLoading) {
             showToast(`Waiting Approve from token ${tokenFromConfig?.symbol}`, '', 'warning');
-        } else if (waitingTransactionApprove?.isSuccess) {
-            showToast(`Success Approve`, '', 'success');
-            contractApproveWrite?.reset();
-            contracInfoRead?.refetch();
-        } else if (waitingTransactionApprove?.isError) {
-            showToast(`Can not Approve`, '', 'error');
-            contractApproveWrite?.reset();
+        } else {
+            if (waitingTransactionApprove?.isSuccess) {
+                showToast(`Success Approve`, '', 'success');
+                handleStore();
+                contracInfoRead?.refetch();
+            } else if (waitingTransactionApprove?.isError) {
+                showToast(`Can not Approve`, '', 'error');
+                handleStore();
+            }
         }
     }, [
         contracInfoRead,
@@ -213,11 +252,12 @@ export default function Swap() {
         waitingTransactionApprove?.isSuccess,
     ]);
 
-    const handleValueInput = useCallback((value: number) => {
-        setValueInput(formatUnits(value, tokenFromConfig?.decimals + 8));
-    }, [tokenFromConfig?.decimals]);
-
-    console.log('valueInput', valueInput)
+    const handleValueInput = useCallback(
+        (value: number) => {
+            setValueInput(formatUnits(value, tokenFromConfig?.decimals + 8));
+        },
+        [tokenFromConfig?.decimals],
+    );
 
     const status = useMemo(() => {
         if (!isConnected) {
@@ -291,7 +331,6 @@ export default function Swap() {
         }
     }, [contractApproveWrite, contractRouterWrite, status]);
 
-
     const feeAmount = useMemo(() => {
         if (
             contracInfoRead?.data &&
@@ -316,7 +355,6 @@ export default function Swap() {
         return undefined;
     }, [outValue, status]);
 
-
     const priceRatio = useMemo(() => {
         if (
             tokenToConfig?.symbol &&
@@ -326,7 +364,8 @@ export default function Swap() {
         ) {
             return parseUnits(
                 (
-                    getPrice[tokenFromConfig?.symbol] * BigInt(1e8) / getPrice[tokenToConfig?.symbol]
+                    (getPrice[tokenFromConfig?.symbol] * BigInt(1e8)) /
+                    getPrice[tokenToConfig?.symbol]
                 ).toString(),
                 10,
             );
@@ -336,35 +375,6 @@ export default function Swap() {
     return (
         <div className="container">
             <div className="left-content-container">
-                <div className="top-left-content-container">
-                    <div className="left-swap-icon-container">
-                        <div className="image-icon">
-                            <img src={btcIcon2} alt="" />
-                            <img src={etcIcon} alt="" />
-                        </div>
-                        <div className="detail-icon">
-                            <p>BTC/ETH</p>
-                            <img src={refreshIcon} alt="" />
-                        </div>
-                    </div>
-                    <div className="right-time-container">
-                        <div className="right-time-select">
-                            {options1.map((option1) => (
-                                <div
-                                    onClick={(opt) => setTimeSelect(option1)}
-                                    className={
-                                        timeSelect === option1
-                                            ? 'is-active time-select'
-                                            : 'time-select'
-                                    }
-                                    key={option1}
-                                >
-                                    {option1}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
                 <div className="bottom-left-content-container">
                     <div className="header-table">
                         <div className="table-head">From</div>
@@ -378,22 +388,22 @@ export default function Swap() {
             <div className="right-content-container">
                 <StyledContainerDiv>
                     <InputTokenWithSelect
+                        title="From"
                         tokens={tokens}
                         amountChange={amountFromChange}
                         tokenChange={handleTokenFromChange}
-                        title="From"
                         refresh={refresh}
                         valueChange={handleValueInput}
+                        disable={status === ButtonStatus.loading}
+                        disableSelect={status === ButtonStatus.loading}
                     />
                 </StyledContainerDiv>
-                <div className="icon-swap">
-                    <img src={iconSwap} alt="" />
-                </div>
                 <div className="from-container">
                     <div>
                         <InputTokenWithSelect
                             title="To"
                             disable
+                            disableSelect={status === ButtonStatus.loading}
                             value={outValue}
                             tokens={tokens}
                             amountChange={amountToChange}
@@ -406,7 +416,9 @@ export default function Swap() {
                     <p className="title-detail">Price</p>
                     <p className="info-detail">
                         1 <span className="title-detail">{tokenFromConfig?.symbol}</span> ={' '}
-                        <BigintDisplay value={priceRatio} decimals={18}
+                        <BigintDisplay
+                            value={priceRatio}
+                            decimals={18}
                             fractionDigits={tokenToConfig?.fractionDigits + 2}
                             threshold={tokenToConfig?.threshold}
                         ></BigintDisplay>{' '}
