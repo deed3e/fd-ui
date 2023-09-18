@@ -5,7 +5,6 @@ import { shortenAddress } from '../../utils/addresses';
 import { useCallback, useEffect } from 'react';
 import { useConnect, useAccount, useSwitchNetwork } from 'wagmi';
 import { DropdownUser } from './DropdownUser';
-import { TransactionHistory } from '../TransactionHistory';
 
 const ConnectWallet: React.FC = () => {
     const { connect, connectors, isSuccess } = useConnect();

@@ -1,17 +1,9 @@
-import { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import InputTokenWithSelect from '../../component/InputToken/InputTokenWithSelect';
-import { formatUnits } from 'viem';
-import { getAllTokenSymbol, getWrapNativeTokenSymbol } from '../../config';
 const Dashboard: React.FC = () => {
-    const tokens = useMemo(() => {
-        return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
-    }, []);
+
 
     return (
-        <StyledContainer>
-            <InputTokenWithSelect tokens={tokens} amountChange={amountChange} />
-        </StyledContainer>
+        <StyledContainer>doan dat</StyledContainer>
     );
 };
 
