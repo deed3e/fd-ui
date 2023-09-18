@@ -13,7 +13,6 @@ export const Config: ChainConfig = {
     router:'0x65870ceCFB6725939C1321E055224eA405504A52',
     nativeToken: 'tBNB',
     wrapNativeToken: 'WETH',
-    usdc: '0x93406E1a043eE311246Ef8F6870194dB9Fe14832',
     tokens: {
         USDC: {
             address: '0x0ebE956E651ab4483bD9E294708bf9FB3388C45f',

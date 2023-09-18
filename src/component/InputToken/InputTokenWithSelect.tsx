@@ -15,7 +15,10 @@ interface InputTokenWithSelectProps {
     title: string;
     disable?: boolean;
     disableSelect?: boolean;
+    disableOverBalance?: boolean;
     value?: string;
+    pickToken?: string;
+    insufficientBalanceChange?: (check: boolean) => unknown;
     amountChange?: (amount: BigInt) => unknown;
     tokenChange?: (symbol: string) => unknown;
     valueChange?: (symbol: number) => unknown;
@@ -27,10 +30,13 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     title = 'Amount',
     disable = false,
     disableSelect = false,
+    disableOverBalance = false,
     value,
+    pickToken,
     amountChange,
     tokenChange,
     valueChange,
+    insufficientBalanceChange,
 }) => {
     const { address } = useAccount();
     const [isShowMax] = useState(false);
@@ -75,6 +81,21 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     );
 
     useEffect(() => {
+        if (!disableSelect && pickToken) {
+            setSelectToken(pickToken);
+        }
+    }, [pickToken]);
+
+    useEffect(() => {
+        const balanceUser = balance?.data?.value ?? BigInt(0);
+        if (insufficientBalanceChange) {
+            insufficientBalanceChange(
+                balanceUser < parseUnits(amount, configSelectToken?.decimals ?? 0),
+            );
+        }
+    }, [amount, balance, insufficientBalanceChange, configSelectToken]);
+
+    useEffect(() => {
         balance.refetch();
     }, [balance, refresh]);
 
@@ -94,6 +115,9 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     }, [amount, configSelectToken?.decimals, configSelectToken?.symbol, getPrice, valueChange]);
 
     const overBalance = useMemo(() => {
+        if (disableOverBalance) {
+            return false;
+        }
         if (balance.data?.value) {
             return parseUnits(amount, configSelectToken?.decimals ?? 0) > balance.data?.value;
         }

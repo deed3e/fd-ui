@@ -11,7 +11,6 @@ export type ChainConfig = {
     wrapNativeToken: string;
     pool: string;
     router: string;
-    usdc: string;
     tokens: {
         [symbol: string]: TokenInfo;
     };

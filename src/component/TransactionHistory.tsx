@@ -45,8 +45,11 @@ export const TransactionHistory = ({ onDismiss }: ModalProps) => {
                     <div onClick={handleClear}>clear</div>
                 </StyledItemClear>
                 {localStore &&
-                    localStore?.map((item: IHistoryTransaction) => (
-                        <TransactionItem check={item.status === StatusHistoryTransaction.false}>
+                    localStore?.map((item: IHistoryTransaction, index) => (
+                        <TransactionItem
+                            key={index}
+                            check={item.status === StatusHistoryTransaction.false}
+                        >
                             <IcSuccess />
                             <div>{item.title}</div>&nbsp;
                             <ExplorerLink address={item.hash}>Link</ExplorerLink>

@@ -11,8 +11,6 @@ import {
 } from '../../config';
 import PoolAbi from '../../abis/Pool.json';
 import RouterAbi from '../../abis/Router.json';
-
-import iconSwap from '../../assets/image/Transger_light.png';
 import { useShowToast } from '../../hooks/useShowToast';
 import {
     useAccount,
@@ -32,8 +30,7 @@ import {
     IHistoryTransaction,
     StatusHistoryTransaction,
 } from '../../component/TransactionHistory';
-
-const options1 = ['24H', '1W', '1M', '1Y'];
+import { ReactComponent as IcSwap } from '../../assets/icons/ic-swap.svg';
 
 enum ButtonStatus {
     notConnect,
@@ -41,9 +38,9 @@ enum ButtonStatus {
     loading,
     notApprove,
     ready,
-    insufficient,
+    insufficientPool,
+    insufficientBalance,
     sameToken,
-    overBalance,
     minInput, // min 10 u
 }
 
@@ -60,12 +57,14 @@ const contractRouter = {
 const MIN_VALUE_INPUT = 10; // 10u
 
 export default function Swap() {
-    const [timeSelect, setTimeSelect] = useState(options1[0]);
     const [inputFromAmount, setInputFromAmount] = useState<BigInt>(BigInt(0));
     const [tokenFrom, setTokenFrom] = useState<string>('BTC');
     const [tokenTo, setTokenTo] = useState<string>('BTC');
+    const [pickTokenFrom, setPickTokenFrom] = useState<string>('BTC');
+    const [pickTokenTo, setPickTokenTo] = useState<string>('USDC');
     const [valueInput, setValueInput] = useState<number>(0);
     const [refresh, setRefesh] = useState<boolean>();
+    const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
     const showToast = useShowToast();
     const tokenFromConfig = getTokenConfig(tokenFrom);
     const tokenToConfig = getTokenConfig(tokenTo);
@@ -130,6 +129,7 @@ export default function Swap() {
                     );
                 }
             } else if (contracInfoRead?.data[0]?.status === 'failure') {
+                console.log('pool', contracInfoRead?.data[0]);
                 return 'Insufficient Pool';
             }
         }
@@ -138,7 +138,12 @@ export default function Swap() {
 
     const amountToChange = useCallback((value: BigInt) => {}, []);
 
-    const { config } = usePrepareContractWrite({
+    const handleInsufficientBalance = useCallback((check: boolean) => {
+        console.log('check', check);
+        setInsufficientBalance(check);
+    }, []);
+
+    const prepareContractWrite = usePrepareContractWrite({
         ...contractRouter,
         functionName: 'swap',
         args: [tokenFromConfig?.address, tokenToConfig?.address, inputFromAmount, 0],
@@ -152,7 +157,7 @@ export default function Swap() {
 
     const contractApproveWrite = useContractWrite(prepareContractApproveWrite.config);
 
-    const contractRouterWrite = useContractWrite(config);
+    const contractRouterWrite = useContractWrite(prepareContractWrite.config);
 
     const waitingTransaction = useWaitForTransaction({
         hash: contractRouterWrite?.data?.hash,
@@ -178,8 +183,9 @@ export default function Swap() {
             const newLocalStore = localStore ? [...localStore, current] : [current];
             store.set(address ?? 'guest', newLocalStore);
             contractRouterWrite?.reset();
+            contracInfoRead?.refetch();
         };
-
+        console.log(status);
         if (waitingTransaction?.isLoading) {
             showToast(
                 `Waiting Swap from ${formatUnits(
@@ -220,7 +226,7 @@ export default function Swap() {
                 title: `Approve ${formatUnits(
                     inputFromAmount as bigint,
                     tokenFromConfig?.decimals ?? 0,
-                )} ${tokenFromConfig?.symbol} to ${tokenToConfig?.symbol}`,
+                )} ${tokenFromConfig?.symbol} `,
                 status: waitingTransactionApprove?.isSuccess
                     ? StatusHistoryTransaction.success
                     : StatusHistoryTransaction.false,
@@ -265,9 +271,11 @@ export default function Swap() {
         } else if (tokenFrom === tokenTo) {
             return ButtonStatus.sameToken;
         } else if (outValue === 'Insufficient Pool') {
-            return ButtonStatus.insufficient;
+            return ButtonStatus.insufficientPool;
         } else if (!inputFromAmount) {
             return ButtonStatus.notInput;
+        } else if (insufficientBalance) {
+            return ButtonStatus.insufficientBalance;
         } else if (valueInput < MIN_VALUE_INPUT) {
             return ButtonStatus.minInput;
         } else if (waitingTransactionApprove?.isLoading || waitingTransaction?.isLoading) {
@@ -291,6 +299,7 @@ export default function Swap() {
         valueInput,
         waitingTransaction?.isLoading,
         waitingTransactionApprove?.isLoading,
+        insufficientBalance,
     ]);
 
     const buttonText = useMemo(() => {
@@ -298,12 +307,14 @@ export default function Swap() {
             case ButtonStatus.notConnect:
                 return 'Connect Wallet';
             case ButtonStatus.sameToken:
-                return 'Not same token';
+                return 'Not Same Token';
             case ButtonStatus.notInput:
-                return 'Enter an amount';
+                return 'Enter An Amount';
+            case ButtonStatus.insufficientBalance:
+                return 'Insufficient Your Balance';
             case ButtonStatus.minInput:
-                return 'Min amount 10 USD';
-            case ButtonStatus.insufficient:
+                return 'Min Amount 10 USD';
+            case ButtonStatus.insufficientPool:
                 return 'Insufficient Pool';
             case ButtonStatus.loading:
                 return ``;
@@ -372,6 +383,17 @@ export default function Swap() {
         }
         return undefined;
     }, [getPrice, tokenFromConfig?.symbol, tokenToConfig?.symbol]);
+
+    const handleSwapSelectToken = useCallback(() => {
+        if (tokenToConfig?.symbol === tokenFromConfig?.symbol) return;
+        const tokenTmp = tokenFromConfig?.symbol ?? '';
+        setPickTokenFrom(tokenToConfig?.symbol ?? '');
+        setPickTokenTo(tokenTmp);
+    }, [tokenFromConfig, tokenToConfig]);
+
+    console.log('tokenFromConfig', tokenFromConfig?.symbol);
+    console.log('tokenToConfig', tokenToConfig?.symbol);
+
     return (
         <div className="container">
             <div className="left-content-container">
@@ -396,19 +418,28 @@ export default function Swap() {
                         valueChange={handleValueInput}
                         disable={status === ButtonStatus.loading}
                         disableSelect={status === ButtonStatus.loading}
+                        insufficientBalanceChange={handleInsufficientBalance}
+                        pickToken={pickTokenFrom}
                     />
                 </StyledContainerDiv>
+                <StyledContainerIconSwap>
+                    <StyledIconSwap onClick={handleSwapSelectToken}>
+                        <IcSwap></IcSwap>
+                    </StyledIconSwap>
+                </StyledContainerIconSwap>
                 <div className="from-container">
                     <div>
                         <InputTokenWithSelect
                             title="To"
                             disable
                             disableSelect={status === ButtonStatus.loading}
+                            disableOverBalance
                             value={outValue}
                             tokens={tokens}
                             amountChange={amountToChange}
                             tokenChange={handleTokenToChange}
                             refresh={refresh}
+                            pickToken={pickTokenTo}
                         />
                     </div>
                 </div>
@@ -483,6 +514,21 @@ export default function Swap() {
     );
 }
 
+const StyledIconSwap = styled.div`
+    cursor: pointer;
+    :hover {
+        svg {
+            path {
+                stroke: #5552a9;
+            }
+        }
+    }
+`;
+const StyledContainerIconSwap = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
 const StyledWrapButton = styled.div`
     display: flex;
     justify-content: center;
