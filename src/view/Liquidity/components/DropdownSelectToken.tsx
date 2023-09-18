@@ -104,7 +104,7 @@ const StyleDropdownItem = styled.div<{ active?: boolean }>`
     width: 100%;
     padding: 8px 0;
     font-size: 14px;
-    color: ${(p) => (p.active ? '#ffb313' : '#fff')};
+    color: ${(p) => (p.active ? '#6763e3' : '#fff')};
     cursor: pointer;
     .info {
         margin-left: 8px;
@@ -129,10 +129,10 @@ const StyleDropdownItem = styled.div<{ active?: boolean }>`
         :hover {
             svg {
                 path {
-                    fill: #ffb313;
+                    fill: #6763e3;
                 }
                 rect {
-                    stroke: #ffb313;
+                    stroke: #6763e3;
                 }
             }
         }
@@ -141,6 +141,6 @@ const StyleDropdownItem = styled.div<{ active?: boolean }>`
         border-bottom: 1px solid #363636;
     }
     :hover {
-        color: #ffb313;
+        color: #6763e3;
     }
 `;

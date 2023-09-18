@@ -27,14 +27,18 @@ enum ButtonStatus {
     ready,
 }
 
+const AmountFaucet: Record<string, number> = {
+    BTC: 0.1,
+    ETH: 1,
+    USDC: 1000,
+};
+
 const Faucet: React.FC = () => {
-    const { address ,isConnected } = useAccount();
+    const { address, isConnected } = useAccount();
     const showToast = useShowToast();
-    const [isShowMax] = useState(false);
     const [selectToken, setSelectToken] = useState('BTC');
     const configSelectToken = getTokenConfig(selectToken);
-    const [amount, setAmount] = useState('');
-    const [subValue, setSubValue] = useState<BigInt>();
+    const [amount, setAmount] = useState<string>(AmountFaucet[configSelectToken?.symbol ?? ''].toString()??'');
     const addToken = useAddTokenMetamask();
 
     const tokens = useMemo(() => {
@@ -43,44 +47,27 @@ const Faucet: React.FC = () => {
 
     const getPrice = useOracle(tokens);
 
-    useEffect(() => {
-        console.log(getPrice);
-    }, [getPrice]);
     const balance = useBalance({
         address: address,
         token: getAddress(configSelectToken?.address ?? ''),
     });
 
-    const { config } = usePrepareContractWrite({
+    const prepareContractWrite = usePrepareContractWrite({
         address: getAddress(configSelectToken?.address ?? ''),
         abi: MockERC20,
         functionName: 'mint',
         args: [parseUnits(amount, configSelectToken?.decimals ?? 0)],
     });
 
-    const { data, write, reset } = useContractWrite(config);
+    const { data, write, reset } = useContractWrite(prepareContractWrite?.config);
 
     const { isLoading, isSuccess } = useWaitForTransaction({
         hash: data?.hash,
     });
 
-    const handleInputHandle = useCallback(
-        (ev: ChangeEvent<HTMLInputElement>) => {
-            const tmp = ev.target.value;
-            var regExp = /^0[0-9].*$/;
-            const splipDot = tmp.split('.');
-            const check =
-                (parseUnits(tmp.replace('.', ''), configSelectToken?.decimals ?? 0) ||
-                    +tmp === 0) &&
-                    splipDot.length <= 2 &&
-                    !tmp.includes(' ') &&
-                    !regExp.test(tmp)
-            if (check) {
-                setAmount(tmp);
-            }
-        },
-        [configSelectToken?.decimals],
-    );
+    useEffect(() => {
+        setAmount(AmountFaucet[configSelectToken?.symbol ?? ''].toString()??'');
+    }, [configSelectToken]);
 
     useEffect(() => {
         if (isSuccess) {
@@ -109,13 +96,6 @@ const Faucet: React.FC = () => {
         setSelectToken(symbol);
     }, []);
 
-    useEffect(() => {
-        setSubValue(
-            parseUnits(amount, configSelectToken?.decimals ?? 0) *
-                getPrice[configSelectToken?.symbol],
-        );
-    }, [amount, configSelectToken?.decimals, configSelectToken?.symbol, getPrice]);
-
     const handleAddToken = useCallback(() => {
         addToken(configSelectToken?.symbol ?? '');
     }, [addToken, configSelectToken?.symbol]);
@@ -143,8 +123,6 @@ const Faucet: React.FC = () => {
                 return `Request`;
         }
     }, [status]);
-
-
 
     return (
         <>
@@ -177,26 +155,9 @@ const Faucet: React.FC = () => {
                                         <StyledInput
                                             placeholder={amount ? '0' : '0.0'}
                                             value={amount}
-                                            onChange={handleInputHandle}
+                                            disabled
                                         ></StyledInput>
-                                        <StyledSubValue
-                                            show={
-                                                +amount !== 0
-                                            }
-                                        >
-                                            ~&nbsp;
-                                            <BigintDisplay
-                                                value={subValue}
-                                                decimals={
-                                                    (configSelectToken?.decimals ?? 0) + 8
-                                                }
-                                                currency="USD"
-                                                threshold={0.1}
-                                                fractionDigits={2}
-                                            />
-                                        </StyledSubValue>
                                     </StyledWrapInputAndSubValue>
-                                    {isShowMax && <StyledMaxValue>Max</StyledMaxValue>}
                                     <StyledSelectToken>
                                         <DropdownSelectToken
                                             selectedToken={selectToken}
@@ -240,7 +201,7 @@ const StyledInput = styled.input`
     flex: 1;
     width: 100%;
     border: none;
-    color: #fff;
+    color: #c9c9c9;
     padding: 0;
     font-weight: bold;
     font-size: 16px;

@@ -140,7 +140,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
                 </StyledBalance>
             </StyledHeaderBtn>
             <StyledBodyBtn>
-                <StyledContainerInput>
+                <StyledContainerInput disable={disable}>
                     <StyledWrapInputAndSubValue>
                         <StyledInput
                             placeholder={amount ? '0' : '0.0'}
@@ -239,9 +239,9 @@ const StyledBalance = styled.div`
     font-size: 12px;
     font-weight: 300;
 `;
-const StyledContainerInput = styled.div`
+const StyledContainerInput = styled.div<{disable?:boolean}>`
     position: relative;
-    background-color: black;
+    background-color: ${({ disable }) => (disable ? 'rgba(255, 255, 255, 0.1);' : 'black')};
     border-radius: 10px;
     height: 49px;
     display: flex;

@@ -129,7 +129,6 @@ export default function Swap() {
                     );
                 }
             } else if (contracInfoRead?.data[0]?.status === 'failure') {
-                console.log('pool', contracInfoRead?.data[0]);
                 return 'Insufficient Pool';
             }
         }
@@ -139,7 +138,6 @@ export default function Swap() {
     const amountToChange = useCallback((value: BigInt) => {}, []);
 
     const handleInsufficientBalance = useCallback((check: boolean) => {
-        console.log('check', check);
         setInsufficientBalance(check);
     }, []);
 
@@ -185,7 +183,7 @@ export default function Swap() {
             contractRouterWrite?.reset();
             contracInfoRead?.refetch();
         };
-        console.log(status);
+
         if (waitingTransaction?.isLoading) {
             showToast(
                 `Waiting Swap from ${formatUnits(
@@ -390,9 +388,6 @@ export default function Swap() {
         setPickTokenFrom(tokenToConfig?.symbol ?? '');
         setPickTokenTo(tokenTmp);
     }, [tokenFromConfig, tokenToConfig]);
-
-    console.log('tokenFromConfig', tokenFromConfig?.symbol);
-    console.log('tokenToConfig', tokenToConfig?.symbol);
 
     return (
         <div className="container">

@@ -81,7 +81,7 @@ const StyledLink = styled.div`
       width: 14px;
       margin-right: 5px;
       path {
-        fill: #ffb313;
+        fill: #6763e3;
       }
     }
     :hover {
