@@ -67,6 +67,8 @@ const InputToken: React.FC<InputTokenProps> = ({
         args:[address]
     });
 
+    console.log(balance.data);
+
     // useEffect(() => {
     //     if (tokenChange) {
     //         tokenChange(selectToken);

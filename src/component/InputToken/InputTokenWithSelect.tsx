@@ -118,8 +118,8 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
         if (disableOverBalance) {
             return false;
         }
-        if (balance.data?.value) {
-            return parseUnits(amount, configSelectToken?.decimals ?? 0) > balance.data?.value;
+        if (balance.data) {
+            return parseUnits(amount, configSelectToken?.decimals ?? 0) > balance.data?.value
         }
         return true;
     }, [amount, balance, configSelectToken?.decimals]);

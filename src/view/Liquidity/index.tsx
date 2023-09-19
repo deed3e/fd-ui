@@ -274,11 +274,14 @@ export default function Liquidity() {
     // const valueUSDT = ((getPrice.USDC as bigint) * balanceUSDC?.data?.value) as bigint;
     // const valueWeth = ((getPrice.WETH as bigint) * balanceWeth?.data?.value) as bigint;
 
-    const valueETH = (BigInt(getPrice.ETH ?? 0) * BigInt(balanceETH?.data?.value ?? 0)) as bigint;
-    const valueBTC = (BigInt(getPrice.BTC ?? 0) * BigInt(balanceBTC?.data?.value ?? 0)) as bigint;
-    const valueUSDT = (BigInt(getPrice.USDC ?? 0) * BigInt(balanceUSDC?.data?.value ?? 0)) as bigint;
-    const valueWeth = (BigInt(getPrice.WETH ?? 0) * BigInt(balanceWeth?.data?.value ?? 0)) as bigint;
-
+    const valueETH = (BigInt(getPrice.ETH ?? 0) *
+        BigInt(balanceETH?.data?.value ?? 0)) as bigint;
+    const valueBTC = (BigInt(getPrice.BTC ?? 0) *
+        BigInt(balanceBTC?.data?.value ?? 0)) as bigint;
+    const valueUSDT = (BigInt(getPrice.USDC ?? 0) *
+        BigInt(balanceUSDC?.data?.value ?? 0)) as bigint;
+    const valueWeth = (BigInt(getPrice.WETH ?? 0) *
+        BigInt(balanceWeth?.data?.value ?? 0)) as bigint;
 
     const dataReadTotalPool = useContractRead({
         address: getAddress(getAdreessPool()),
@@ -286,12 +289,16 @@ export default function Liquidity() {
         functionName: 'getPoolValue',
     });
 
-    console.log("Data Read total", dataReadTotalPool.data);
+    console.log('Data Read total', dataReadTotalPool.data);
 
     const [inputFromAmount, setInputFromAmount] = useState<BigInt>(BigInt(0));
     const [inputRemoveFromAmount, setInputRemoveFromAmount] = useState<BigInt>(BigInt(0));
     const [tokenFrom, setTokenFrom] = useState<string>('BTC');
     const [tokenFromRemove, setTokenFromRemove] = useState<string>('BTC');
+    const [minimumReceive, setMinimumReceive] = useState<BigInt>(BigInt(0));
+    const [numberToCaculateMinimum, setNumberToCaculateMinimum] = useState<BigInt>(
+        BigInt(1) / BigInt(1000),
+    );
 
     const tokens = useMemo(() => {
         return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
@@ -423,13 +430,23 @@ export default function Liquidity() {
         }
     }, [balanceBTC, balanceETH, balanceUSDC, balanceWeth, isSuccess]);
 
-
     const calcRemoveLiquidity = useContractRead({
         address: getAddress(getAdreessPool()),
         abi: Pool,
         functionName: 'calcRemoveLiquidity',
         args: [tokenRemoveConfig?.address, inputRemoveFromAmount],
     });
+
+    console.log('calcRemoveLiquidity', calcRemoveLiquidity.data);
+
+    useEffect(() => {
+        if (calcRemoveLiquidity.data != undefined) {
+            const initialNumber = BigInt(calcRemoveLiquidity.data);
+            const percentageToReduce = BigInt(999); // Giảm 0.1%
+            const result = (initialNumber * percentageToReduce) / BigInt(1000); // Chia cho 1000 để lấy phần thập phân
+            setMinimumReceive(result);
+        }
+    }, [calcRemoveLiquidity.data, tokenFromRemove, inputRemoveFromAmount]);
 
     return (
         <div className="content-container">
@@ -580,25 +597,26 @@ export default function Liquidity() {
                                 refresh={refresh}
                             />
                         </StyledContainerDiv>
+                        <div className="div" style={{ minHeight: '160px' }}>
+                            <div className="content-detail content-detail-first">
+                                <p className="title-detail">Receive</p>
+                                <p className="info-detail">0 FLP</p>
+                            </div>
 
-                        <div className="content-detail content-detail-first">
-                            <p className="title-detail">Receive</p>
-                            <p className="info-detail">0 FLP</p>
-                        </div>
+                            <div className="content-detail">
+                                <p className="title-detail">Slipage</p>
+                                <p className="info-detail">0.1 %</p>
+                            </div>
 
-                        <div className="content-detail">
-                            <p className="title-detail">Slipage</p>
-                            <p className="info-detail">0.1 %</p>
-                        </div>
+                            <div className="content-detail">
+                                <p className="title-detail">Minimun Received</p>
+                                <p className="info-detail">0 FLP</p>
+                            </div>
 
-                        <div className="content-detail">
-                            <p className="title-detail">Minimun Received</p>
-                            <p className="info-detail">0 FLP</p>
-                        </div>
-
-                        <div className="content-detail">
-                            <p className="title-detail">Fees</p>
-                            <p className="info-detail">-</p>
+                            <div className="content-detail">
+                                <p className="title-detail">Fees</p>
+                                <p className="info-detail">-</p>
+                            </div>
                         </div>
                         <div className="button-container">
                             <button onClick={handleAddLiquid} className="btn-add">
@@ -615,32 +633,50 @@ export default function Liquidity() {
                                 refresh={refresh}
                             />
                         </StyledContainerDiv>
-                        <div className="content-detail content-detail-first">
-                            <p className="title-detail">Receive</p>
-                            <div className="div" style={{display:'flex',alignItems:'center'}}>
-                           
-                                <BigintDisplay
-                                    value={calcRemoveLiquidity.data as BigInt}
-                                    decimals={8 + tokenRemoveConfig?.decimals}
-                                    currency="USD"
-                                />
-                                <p className="info-detail" style={{marginLeft:'5px'}}>
-                                    <SelectToken tokens={tokensRemove}
-                                        tokenChange={handleTokenRemoveFromChange}
-                                        title="Amount"
-                                        refresh={refresh} />
+                        <div className="div" style={{ minHeight: '160px' }}>
+                            <div className="content-detail content-detail-first">
+                                <p className="title-detail">
+                                    Receive {calcRemoveLiquidity.data}
+                                </p>
+                                <div
+                                    className="div"
+                                    style={{ display: 'flex', alignItems: 'center' }}
+                                >
+                                    <div>
+                                        <BigintDisplay
+                                            value={calcRemoveLiquidity.data as BigInt}
+                                            decimals={tokenRemoveConfig?.decimals}
+                                            currency="USD"
+                                        />
+                                    </div>
+                                    <p
+                                        className="info-detail"
+                                        style={{ marginLeft: '5px', marginBottom: '0px' }}
+                                    >
+                                        <SelectToken
+                                            tokens={tokensRemove}
+                                            tokenChange={handleTokenRemoveFromChange}
+                                            title="Amount"
+                                            refresh={refresh}
+                                        />
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="content-detail">
+                                <p className="title-detail">Slipage</p>
+                                <p className="info-detail">0.1 %</p>
+                            </div>
+
+                            <div className="content-detail">
+                                <p className="title-detail">Minimun Received</p>
+                                <p className="info-detail">
+                                    <BigintDisplay
+                                        value={minimumReceive as BigInt}
+                                        decimals={tokenConfig.decimals}
+                                    />
+                                    <span> {tokenFromRemove}</span>
                                 </p>
                             </div>
-                        </div>
-
-                        <div className="content-detail">
-                            <p className="title-detail">Slipage</p>
-                            <p className="info-detail">0.1 %</p>
-                        </div>
-
-                        <div className="content-detail">
-                            <p className="title-detail">Minimun Received</p>
-                            <p className="info-detail">0 FLP</p>
                         </div>
                         <div className="button-container">
                             <button onClick={handleAddLiquid} className="btn-add">
