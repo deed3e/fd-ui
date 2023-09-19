@@ -11,6 +11,7 @@ export const Config: ChainConfig = {
     oracle: '0x1e7c44872570115CC7C47466205F7831343cDfb5',
     pool:'0xee23330d055162348eAFdEd363f5f12a2d338d7c',
     router:'0x65870ceCFB6725939C1321E055224eA405504A52',
+    lp : '0x6819a6E5591168bA6496bF1A0727F00Dc3015e08',
     nativeToken: 'tBNB',
     wrapNativeToken: 'WETH',
     tokens: {

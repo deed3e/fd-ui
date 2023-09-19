@@ -26,6 +26,10 @@ export const getAdreessPool = () => {
     return get(config, ['pool']);
 };
 
+export const getAdreessLp = () => {
+    return get(config, ['lp']);
+};
+
 export const getAdreessRouter = () => {
     return get(config, ['router']);
 };

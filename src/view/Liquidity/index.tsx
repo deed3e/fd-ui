@@ -24,6 +24,8 @@ import BTCRight from '../../assets/image/btc-right.svg';
 import { useOracle } from '../../hooks/useOracle';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import InputTokenWithSelect from '../../component/InputToken/InputTokenWithSelect';
+import InputToken from '../../component/InputToken/InputToken';
+import SelectToken from '../../component/InputToken/selectToken';
 
 import {
     getAllTokenSymbol,
@@ -45,6 +47,7 @@ import {
 import { formatUnits, getAddress, parseUnits } from 'viem';
 import IER from '../../abis/IERC20.json';
 import Router from '../../abis/Router.json';
+import Pool from '../../abis/Pool.json';
 import { useShowToast } from '../../hooks/useShowToast';
 
 const options = [
@@ -275,10 +278,25 @@ export default function Liquidity() {
     const valueUSDT = (BigInt(getPrice.USDC ?? 0) * BigInt(balanceUSDC?.data?.value ?? 0)) as bigint;
     const valueWeth = (BigInt(getPrice.WETH ?? 0) * BigInt(balanceWeth?.data?.value ?? 0)) as bigint;
 
+
+    const dataReadTotalPool = useContractRead({
+        address: getAddress(getAdreessPool()),
+        abi: Pool,
+        functionName: 'getPoolValue',
+    });
+
+    console.log("Data Read total", dataReadTotalPool.data);
+
     const [inputFromAmount, setInputFromAmount] = useState<BigInt>(BigInt(0));
+    const [inputRemoveFromAmount, setInputRemoveFromAmount] = useState<BigInt>(BigInt(0));
     const [tokenFrom, setTokenFrom] = useState<string>('BTC');
+    const [tokenFromRemove, setTokenFromRemove] = useState<string>('BTC');
 
     const tokens = useMemo(() => {
+        return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
+    }, []);
+
+    const tokensRemove = useMemo(() => {
         return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
     }, []);
 
@@ -290,13 +308,26 @@ export default function Liquidity() {
         }
     }, []);
 
+    const amountRemoveFromChange = useCallback((value: BigInt) => {
+        if (value) {
+            setInputRemoveFromAmount(value);
+        } else {
+            setInputRemoveFromAmount(BigInt(0));
+        }
+    }, []);
+
     const handleTokenFromChange = useCallback((symbol: string) => {
         setTokenFrom(symbol);
+    }, []);
+
+    const handleTokenRemoveFromChange = useCallback((symbol: string) => {
+        setTokenFromRemove(symbol);
     }, []);
 
     const { address, isConnected } = useAccount();
 
     const tokenConfig = getTokenConfig(tokenFrom);
+    const tokenRemoveConfig = getTokenConfig(tokenFromRemove);
     const addressRouter = getAddress(getAdreessRouter());
     const [refresh, setRefesh] = useState<boolean>();
 
@@ -385,8 +416,21 @@ export default function Liquidity() {
             balanceETH.refetch();
             balanceUSDC.refetch();
             balanceWeth.refetch();
+            dataReadTotalPool.refetch();
         }
     }, [balanceBTC, balanceETH, balanceUSDC, balanceWeth, isSuccess]);
+
+
+    const calcRemoveLiquidity = useContractRead({
+        address: getAddress(getAdreessPool()),
+        abi: Pool,
+        functionName: 'calcRemoveLiquidity',
+        args: [tokenRemoveConfig?.address, inputRemoveFromAmount],
+    });
+
+    console.log("inputRemoveFromAmount", inputRemoveFromAmount);
+
+    console.log("Calc Remove Liquidity", calcRemoveLiquidity.data);
 
     return (
         <div className="content-container">
@@ -396,7 +440,14 @@ export default function Liquidity() {
                         <img src={BankImage} alt="bank" />
                         <p>Assets Under Management</p>
                     </div>
-                    <p className="money-header">$7,2223,12312</p>
+                    <p className="money-header">
+                        {
+                            <BigintDisplay
+                                value={dataReadTotalPool.data as BigInt}
+                                decimals={30}
+                            />
+                        }
+                    </p>
                 </div>
 
                 <div className="bottom-left-container">
@@ -557,7 +608,46 @@ export default function Liquidity() {
                         </div>
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={1}>
-                        Item Two
+                        <StyledContainerDiv>
+                            <InputToken
+                                tokens={tokensRemove}
+                                amountChange={amountRemoveFromChange}
+                                title="Amount"
+                                refresh={refresh}
+                            />
+                        </StyledContainerDiv>
+
+                        <div className="content-detail content-detail-first">
+                            <p className="title-detail">Receive</p>
+                            <div className="div" style={{display:'flex',alignItems:'center'}}>
+                                <BigintDisplay
+                                    value={calcRemoveLiquidity.data as BigInt}
+                                    decimals={8 + tokenRemoveConfig?.decimals}
+                                    currency="USD"
+                                />
+                                <p className="info-detail" style={{marginLeft:'5px'}}>
+                                    <SelectToken tokens={tokensRemove}
+                                        tokenChange={handleTokenRemoveFromChange}
+                                        title="Amount"
+                                        refresh={refresh} />
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="content-detail">
+                            <p className="title-detail">Slipage</p>
+                            <p className="info-detail">0.1 %</p>
+                        </div>
+
+                        <div className="content-detail">
+                            <p className="title-detail">Minimun Received</p>
+                            <p className="info-detail">0 FLP</p>
+                        </div>
+                        <div className="button-container">
+                            <button onClick={handleAddLiquid} className="btn-add">
+                                Remove
+                            </button>
+                        </div>
                     </CustomTabPanel>
                 </Box>
             </div>
