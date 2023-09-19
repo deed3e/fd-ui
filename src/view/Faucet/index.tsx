@@ -10,7 +10,7 @@ import {
     useBalance,
     useAccount,
 } from 'wagmi';
-import { getAddress, parseUnits } from 'viem';
+import { parseUnits } from 'viem';
 import { useShowToast } from '../../hooks/useShowToast';
 import { ReactComponent as IconAddToken } from '../../assets/svg/ic-add-token.svg';
 import { TokenSymbol } from '../../component/TokenSymbol';
@@ -38,7 +38,9 @@ const Faucet: React.FC = () => {
     const showToast = useShowToast();
     const [selectToken, setSelectToken] = useState('BTC');
     const configSelectToken = getTokenConfig(selectToken);
-    const [amount, setAmount] = useState<string>(AmountFaucet[configSelectToken?.symbol ?? ''].toString()??'');
+    const [amount, setAmount] = useState<string>(
+        AmountFaucet[configSelectToken?.symbol ?? ''].toString() ?? '',
+    );
     const addToken = useAddTokenMetamask();
 
     const tokens = useMemo(() => {
@@ -49,11 +51,11 @@ const Faucet: React.FC = () => {
 
     const balance = useBalance({
         address: address,
-        token: getAddress(configSelectToken?.address ?? ''),
+        token: configSelectToken?.address,
     });
 
     const prepareContractWrite = usePrepareContractWrite({
-        address: getAddress(configSelectToken?.address ?? ''),
+        address: configSelectToken?.address,
         abi: MockERC20,
         functionName: 'mint',
         args: [parseUnits(amount, configSelectToken?.decimals ?? 0)],
@@ -66,7 +68,7 @@ const Faucet: React.FC = () => {
     });
 
     useEffect(() => {
-        setAmount(AmountFaucet[configSelectToken?.symbol ?? ''].toString()??'');
+        setAmount(AmountFaucet[configSelectToken?.symbol ?? ''].toString() ?? '');
     }, [configSelectToken]);
 
     useEffect(() => {

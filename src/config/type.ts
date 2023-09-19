@@ -1,25 +1,27 @@
+import { Address } from "viem";
+
 export type ChainConfig = {
     testnet: boolean;
     chainId: number;
     chainName: string;
     etherscanName: string;
     explorerUrl: string;
-    oracle: string;
+    oracle: Address;
     nativeToken: string;
     wrapNativeToken: string;
     pool: {
-        address: string;
+        address: Address;
         lp: string;
         assets: string[];
     };
-    router: string;
+    router: Address;
     tokens: {
         [symbol: string]: TokenInfo;
     };
 };
 export type TokenInfo = {
     symbol?: string;
-    address: string;
+    address: Address;
     name?: string;
     decimals: number;
     threshold?: number;

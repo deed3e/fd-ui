@@ -20,7 +20,7 @@ import {
     usePrepareContractWrite,
     useWaitForTransaction,
 } from 'wagmi';
-import { formatUnits, getAddress, maxUint256, parseUnits } from 'viem';
+import { formatUnits, maxUint256, parseUnits } from 'viem';
 import IcLoading from '../../assets/image/ic-loading.png';
 import MockErc20 from '../../abis/MockERC20.json';
 import { BigintDisplay } from '../../component/BigIntDisplay';
@@ -45,12 +45,12 @@ enum ButtonStatus {
 }
 
 const contractPool = {
-    address: getAddress(getAdreessPool()),
+    address: getAdreessPool(),
     abi: PoolAbi,
 };
 
 const contractRouter = {
-    address: getAddress(getAdreessRouter()),
+    address: getAdreessRouter(),
     abi: RouterAbi,
 };
 
@@ -84,8 +84,8 @@ export default function Swap() {
     }, [tokenFromConfig?.address]);
 
     const balancePool = useBalance({
-        address: getAddress(getAdreessPool()),
-        token: getAddress(tokenToConfig?.address ?? ''),
+        address: getAdreessPool(),
+        token: tokenToConfig?.address,
     });
 
     const contracInfoRead = useContractReads({
