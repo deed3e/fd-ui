@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import InputTokenWithSelect from '../../component/InputToken/InputTokenWithSelect';
 import {
-    getAllTokenSymbol,
+    getPoolAssetSymbol,
     getWrapNativeTokenSymbol,
     getAdreessRouter,
     getAdreessPool,
@@ -73,7 +73,7 @@ export default function Swap() {
     const { address, isConnected } = useAccount();
 
     const tokens = useMemo(() => {
-        return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
+        return getPoolAssetSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
     }, []);
 
     const contractMockErc20 = useMemo(() => {

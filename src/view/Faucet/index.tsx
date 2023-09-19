@@ -14,7 +14,7 @@ import { getAddress, parseUnits } from 'viem';
 import { useShowToast } from '../../hooks/useShowToast';
 import { ReactComponent as IconAddToken } from '../../assets/svg/ic-add-token.svg';
 import { TokenSymbol } from '../../component/TokenSymbol';
-import { getAllTokenSymbol, getWrapNativeTokenSymbol, getTokenConfig } from '../../config';
+import { getPoolAssetSymbol, getWrapNativeTokenSymbol, getTokenConfig } from '../../config';
 import { useAddTokenMetamask } from '../../hooks/useAddTokenMetamask';
 import { useOracle } from '../../hooks/useOracle';
 import { BigintDisplay } from '../../component/BigIntDisplay';
@@ -42,7 +42,7 @@ const Faucet: React.FC = () => {
     const addToken = useAddTokenMetamask();
 
     const tokens = useMemo(() => {
-        return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
+        return getPoolAssetSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
     }, []);
 
     const getPrice = useOracle(tokens);

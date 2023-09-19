@@ -4,10 +4,6 @@ import { TokenInfo, TokenInfoProps } from './type';
 
 export const config = Config;
 
-export const getRpcUrl = () => {
-    return get(config, ['rpcUrl']);
-};
-
 export const getTokenConfig = (tokenSymbol: string) => {
     if (!tokenSymbol) {
         return undefined;
@@ -17,17 +13,20 @@ export const getTokenConfig = (tokenSymbol: string) => {
     return { ...(tokenConfig || {}), symbol: tokenSymbol } as TokenInfoProps;
 };
 
-
 export const getAdreessOracle = () => {
     return get(config, ['oracle']);
 };
 
 export const getAdreessPool = () => {
-    return get(config, ['pool']);
+    return get(config, ['pool', 'address']);
 };
 
 export const getAdreessRouter = () => {
     return get(config, ['router']);
+};
+
+export const getLpSymbol = () => {
+    return get(config, ['pool,lp']);
 };
 
 export const getExplorerUrl = () => {
@@ -44,4 +43,8 @@ export const getWrapNativeTokenSymbol = () => {
 
 export const getAllTokenSymbol = () => {
     return keys(get(config, ['tokens']));
+};
+
+export const getPoolAssetSymbol = () => {
+    return get(config, ['pool', 'assets']);
 };

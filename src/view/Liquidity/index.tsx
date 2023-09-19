@@ -26,7 +26,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import InputTokenWithSelect from '../../component/InputToken/InputTokenWithSelect';
 
 import {
-    getAllTokenSymbol,
+    getPoolAssetSymbol,
     getWrapNativeTokenSymbol,
     getAdreessRouter,
     getAdreessPool,
@@ -279,7 +279,7 @@ export default function Liquidity() {
     const [tokenFrom, setTokenFrom] = useState<string>('BTC');
 
     const tokens = useMemo(() => {
-        return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
+        return getPoolAssetSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
     }, []);
 
     const amountFromChange = useCallback((value: BigInt) => {
