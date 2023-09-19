@@ -49,6 +49,7 @@ import IER from '../../abis/IERC20.json';
 import Router from '../../abis/Router.json';
 import Pool from '../../abis/Pool.json';
 import { useShowToast } from '../../hooks/useShowToast';
+import { ca } from 'date-fns/locale';
 
 const options = [
     {
@@ -311,8 +312,10 @@ export default function Liquidity() {
     const amountRemoveFromChange = useCallback((value: BigInt) => {
         if (value) {
             setInputRemoveFromAmount(value);
+            calcRemoveLiquidity.refetch();
         } else {
             setInputRemoveFromAmount(BigInt(0));
+            calcRemoveLiquidity.refetch();
         }
     }, []);
 
@@ -427,10 +430,6 @@ export default function Liquidity() {
         functionName: 'calcRemoveLiquidity',
         args: [tokenRemoveConfig?.address, inputRemoveFromAmount],
     });
-
-    console.log("inputRemoveFromAmount", inputRemoveFromAmount);
-
-    console.log("Calc Remove Liquidity", calcRemoveLiquidity.data);
 
     return (
         <div className="content-container">
@@ -616,10 +615,10 @@ export default function Liquidity() {
                                 refresh={refresh}
                             />
                         </StyledContainerDiv>
-
                         <div className="content-detail content-detail-first">
                             <p className="title-detail">Receive</p>
                             <div className="div" style={{display:'flex',alignItems:'center'}}>
+                           
                                 <BigintDisplay
                                     value={calcRemoveLiquidity.data as BigInt}
                                     decimals={8 + tokenRemoveConfig?.decimals}
