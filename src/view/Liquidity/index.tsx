@@ -34,6 +34,7 @@ import {
     getAdreessPool,
     getTokenConfig,
     getAdreessOracle,
+    getAdreessLp
 } from '../../config';
 
 import {
@@ -46,6 +47,7 @@ import {
 } from 'wagmi';
 import { formatUnits, getAddress, parseUnits } from 'viem';
 import IER from '../../abis/IERC20.json';
+import Mocker from '../../abis/MockERC20.json';
 import Router from '../../abis/Router.json';
 import Pool from '../../abis/Pool.json';
 import { useShowToast } from '../../hooks/useShowToast';
@@ -195,6 +197,7 @@ export default function Liquidity() {
     const [value, setValue] = React.useState(0);
     const [btcValue, setBtcValue] = React.useState(0);
     const showToast = useShowToast();
+    const showToastRemove = useShowToast();
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -289,8 +292,6 @@ export default function Liquidity() {
         functionName: 'getPoolValue',
     });
 
-    console.log('Data Read total', dataReadTotalPool.data);
-
     const [inputFromAmount, setInputFromAmount] = useState<BigInt>(BigInt(0));
     const [inputRemoveFromAmount, setInputRemoveFromAmount] = useState<BigInt>(BigInt(0));
     const [tokenFrom, setTokenFrom] = useState<string>('BTC');
@@ -340,10 +341,18 @@ export default function Liquidity() {
     const tokenRemoveConfig = getTokenConfig(tokenFromRemove);
     const addressRouter = getAddress(getAdreessRouter());
     const [refresh, setRefesh] = useState<boolean>();
+    const [refreshRemove, setRefeshRemove] = useState<boolean>();
 
     const dataAlowance = useContractRead({
         address: getAddress(tokenConfig?.address ?? ''),
         abi: IER,
+        functionName: 'allowance',
+        args: [address, addressRouter],
+    });
+
+    const dataAlowanceRemove = useContractRead({
+        address: getAddress(getAdreessLp()),
+        abi: Mocker,
         functionName: 'allowance',
         args: [address, addressRouter],
     });
@@ -355,11 +364,25 @@ export default function Liquidity() {
         args: [addressRouter, inputFromAmount],
     });
 
+    const contractWriteApproveRemove = useContractWrite({
+        address: getAddress(getAdreessLp()),
+        abi: Mocker,
+        functionName: 'approve',
+        args: [addressRouter, inputRemoveFromAmount],
+    });
+
     const contractWriteAddLiquidity = useContractWrite({
         address: getAddress(getAdreessRouter()),
         abi: Router,
         functionName: 'addLiquidity',
         args: [tokenConfig?.address, inputFromAmount, 0],
+    });
+
+    const contractWriteRemoveLiquidity = useContractWrite({
+        address: getAddress(getAdreessRouter()),
+        abi: Router,
+        functionName: 'removeLiquidity',
+        args: [tokenRemoveConfig?.address, inputRemoveFromAmount, 0],
     });
 
     const handleAddLiquid = useCallback(() => {
@@ -372,12 +395,30 @@ export default function Liquidity() {
         }
     }, [tokenFrom, inputFromAmount, dataAlowance.data]);
 
+    const handleRemoveLiquid = useCallback(() => {
+        if (dataAlowanceRemove?.data < inputRemoveFromAmount) {
+            contractWriteApproveRemove.write();
+            setRefeshRemove(!refreshRemove);
+        } else {
+            contractWriteRemoveLiquidity.write();
+            setRefeshRemove(!refreshRemove);
+        }
+    }, [tokenFromRemove, inputRemoveFromAmount, dataAlowanceRemove.data]);
+
     const { isLoading, isSuccess } = useWaitForTransaction({
         hash: contractWriteAddLiquidity.data?.hash,
     });
 
+    const waitForRemoveLiquid = useWaitForTransaction({
+        hash: contractWriteRemoveLiquidity.data?.hash,
+    });
+
     const useForApprove = useWaitForTransaction({
         hash: contractWriteApprove.data?.hash,
+    });
+
+    const useForApproveRemove = useWaitForTransaction({
+        hash: contractWriteApproveRemove.data?.hash,
     });
 
     useEffect(() => {
@@ -389,6 +430,16 @@ export default function Liquidity() {
             );
         }
     }, [inputFromAmount, tokenConfig?.symbol, contractWriteApprove.isLoading, showToast]);
+
+    useEffect(() => {
+        if (useForApproveRemove.isLoading) {
+            showToast(
+                `Waiting request for ${inputRemoveFromAmount} ${tokenRemoveConfig?.symbol}`,
+                '',
+                'warning',
+            );
+        }
+    }, [inputRemoveFromAmount, tokenRemoveConfig?.symbol, contractWriteApproveRemove.isLoading, showToastRemove]);
 
     useEffect(() => {
         if (useForApprove.isSuccess) {
@@ -403,6 +454,18 @@ export default function Liquidity() {
     }, [inputFromAmount, tokenConfig?.symbol, useForApprove.isSuccess, showToast]);
 
     useEffect(() => {
+        if (useForApproveRemove.isSuccess) {
+            showToast(
+                `Success approve ${inputRemoveFromAmount} ${tokenRemoveConfig?.symbol}`,
+                '',
+                'success',
+            );
+            dataAlowanceRemove.refetch();
+            contractWriteApproveRemove.reset();
+        }
+    }, [inputRemoveFromAmount, tokenRemoveConfig?.symbol, useForApproveRemove.isSuccess, showToastRemove]);
+
+    useEffect(() => {
         if (isLoading) {
             showToast(
                 `Waiting request for ${inputFromAmount} ${tokenConfig?.symbol}`,
@@ -413,12 +476,30 @@ export default function Liquidity() {
     }, [inputFromAmount, tokenConfig?.symbol, isLoading, showToast]);
 
     useEffect(() => {
+        if (waitForRemoveLiquid.isLoading) {
+            showToast(
+                `Waiting request for ${inputRemoveFromAmount} ${tokenRemoveConfig?.symbol}`,
+                '',
+                'warning',
+            );
+        }
+    }, [inputRemoveFromAmount, tokenRemoveConfig?.symbol, waitForRemoveLiquid.isLoading, showToastRemove]);
+
+    useEffect(() => {
         if (isSuccess) {
             showToast(`Success add ${inputFromAmount} ${tokenConfig?.symbol}`, '', 'success');
             dataAlowance.refetch();
             contractWriteAddLiquidity.reset();
         }
     }, [inputFromAmount, tokenConfig?.symbol, isSuccess, showToast]);
+
+    useEffect(() => {
+        if (waitForRemoveLiquid.isSuccess) {
+            showToast(`Success remove ${inputRemoveFromAmount} ${tokenRemoveConfig?.symbol}`, '', 'success');
+            dataAlowanceRemove.refetch();
+            contractWriteRemoveLiquidity.reset();
+        }
+    }, [inputRemoveFromAmount, tokenRemoveConfig?.symbol, waitForRemoveLiquid.isSuccess, showToastRemove]);
 
     useEffect(() => {
         if (isSuccess) {
@@ -437,8 +518,6 @@ export default function Liquidity() {
         args: [tokenRemoveConfig?.address, inputRemoveFromAmount],
     });
 
-    console.log('calcRemoveLiquidity', calcRemoveLiquidity.data);
-
     useEffect(() => {
         if (calcRemoveLiquidity.data != undefined) {
             const initialNumber = BigInt(calcRemoveLiquidity.data);
@@ -447,6 +526,8 @@ export default function Liquidity() {
             setMinimumReceive(result);
         }
     }, [calcRemoveLiquidity.data, tokenFromRemove, inputRemoveFromAmount]);
+
+
 
     return (
         <div className="content-container">
@@ -679,7 +760,7 @@ export default function Liquidity() {
                             </div>
                         </div>
                         <div className="button-container">
-                            <button onClick={handleAddLiquid} className="btn-add">
+                            <button onClick={handleRemoveLiquid} className="btn-add">
                                 Remove
                             </button>
                         </div>
