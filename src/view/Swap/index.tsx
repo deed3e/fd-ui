@@ -5,8 +5,8 @@ import InputTokenWithSelect from '../../component/InputToken/InputTokenWithSelec
 import {
     getPoolAssetSymbol,
     getWrapNativeTokenSymbol,
-    getAdreessRouter,
-    getAdreessPool,
+    getAddressRouter,
+    getAddressPool,
     getTokenConfig,
 } from '../../config';
 import PoolAbi from '../../abis/Pool.json';
@@ -45,12 +45,12 @@ enum ButtonStatus {
 }
 
 const contractPool = {
-    address: getAdreessPool(),
+    address: getAddressPool(),
     abi: PoolAbi,
 };
 
 const contractRouter = {
-    address: getAdreessRouter(),
+    address: getAddressRouter(),
     abi: RouterAbi,
 };
 
@@ -84,7 +84,7 @@ export default function Swap() {
     }, [tokenFromConfig?.address]);
 
     const balancePool = useBalance({
-        address: getAdreessPool(),
+        address: getAddressPool(),
         token: tokenToConfig?.address,
     });
 
@@ -98,7 +98,7 @@ export default function Swap() {
             {
                 ...contractMockErc20,
                 functionName: 'allowance',
-                args: [address, getAdreessRouter()],
+                args: [address, getAddressRouter()],
             },
         ],
     });
@@ -150,7 +150,7 @@ export default function Swap() {
     const prepareContractApproveWrite = usePrepareContractWrite({
         ...contractMockErc20,
         functionName: 'approve',
-        args: [getAdreessRouter(), maxUint256],
+        args: [getAddressRouter(), maxUint256],
     });
 
     const contractApproveWrite = useContractWrite(prepareContractApproveWrite.config);

@@ -1,7 +1,7 @@
 import { useContractRead } from 'wagmi';
 import abiOracle from '../abis/Oracle.json';
 import { useMemo } from 'react';
-import { getTokenConfig, getAdreessOracle } from '../config';
+import { getTokenConfig, getAddressOracle } from '../config';
 import { getAddress, formatUnits, parseUnits } from 'viem';
 
 export const useOracle = (tokens: string[]): Record<string, BigInt> => {
@@ -10,7 +10,7 @@ export const useOracle = (tokens: string[]): Record<string, BigInt> => {
     }, [tokens]);
 
     const contractRead: any = useContractRead({
-        address: getAddress(getAdreessOracle() ?? ''),
+        address: getAddress(getAddressOracle() ?? ''),
         abi: abiOracle,
         functionName: 'getMultiplePrices',
         args: [addresss],

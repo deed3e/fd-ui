@@ -19,9 +19,9 @@ export const Config: ChainConfig = {
         FLP:{
             address: '0x6819a6E5591168bA6496bF1A0727F00Dc3015e08',
             decimals: 18,
-            fractionDigits: 5,
+            fractionDigits: 3,
             priceFractionDigits: 2,
-            threshold: 0.00001,
+            threshold: 0.001,
         },
         USDC: {
             address: '0x0ebE956E651ab4483bD9E294708bf9FB3388C45f',

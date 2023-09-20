@@ -13,20 +13,24 @@ export const getTokenConfig = (tokenSymbol: string) => {
     return { ...(tokenConfig || {}), symbol: tokenSymbol } as TokenInfoProps;
 };
 
-export const getAdreessOracle = () => {
+export const getAddressOracle = () => {
     return get(config, ['oracle']);
 };
 
-export const getAdreessPool = () => {
+export const getAddressPool = () => {
     return get(config, ['pool', 'address']);
 };
 
-export const getAdreessRouter = () => {
+// export const getAdreessLp = () => {
+//     return get(config, ['lp']);
+// };
+
+export const getAddressRouter = () => {
     return get(config, ['router']);
 };
 
 export const getLpSymbol = () => {
-    return get(config, ['pool,lp']);
+    return get(config, ['pool', 'lp']);
 };
 
 export const getExplorerUrl = () => {
