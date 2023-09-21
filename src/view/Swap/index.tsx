@@ -42,6 +42,7 @@ enum ButtonStatus {
     insufficientBalance,
     sameToken,
     minInput, // min 10 u
+    timeOutOracle
 }
 
 const contractPool = {
@@ -128,14 +129,12 @@ export default function Swap() {
                         tokenToConfig?.decimals ?? 0,
                     );
                 }
-            } else if (contracInfoRead?.data[0]?.status === 'failure') {
-                return 'Insufficient Pool';
             }
         }
         return undefined;
     }, [contracInfoRead?.data, contracInfoRead?.isSuccess, tokenToConfig?.decimals]);
 
-    const amountToChange = useCallback((value: BigInt) => {}, []);
+    const amountToChange = useCallback((value: BigInt) => { }, []);
 
     const handleInsufficientBalance = useCallback((check: boolean) => {
         setInsufficientBalance(check);
@@ -146,7 +145,7 @@ export default function Swap() {
         functionName: 'swap',
         args: [tokenFromConfig?.address, tokenToConfig?.address, inputFromAmount, 0],
     });
-
+   
     const prepareContractApproveWrite = usePrepareContractWrite({
         ...contractMockErc20,
         functionName: 'approve',
@@ -220,7 +219,7 @@ export default function Swap() {
         const handleStore = () => {
             const localStore: IHistoryTransaction[] | undefined = store.get(address ?? 'guest');
             const current = {
-                hash: contractRouterWrite?.data?.hash,
+                hash: contractApproveWrite?.data?.hash,
                 title: `Approve ${formatUnits(
                     inputFromAmount as bigint,
                     tokenFromConfig?.decimals ?? 0,
@@ -239,8 +238,9 @@ export default function Swap() {
         } else {
             if (waitingTransactionApprove?.isSuccess) {
                 showToast(`Success Approve`, '', 'success');
-                handleStore();
                 contracInfoRead?.refetch();
+                handleStore();
+                setRefesh(!refresh);
             } else if (waitingTransactionApprove?.isError) {
                 showToast(`Can not Approve`, '', 'error');
                 handleStore();
@@ -250,6 +250,7 @@ export default function Swap() {
         contracInfoRead,
         contractApproveWrite,
         showToast,
+        refresh,
         tokenFromConfig?.symbol,
         waitingTransactionApprove?.isError,
         waitingTransactionApprove?.isLoading,
@@ -268,7 +269,11 @@ export default function Swap() {
             return ButtonStatus.notConnect;
         } else if (tokenFrom === tokenTo) {
             return ButtonStatus.sameToken;
-        } else if (outValue === 'Insufficient Pool') {
+        } else if (contracInfoRead?.isSuccess && contracInfoRead?.data && contracInfoRead?.data[0]?.status === 'failure') {
+            if (contracInfoRead?.data[0]?.error?.message.includes('TimeOutOracle')) {
+                return ButtonStatus.timeOutOracle;
+            }
+
             return ButtonStatus.insufficientPool;
         } else if (!inputFromAmount) {
             return ButtonStatus.notInput;
@@ -308,6 +313,8 @@ export default function Swap() {
                 return 'Not Same Token';
             case ButtonStatus.notInput:
                 return 'Enter An Amount';
+            case ButtonStatus.timeOutOracle:
+                return 'Oracle TimeOut';
             case ButtonStatus.insufficientBalance:
                 return 'Insufficient Your Balance';
             case ButtonStatus.minInput:
@@ -331,11 +338,12 @@ export default function Swap() {
     }, [status]);
 
     const handleOnClick = useCallback(() => {
+        prepareContractWrite?.refetch();
         switch (status) {
             case ButtonStatus.notApprove:
                 contractApproveWrite?.write?.();
                 break;
-            case ButtonStatus.ready:
+            default:
                 contractRouterWrite?.write?.();
         }
     }, [contractApproveWrite, contractRouterWrite, status]);
