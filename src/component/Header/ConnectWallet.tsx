@@ -57,7 +57,7 @@ const StyledLogo = styled.img`
     margin-right: 2px;
 `;
 
-const StyledButtonConnect = styled.button`
+const StyledButtonConnect = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
