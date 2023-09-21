@@ -29,9 +29,9 @@ const InputToken: React.FC<InputTokenProps> = ({
     const { address } = useAccount();
     const [isShowMax] = useState(false);
 
-    const [decimals, setDecimals] = useState(18);
-    const [threshold, setThreshold] = useState(0);
-    const [fractionDigits, setFractionDigits] = useState(12);
+    const [decimals, setDecimals] = useState(getTokenConfig(getLpSymbol())?.decimals);
+    const [threshold, setThreshold] = useState(getTokenConfig(getLpSymbol())?.threshold);
+    const [fractionDigits, setFractionDigits] = useState(getTokenConfig(getLpSymbol())?.fractionDigits);
 
     const [amount, setAmount] = useState('');
 
@@ -41,9 +41,6 @@ const InputToken: React.FC<InputTokenProps> = ({
         functionName: 'balanceOf',
         args: [address],
     });
-
-    console.log('input',getTokenConfig(getLpSymbol())?.address)
-    console.log('input',getLpSymbol())
 
     const handleInputHandle = useCallback(
         (ev: ChangeEvent<HTMLInputElement>) => {

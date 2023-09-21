@@ -232,14 +232,17 @@ const StyledWrapInputAndSubValue = styled.div`
     overflow: hidden;
 `;
 
-const StyledAmount = styled.div``;
+const StyledAmount = styled.div`
+font-family: 'IBM Plex Mono', monospace;
+`;
 
 const StyledBalance = styled.div`
     color: rgba(255, 255, 255, 0.6);
     font-size: 12px;
     font-weight: 300;
+    font-family: 'IBM Plex Mono', monospace;
 `;
-const StyledContainerInput = styled.div<{disable?:boolean}>`
+const StyledContainerInput = styled.div<{ disable?: boolean }>`
     position: relative;
     background-color: ${({ disable }) => (disable ? 'rgba(255, 255, 255, 0.1);' : 'black')};
     border-radius: 10px;
@@ -282,7 +285,7 @@ const StyledToken = styled.div`
         }
     }
 `;
-const StyledTokenSelect = styled(StyledToken)<{ pointer?: boolean }>`
+const StyledTokenSelect = styled(StyledToken) <{ pointer?: boolean }>`
     cursor: ${({ pointer }) => (pointer ? 'pointer' : 'auto')};
     :hover {
         border: 1px solid #515050;
