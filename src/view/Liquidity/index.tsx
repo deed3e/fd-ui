@@ -372,6 +372,14 @@ export default function Liquidity() {
     const [refreshRemove, setRefeshRemove] = useState<boolean>();
     const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
     const [insufficientBalanceRemove, setInsufficientBalanceRemove] = useState<boolean>(true);
+    const [targetBTC, setTargetBTC] = useState(0);
+    const [targetETH, setTargetETH] = useState(0);
+    const [targetUSDC, setTargetUSDC] = useState(0);
+    const [targetWETH, setTargetWETH] = useState(0);
+    const [weightBTC, setWeightBTC] = useState(0);
+    const [weightETH, setWeightETH] = useState(0);
+    const [weightUSDC, setWeightUSDC] = useState(0);
+    const [weightWETH, setWeightWETH] = useState(0);
 
     const dataAlowance = useContractRead({
         address: getAddress(tokenConfig?.address ?? ''),
@@ -716,6 +724,65 @@ export default function Liquidity() {
         return false;
     }, [statusForRemove]);
 
+    const readTartgetWeightOfBtc = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'targetWeights',
+        args: [getAddress(tokenBTCConfig?.address ?? '')],
+    });
+
+    const readTotalWeight = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'totalWeight',
+    });
+
+    const readTartgetWeightOfETH = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'targetWeights',
+        args: [getAddress(tokenETHConfig?.address ?? '')],
+    });
+
+    const readTartgetWeightOfUSDC = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'targetWeights',
+        args: [getAddress(tokenUSDCConfig?.address ?? '')],
+    });
+
+    const readTartgetWeightOfWETH = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'targetWeights',
+        args: [getAddress(tokenWethConfig?.address ?? '')],
+    });
+
+
+    useEffect(() => {
+        setTargetBTC(formatUnits(readTartgetWeightOfBtc.data as bigint, tokenBTCConfig?.decimals ?? 0) / formatUnits(readTotalWeight.data as bigint, tokenBTCConfig?.decimals ?? 0) * 100);
+    }, [readTartgetWeightOfBtc.data, readTotalWeight.data]);
+
+    useEffect(() => {
+        setTargetETH(formatUnits(readTartgetWeightOfETH?.data as bigint, tokenETHConfig?.decimals ?? 0) / formatUnits(readTotalWeight.data as bigint, tokenETHConfig?.decimals ?? 0) * 100);
+    }, [readTartgetWeightOfETH.data, readTotalWeight.data]);
+
+    useEffect(() => {
+        setTargetUSDC(formatUnits(readTartgetWeightOfUSDC?.data as bigint, tokenUSDCConfig?.decimals ?? 0) / formatUnits(readTotalWeight.data as bigint, tokenUSDCConfig?.decimals ?? 0) * 100);
+    }, [readTartgetWeightOfUSDC.data, readTotalWeight.data]);
+
+    useEffect(() => {
+        setTargetWETH(formatUnits(readTartgetWeightOfWETH?.data as bigint, tokenWethConfig?.decimals ?? 0) / formatUnits(readTotalWeight.data as bigint, tokenWethConfig?.decimals ?? 0) * 100);
+    }, [readTartgetWeightOfWETH.data, readTotalWeight.data]);
+
+
+    useEffect(() => {
+        setWeightBTC(formatUnits(valueBTC as bigint, 8 + tokenBTCConfig?.decimals ?? 0) / formatUnits(dataReadTotalPool.data as bigint, 30) * 100);
+        setWeightETH(formatUnits(valueETH as bigint, 8 + tokenETHConfig?.decimals ?? 0) / formatUnits(dataReadTotalPool.data as bigint, 30) * 100);
+        setWeightUSDC(formatUnits(valueUSDT as bigint, 8 + tokenUSDCConfig?.decimals ?? 0) / formatUnits(dataReadTotalPool.data as bigint, 30) * 100);
+        setWeightWETH(formatUnits(valueWeth as bigint, 8 + tokenWethConfig?.decimals ?? 0) / formatUnits(dataReadTotalPool.data as bigint, 30) * 100);
+    }, [valueBTC, valueETH, valueUSDT, valueWeth, dataReadTotalPool.data]);
+
     return (
         <div className="content-container">
             <div className="table-container">
@@ -763,7 +830,12 @@ export default function Liquidity() {
                                         currency="USD"
                                     />
                                 </div>
-                                <div className="table-content">26%</div>
+                                <div className="table-content">
+                                    <BigintDisplay
+                                        value={weightBTC as BigInt}
+                                        decimals={0}
+                                        fractionDigits={1}
+                                    />%/{targetBTC}%</div>
                             </div>
 
                             <div className="body-table-liquid">
@@ -785,7 +857,12 @@ export default function Liquidity() {
                                         currency="USD"
                                     />
                                 </div>
-                                <div className="table-content">26%</div>
+                                <div className="table-content">
+                                    <BigintDisplay
+                                        value={weightETH as BigInt}
+                                        decimals={0}
+                                        fractionDigits={1}
+                                    />%/{targetETH}%</div>
                             </div>
 
                             <div className="body-table-liquid">
@@ -807,7 +884,12 @@ export default function Liquidity() {
                                         currency="USD"
                                     />
                                 </div>
-                                <div className="table-content">26%</div>
+                                <div className="table-content">
+                                    <BigintDisplay
+                                    value={weightUSDC as BigInt}
+                                    decimals={0}
+                                    fractionDigits={1}
+                                />%/{targetUSDC}%</div>
                             </div>
 
                             <div className="body-table-liquid body-table-liquid-last">
@@ -829,7 +911,11 @@ export default function Liquidity() {
                                         currency="USD"
                                     />
                                 </div>
-                                <div className="table-content">26%</div>
+                                <div className="table-content"> <BigintDisplay
+                                    value={weightWETH as BigInt}
+                                    decimals={0}
+                                    fractionDigits={1}
+                                />%/{targetWETH}%</div>
                             </div>
                         </div>
                     </div>
