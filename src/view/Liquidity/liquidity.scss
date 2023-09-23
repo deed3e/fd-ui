@@ -264,3 +264,15 @@ button.MuiButtonBase-root.MuiButton-root.MuiButton-contained {
 span.MuiTabs-indicator.css-1aquho2-MuiTabs-indicator {
     display: none;
 }
+
+.green-color {
+    color: var(--green, #19AB72);
+}
+
+.red-color {
+    color: var(--red, #971727);
+}
+
+.css-hz1bth-MuiDialog-container {
+    height: 32% !important;
+}

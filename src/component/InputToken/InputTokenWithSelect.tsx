@@ -77,6 +77,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
                 }
             }
         },
+        
         [amountChange, configSelectToken?.decimals],
     );
 
