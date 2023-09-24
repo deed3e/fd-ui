@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap');
+
+html .chart-page {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+html.theme-dark .chart-page {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+html.theme-dark .group-2JyOhh7Z {
+  background-color: #161618;
+}
+html.theme-dark .chart-page {
+  background-color: #161618;
+}
+html.theme-dark .chart-controls-bar {
+  background-color: #161618;
+}
+html.theme-dark .group-wWM3zP_M {
+  background-color: #161618;
+}
+
+html .chart-page .chart-container-border {
+  background-color: transparent;
+}
+
+html .chart-page {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+html .loading-indicator {
+  background: transparent;
+}
+
+html .tv-spinner {
+  color: #ffb313;
+}
+.chart-widget--themed-dark .title-bcHj6pEn,
+.chart-widget--themed-dark .series-12hzsxbp .valueItem-3JDGGSt_ .valueTitle-1myNPdtH {
+  font-size: 13px;
+  color: #979595 !important;
+}
+
+.container-2yI8A9Vu {
+  display: none !important;
+}
+.menu-1fA401bY {
+  display: none;
+}

@@ -18,7 +18,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Dashboard />} />
                         <Route path="/liquidity" element={<Liquidity />} />
-                        <Route path="/trading" element={<Trading />} />
+                        <Route path="/trading/:market/:side" element={<Trading />} />
                         <Route path="/swap" element={<Swap />} />
                         <Route path="/faucet" element={<Faucet />} />
                     </Routes>

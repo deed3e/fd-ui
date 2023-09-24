@@ -225,6 +225,7 @@ const StyledSubValue = styled.div<{ show: boolean }>`
     transition: all 0.2s linear;
     word-break: break-word;
 `;
+
 const StyledMaxValue = styled.div`
     position: absolute;
     justify-self: end;
@@ -236,6 +237,7 @@ const StyledMaxValue = styled.div`
         color: #9b99c3;
     }
 `;
+
 const StyledSelectToken = styled.div`
     justify-self: self-end;
     align-self: center;
@@ -259,6 +261,7 @@ const StyledBalance = styled.div`
     font-size: 12px;
     font-weight: 300;
 `;
+
 const StyledContainerInput = styled.div`
     position: relative;
     background-color: black;
@@ -269,15 +272,18 @@ const StyledContainerInput = styled.div`
     padding: 8px 10px 6px 10px;
     gap: 5px;
 `;
+
 const StyledBodyBtn = styled.div`
     margin-top: 4.4px;
     margin-bottom: 5px;
 `;
+
 const StyledHeaderBtn = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
 `;
+
 const StyledWrapIconAddToken = styled.div`
     display: flex;
     justify-content: end;
@@ -375,6 +381,7 @@ export const StyledToken = styled.div`
         }
     }
 `;
+
 const StyledTokenSelect = styled(StyledToken) <{ pointer?: boolean }>`
     cursor: ${({ pointer }) => (pointer ? 'pointer' : 'auto')};
     :hover {
