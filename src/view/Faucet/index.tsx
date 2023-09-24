@@ -47,7 +47,6 @@ const Faucet: React.FC = () => {
         return getPoolAssetSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
     }, []);
 
-    const getPrice = useOracle(tokens);
 
     const balance = useBalance({
         address: address,
@@ -99,7 +98,13 @@ const Faucet: React.FC = () => {
     }, []);
 
     const handleAddToken = useCallback(() => {
-        addToken(configSelectToken?.symbol ?? '');
+
+        if (typeof window.ethereum !== 'undefined') {
+            addToken(configSelectToken?.symbol ?? '');
+        } else {
+            alert('MetaMask is not installed. Please consider installing it!');
+        }
+
     }, [addToken, configSelectToken?.symbol]);
 
     const status = useMemo(() => {
@@ -371,7 +376,7 @@ export const StyledToken = styled.div`
         }
     }
 `;
-const StyledTokenSelect = styled(StyledToken)<{ pointer?: boolean }>`
+const StyledTokenSelect = styled(StyledToken) <{ pointer?: boolean }>`
     cursor: ${({ pointer }) => (pointer ? 'pointer' : 'auto')};
     :hover {
         border: 1px solid #515050;

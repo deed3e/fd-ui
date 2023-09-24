@@ -72,6 +72,7 @@ tbody.MuiTableBody-root.css-apqrd9-MuiTableBody-root {
 th.MuiTableCell-root.MuiTableCell-body.MuiTableCell-sizeMedium.css-132a6sb-MuiTableCell-root {
     color: var(--white, #fff);
 }
+
 td.MuiTableCell-root.MuiTableCell-body.MuiTableCell-alignCenter.MuiTableCell-sizeMedium.css-1dydcym-MuiTableCell-root {
     color: var(--white, #fff) !important;
 }
@@ -94,6 +95,7 @@ button#simple-tab-0 {
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+    font-family: 'IBM Plex Mono', monospace !important;
 }
 
 button#simple-tab-1 {
@@ -102,6 +104,7 @@ button#simple-tab-1 {
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+    font-family: 'IBM Plex Mono', monospace !important;
 }
 
 .content-right-header {
@@ -178,6 +181,7 @@ input#formatted-numberformat-input {
         line-height: normal;
     }
 }
+
 .MuiButtonGroup-root.MuiButtonGroup-contained.css-zqcytf-MuiButtonGroup-root {
     position: absolute;
     top: 7px;
@@ -206,6 +210,7 @@ button.MuiButtonBase-root.MuiButton-root.MuiButton-contained {
     background: #231844;
     padding: 10px 0px;
     border-radius: 15px 15px 0px 0px;
+
     .table-head {
         flex: 1;
     }
@@ -219,16 +224,25 @@ button.MuiButtonBase-root.MuiButton-root.MuiButton-contained {
 .body-table-liquid {
     display: flex;
     align-items: center;
-    padding: 20px 0px;
+    padding: 9px 0px;
 
     .table-content {
         flex: 1;
     }
 }
 
+.body-table-liquid-1 {
+    padding-top: 17px;
+}
+
+.body-table-liquid-last {
+    padding-bottom: 17px;
+}
+
 .button-container {
     text-align: center;
     padding-bottom: 20px;
+
     .btn-add {
         color: var(--d-9-d-9-d-9, #d9d9d9);
         font-family: IBM Plex Mono;
@@ -237,13 +251,29 @@ button.MuiButtonBase-root.MuiButton-root.MuiButton-contained {
         font-weight: 700;
         line-height: normal;
         width: 100%;
-        padding: 11px 0px;
+        padding: 4px 0px;
         border-radius: 10px;
-        margin-top: 30px;
+        // margin-top: 30px;
         background: var(--primary-color, #6763e3);
+    }
+
+    .btn-add:hover {
+        background: #5552a9;
     }
 }
 
 span.MuiTabs-indicator.css-1aquho2-MuiTabs-indicator {
     display: none;
+}
+
+.green-color {
+    color: var(--green, #19AB72);
+}
+
+.red-color {
+    color: var(--red, #971727);
+}
+
+.css-hz1bth-MuiDialog-container {
+    height: 32% !important;
 }

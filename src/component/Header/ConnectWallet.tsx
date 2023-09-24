@@ -14,7 +14,7 @@ const ConnectWallet: React.FC = () => {
 
     const handleConnectWallet = async () => {
         if (!connector) {
-            alert('Please install MetaMask!');
+            alert('MetaMask is not installed. Please consider installing it!');
             return;
         }
         connect({ connector });
@@ -26,7 +26,7 @@ const ConnectWallet: React.FC = () => {
         }
     }, [isSuccess, switchNetwork]);
 
-    const handleUserModal = useCallback(() => {}, []);
+    const handleUserModal = useCallback(() => { }, []);
 
     return (
         <>
@@ -57,7 +57,7 @@ const StyledLogo = styled.img`
     margin-right: 2px;
 `;
 
-const StyledButtonConnect = styled.button`
+const StyledButtonConnect = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;

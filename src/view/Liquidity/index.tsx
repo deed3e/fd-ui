@@ -4,6 +4,7 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import { BigintDisplay } from '../../component/BigIntDisplay';
 import style from 'styled-components';
+import IcLoading from '../../assets/image/ic-loading.png';
 
 import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
@@ -17,7 +18,7 @@ import { NumericFormat, NumericFormatProps } from 'react-number-format';
 import BankImage from '../../assets/image/liquidity-bank.svg';
 import icon3 from '../../assets/image/icon3.svg';
 import icon2 from '../../assets/image/icon2.svg';
-import TIcon from '../../assets/image/btclq1.svg';
+import TIcon from '../../assets/tokens/USDC.png';
 import WETH from '../../assets/tokens/WETH2.png';
 import BTCRight from '../../assets/image/btc-right.svg';
 
@@ -36,6 +37,35 @@ import {
     getLpSymbol,
 } from '../../config';
 
+// start dialog
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import { TransitionProps } from '@mui/material/transitions';
+
+const Transition = React.forwardRef(function Transition(
+    props: TransitionProps & {
+        children: React.ReactElement<any, any>;
+    },
+    ref: React.Ref<unknown>,
+) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+
+const TransitionRemove = React.forwardRef(function Transition(
+    props: TransitionProps & {
+        children: React.ReactElement<any, any>;
+    },
+    ref: React.Ref<unknown>,
+) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+//End dialog
+
 import {
     useBalance,
     useContractRead,
@@ -43,6 +73,7 @@ import {
     usePrepareContractWrite,
     useContractWrite,
     useWaitForTransaction,
+    useContractReads,
 } from 'wagmi';
 import { formatUnits, getAddress, parseUnits } from 'viem';
 import IER from '../../abis/IERC20.json';
@@ -50,7 +81,6 @@ import Mocker from '../../abis/MockERC20.json';
 import Router from '../../abis/Router.json';
 import Pool from '../../abis/Pool.json';
 import { useShowToast } from '../../hooks/useShowToast';
-import { ca } from 'date-fns/locale';
 
 const options = [
     {
@@ -72,6 +102,34 @@ interface TabPanelProps {
     index: number;
     value: number;
 }
+
+enum ButtonStatus {
+    notConnect,
+    notInput,
+    loading,
+    notApprove,
+    ready,
+    insufficientPool,
+    insufficientBalance,
+    sameToken,
+    minInput, // min 10 u
+    timeOutOracle
+}
+
+enum ButtonStatusRemove {
+    notConnect,
+    notInput,
+    loading,
+    notApprove,
+    ready,
+    insufficientPool,
+    insufficientBalance,
+    sameToken,
+    minInput, // min 10 u
+    timeOutOracle
+}
+
+const MIN_VALUE_INPUT = 10; // 10u
 
 function CustomTabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
@@ -100,26 +158,6 @@ function a11yProps(index: number) {
     };
 }
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.black,
-        color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-        fontSize: 14,
-    },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
-    },
-    // hide last border
-    '&:last-child td, &:last-child th': {
-        border: 0,
-    },
-}));
-
 function createData(
     id: number,
     name: string,
@@ -131,61 +169,10 @@ function createData(
     return { id, name, calories, fat, carbs, protein };
 }
 
-const rows = [
-    createData(1, 'Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData(2, 'Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData(3, 'Eclair', 262, 16.0, 24, 6.0),
-    createData(4, 'Cupcake', 305, 3.7, 67, 4.3),
-    createData(5, 'Gingerbread', 356, 16.0, 49, 3.9),
-];
-
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void;
     name: string;
 }
-
-const TextMaskCustom = React.forwardRef<HTMLElement, CustomProps>(function TextMaskCustom(
-    props,
-    ref,
-) {
-    const { onChange, ...other } = props;
-    return (
-        <IMaskInput
-            {...other}
-            mask="(#00) 000-0000"
-            definitions={{
-                '#': /[1-9]/,
-            }}
-            inputRef={ref}
-            onAccept={(value: any) => onChange({ target: { name: props.name, value } })}
-            overwrite
-        />
-    );
-});
-
-const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
-    function NumericFormatCustom(props, ref) {
-        const { onChange, ...other } = props;
-
-        return (
-            <NumericFormat
-                {...other}
-                getInputRef={ref}
-                onValueChange={(values) => {
-                    onChange({
-                        target: {
-                            name: props.name,
-                            value: values.value,
-                        },
-                    });
-                }}
-                thousandSeparator
-                valueIsNumericString
-                prefix="$"
-            />
-        );
-    },
-);
 
 interface State {
     textmask: string;
@@ -207,42 +194,10 @@ export default function Liquidity() {
         numberformat: '1320',
     });
 
-    const handleChange2 = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setValues({
-            ...values,
-            [event.target.name]: event.target.value,
-        });
-    };
-
     // select
     const [open, setOpen] = React.useState(false);
-    const anchorRef = React.useRef<HTMLDivElement>(null);
-    const [selectedIndex, setSelectedIndex] = React.useState(1);
-    const [dataValue, setDataValue] = React.useState([]);
+    const [openRemove, setOpenRemove] = React.useState(false);
 
-    const handleClick = () => {
-        console.info(`You clicked ${options[selectedIndex]}`);
-    };
-
-    const handleMenuItemClick = (
-        event: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        index: number,
-    ) => {
-        setSelectedIndex(index);
-        setOpen(false);
-    };
-
-    const handleToggle = () => {
-        setOpen((prevOpen) => !prevOpen);
-    };
-
-    const handleClose = (event: Event) => {
-        if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
-            return;
-        }
-
-        setOpen(false);
-    };
 
     const getPrice = useOracle(['BTC', 'ETH', 'USDC', 'WETH']); //['BTC','ETH']
 
@@ -271,10 +226,34 @@ export default function Liquidity() {
         token: getAddress(tokenWethConfig?.address ?? ''),
     });
 
-    // const valueETH = ((getPrice.ETH as bigint) * balanceETH?.data?.value) as bigint;
-    // const valueBTC = ((getPrice.BTC as bigint) * balanceBTC?.data?.value) as bigint;
-    // const valueUSDT = ((getPrice.USDC as bigint) * balanceUSDC?.data?.value) as bigint;
-    // const valueWeth = ((getPrice.WETH as bigint) * balanceWeth?.data?.value) as bigint;
+    const poolAssetBTC = useContractRead({
+        address : getAddressPool(),
+        abi : Pool,
+        functionName : 'poolAssets',
+        args: [tokenBTCConfig?.address]
+    })
+
+
+    const poolAssetETH = useContractRead({
+        address : getAddressPool(),
+        abi : Pool,
+        functionName : 'poolAssets',
+        args: [tokenETHConfig?.address]
+    })
+
+    const poolAssetWETH = useContractRead({
+        address : getAddressPool(),
+        abi : Pool,
+        functionName : 'poolAssets',
+        args: [tokenWethConfig?.address]
+    })
+
+    const poolAssetUSDC = useContractRead({
+        address : getAddressPool(),
+        abi : Pool,
+        functionName : 'poolAssets',
+        args: [tokenUSDCConfig?.address]
+    })
 
     const valueETH = (BigInt(getPrice.ETH ?? 0) *
         BigInt(balanceETH?.data?.value ?? 0)) as bigint;
@@ -296,16 +275,14 @@ export default function Liquidity() {
     const [tokenFrom, setTokenFrom] = useState<string>('BTC');
     const [tokenFromRemove, setTokenFromRemove] = useState<string>('BTC');
     const [minimumReceive, setMinimumReceive] = useState<BigInt>(BigInt(0));
-    const [numberToCaculateMinimum, setNumberToCaculateMinimum] = useState<BigInt>(
-        BigInt(1) / BigInt(1000),
-    );
+    const [valueInput, setValueInput] = useState<number>(0);
 
     const tokens = useMemo(() => {
-        return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
+        return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol() && i != 'FLP');
     }, []);
 
     const tokensRemove = useMemo(() => {
-        return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
+        return getAllTokenSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol() && i != 'FLP');
     }, []);
 
     const amountFromChange = useCallback((value: BigInt) => {
@@ -341,6 +318,17 @@ export default function Liquidity() {
     const addressRouter = getAddressRouter();
     const [refresh, setRefesh] = useState<boolean>();
     const [refreshRemove, setRefeshRemove] = useState<boolean>();
+    const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
+    const [insufficientBalanceRemove, setInsufficientBalanceRemove] = useState<boolean>(true);
+    const [targetBTC, setTargetBTC] = useState(0);
+    const [targetETH, setTargetETH] = useState(0);
+    const [targetUSDC, setTargetUSDC] = useState(0);
+    const [targetWETH, setTargetWETH] = useState(0);
+    const [weightBTC, setWeightBTC] = useState(0);
+    const [weightETH, setWeightETH] = useState(0);
+    const [weightUSDC, setWeightUSDC] = useState(0);
+    const [weightWETH, setWeightWETH] = useState(0);
+    const [lpDecimal, setLpDecimal] = useState(getTokenConfig(getLpSymbol())?.decimals);
 
     const dataAlowance = useContractRead({
         address: getAddress(tokenConfig?.address ?? ''),
@@ -391,16 +379,19 @@ export default function Liquidity() {
         } else {
             contractWriteAddLiquidity.write();
             setRefesh(!refresh);
+            setOpen(false);
         }
     }, [tokenFrom, inputFromAmount, dataAlowance.data]);
 
     const handleRemoveLiquid = useCallback(() => {
+        debugger;
         if (dataAlowanceRemove?.data < inputRemoveFromAmount) {
             contractWriteApproveRemove.write();
             setRefeshRemove(!refreshRemove);
         } else {
             contractWriteRemoveLiquidity.write();
             setRefeshRemove(!refreshRemove);
+            setOpenRemove(false);
         }
     }, [tokenFromRemove, inputRemoveFromAmount, dataAlowanceRemove.data]);
 
@@ -423,7 +414,10 @@ export default function Liquidity() {
     useEffect(() => {
         if (useForApprove.isLoading) {
             showToast(
-                `Waiting request for ${inputFromAmount} ${tokenConfig?.symbol}`,
+                `Waiting request for  ${formatUnits(
+                    inputFromAmount as bigint,
+                    tokenConfig?.decimals ?? 0,
+                )} ${tokenConfig?.symbol}`,
                 '',
                 'warning',
             );
@@ -433,17 +427,23 @@ export default function Liquidity() {
     useEffect(() => {
         if (useForApproveRemove.isLoading) {
             showToast(
-                `Waiting request for ${inputRemoveFromAmount} ${tokenRemoveConfig?.symbol}`,
+                `Waiting request for ${formatUnits(
+                    inputRemoveFromAmount as bigint,
+                    getTokenConfig(getLpSymbol())?.decimals ?? 0,
+                )} ${getTokenConfig(getLpSymbol())?.symbol}`,
                 '',
                 'warning',
             );
         }
-    }, [inputRemoveFromAmount, tokenRemoveConfig?.symbol, contractWriteApproveRemove.isLoading, showToastRemove]);
+    }, [inputRemoveFromAmount, getTokenConfig(getLpSymbol())?.symbol, contractWriteApproveRemove.isLoading, showToastRemove]);
 
     useEffect(() => {
         if (useForApprove.isSuccess) {
             showToast(
-                `Success approve ${inputFromAmount} ${tokenConfig?.symbol}`,
+                `Success approve  ${formatUnits(
+                    inputFromAmount as bigint,
+                    tokenConfig?.decimals ?? 0,
+                )} ${tokenConfig?.symbol}`,
                 '',
                 'success',
             );
@@ -455,7 +455,10 @@ export default function Liquidity() {
     useEffect(() => {
         if (useForApproveRemove.isSuccess) {
             showToast(
-                `Success approve ${inputRemoveFromAmount} ${tokenRemoveConfig?.symbol}`,
+                `Success approve ${formatUnits(
+                    inputRemoveFromAmount as bigint,
+                    getTokenConfig(getLpSymbol())?.decimals ?? 0,
+                )} ${tokenRemoveConfig?.symbol}`,
                 '',
                 'success',
             );
@@ -467,7 +470,10 @@ export default function Liquidity() {
     useEffect(() => {
         if (isLoading) {
             showToast(
-                `Waiting request for ${inputFromAmount} ${tokenConfig?.symbol}`,
+                `Waiting request for  ${formatUnits(
+                    inputFromAmount as bigint,
+                    tokenConfig?.decimals ?? 0,
+                )} ${tokenConfig?.symbol}`,
                 '',
                 'warning',
             );
@@ -477,16 +483,22 @@ export default function Liquidity() {
     useEffect(() => {
         if (waitForRemoveLiquid.isLoading) {
             showToast(
-                `Waiting request for ${inputRemoveFromAmount} ${tokenRemoveConfig?.symbol}`,
+                `Waiting request for  ${formatUnits(
+                    inputRemoveFromAmount as bigint,
+                    getTokenConfig(getLpSymbol())?.decimals ?? 0,
+                )} ${getTokenConfig(getLpSymbol())?.symbol}`,
                 '',
                 'warning',
             );
         }
-    }, [inputRemoveFromAmount, tokenRemoveConfig?.symbol, waitForRemoveLiquid.isLoading, showToastRemove]);
+    }, [inputRemoveFromAmount, getTokenConfig(getLpSymbol())?.symbol, waitForRemoveLiquid.isLoading, showToastRemove]);
 
     useEffect(() => {
         if (isSuccess) {
-            showToast(`Success add ${inputFromAmount} ${tokenConfig?.symbol}`, '', 'success');
+            showToast(`Success add ${formatUnits(
+                inputFromAmount as bigint,
+                tokenConfig?.decimals ?? 0,
+            )} ${tokenConfig?.symbol}`, '', 'success');
             dataAlowance.refetch();
             contractWriteAddLiquidity.reset();
         }
@@ -494,14 +506,17 @@ export default function Liquidity() {
 
     useEffect(() => {
         if (waitForRemoveLiquid.isSuccess) {
-            showToast(`Success remove ${inputRemoveFromAmount} ${tokenRemoveConfig?.symbol}`, '', 'success');
+            showToast(`Success remove ${formatUnits(
+                inputRemoveFromAmount as bigint,
+                getTokenConfig(getLpSymbol())?.decimals ?? 0,
+            )} ${getTokenConfig(getLpSymbol())?.symbol}`, '', 'success');
             dataAlowanceRemove.refetch();
             contractWriteRemoveLiquidity.reset();
         }
-    }, [inputRemoveFromAmount, tokenRemoveConfig?.symbol, waitForRemoveLiquid.isSuccess, showToastRemove]);
+    }, [inputRemoveFromAmount, getTokenConfig(getLpSymbol())?.symbol, waitForRemoveLiquid.isSuccess, showToastRemove]);
 
     useEffect(() => {
-        if (isSuccess) {
+        if (isSuccess || waitForRemoveLiquid.isSuccess) {
             balanceBTC.refetch();
             balanceETH.refetch();
             balanceUSDC.refetch();
@@ -527,6 +542,214 @@ export default function Liquidity() {
     }, [calcRemoveLiquidity.data, tokenFromRemove, inputRemoveFromAmount]);
 
 
+    const handleValueInput = useCallback(
+        (value: number) => {
+            setValueInput(Math.round(formatUnits(value, tokenConfig.decimals + 8)));
+        },
+        [tokenConfig?.decimals],
+    );
+
+    const statusForAdd = useMemo(() => {
+        if (!isConnected) {
+            return ButtonStatus.notConnect;
+        }
+        else if (insufficientBalance) {
+            return ButtonStatus.insufficientBalance
+        } else if (!inputFromAmount) {
+            return ButtonStatus.notInput;
+        } else if ((valueInput < MIN_VALUE_INPUT) || valueInput === 0) {
+            return ButtonStatus.minInput;
+        } else if (isLoading || useForApprove.isLoading) {
+            return ButtonStatus.loading;
+        } else if (
+            (dataAlowance?.data === BigInt(0)) &&
+            inputFromAmount > (dataAlowance?.data as BigInt)
+        ) {
+            return ButtonStatus.notApprove;
+        }
+        return ButtonStatus.ready;
+    }, [
+        dataAlowance.data,
+        inputFromAmount,
+        isConnected,
+        tokenFrom,
+        valueInput,
+        isLoading,
+        waitForRemoveLiquid?.isLoading,
+        useForApprove.isLoading,
+        useForApproveRemove.isLoading
+    ]);
+
+    const statusForRemove = useMemo(() => {
+        if (!isConnected) {
+            return ButtonStatusRemove.notConnect;
+        }
+        else if (insufficientBalanceRemove) {
+            return ButtonStatusRemove.insufficientBalance
+        } else if (!inputRemoveFromAmount) {
+            return ButtonStatusRemove.notInput;
+        } else if (inputRemoveFromAmount as bigint < MIN_VALUE_INPUT) {
+            return ButtonStatusRemove.minInput;
+        } else if (waitForRemoveLiquid.isLoading || useForApproveRemove.isLoading) {
+            return ButtonStatusRemove.loading;
+        } else if (
+            inputRemoveFromAmount > (dataAlowanceRemove?.data as BigInt)
+        ) {
+            return ButtonStatusRemove.notApprove;
+        }
+        return ButtonStatusRemove.ready;
+    }, [
+        dataAlowanceRemove.data,
+        inputRemoveFromAmount,
+        insufficientBalanceRemove,
+        isConnected,
+        waitForRemoveLiquid?.isLoading,
+        useForApproveRemove.isLoading
+    ]);
+
+
+    const buttonText = useMemo(() => {
+        switch (statusForAdd) {
+            case ButtonStatus.notConnect:
+                return 'Connect Wallet';
+            case ButtonStatus.notInput:
+                return 'Enter An Amount';
+            // case ButtonStatus.timeOutOracle:
+            //     return 'Oracle TimeOut';
+            case ButtonStatus.insufficientBalance:
+                return 'Insufficient Your Balance';
+            case ButtonStatus.minInput:
+                return 'Min Amount 10 USD';
+            // case ButtonStatus.insufficientPool:
+            //     return 'Insufficient Pool';
+            case ButtonStatus.loading:
+                return ``;
+            case ButtonStatus.notApprove:
+                return 'Approve';
+            default:
+                return 'Add';
+        }
+    }, [statusForAdd]);
+
+    const buttonTextRemove = useMemo(() => {
+        switch (statusForRemove) {
+            case ButtonStatusRemove.notConnect:
+                return 'Connect Wallet';
+            case ButtonStatusRemove.notInput:
+                return 'Enter An Amount';
+            // case ButtonStatusRemove.timeOutOracle:
+            //     return 'Oracle TimeOut';
+            case ButtonStatusRemove.insufficientBalance:
+                return 'Insufficient Your Balance';
+            case ButtonStatusRemove.minInput:
+                return 'Min Amount 10 USD';
+            // case ButtonStatusRemove.insufficientPool:
+            //     return 'Insufficient Pool';
+            case ButtonStatusRemove.loading:
+                return ``;
+            case ButtonStatusRemove.notApprove:
+                return 'Approve';
+            default:
+                return 'Remove';
+        }
+    }, [statusForRemove]);
+
+    const handleInsufficientBalance = useCallback((check: boolean) => {
+        setInsufficientBalance(check);
+    }, []);
+
+    const handleInsufficientBalanceRemove = useCallback((check: boolean) => {
+        setInsufficientBalanceRemove(check);
+    }, []);
+
+    const disableButton = useMemo(() => {
+        if (statusForAdd !== ButtonStatus.ready && statusForAdd !== ButtonStatus.notApprove) {
+            return true;
+        }
+        return false;
+    }, [statusForAdd]);
+
+    const disableButtonRemove = useMemo(() => {
+        if (statusForRemove !== ButtonStatusRemove.ready && statusForRemove !== ButtonStatusRemove.notApprove) {
+            return true;
+        }
+        return false;
+    }, [statusForRemove]);
+
+    const readTartgetWeightOfBtc = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'targetWeights',
+        args: [getAddress(tokenBTCConfig?.address ?? '')],
+    });
+
+    const readTotalWeight = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'totalWeight',
+    });
+
+    const readTartgetWeightOfETH = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'targetWeights',
+        args: [getAddress(tokenETHConfig?.address ?? '')],
+    });
+
+    const readTartgetWeightOfUSDC = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'targetWeights',
+        args: [getAddress(tokenUSDCConfig?.address ?? '')],
+    });
+
+    const readTartgetWeightOfWETH = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'targetWeights',
+        args: [getAddress(tokenWethConfig?.address ?? '')],
+    });
+
+
+    useEffect(() => {
+        setTargetBTC(formatUnits(readTartgetWeightOfBtc.data as bigint, tokenBTCConfig?.decimals ?? 0) / formatUnits(readTotalWeight.data as bigint, tokenBTCConfig?.decimals ?? 0) * 100);
+    }, [readTartgetWeightOfBtc.data, readTotalWeight.data]);
+
+    useEffect(() => {
+        setTargetETH(formatUnits(readTartgetWeightOfETH?.data as bigint, tokenETHConfig?.decimals ?? 0) / formatUnits(readTotalWeight.data as bigint, tokenETHConfig?.decimals ?? 0) * 100);
+    }, [readTartgetWeightOfETH.data, readTotalWeight.data]);
+
+    useEffect(() => {
+        setTargetUSDC(formatUnits(readTartgetWeightOfUSDC?.data as bigint, tokenUSDCConfig?.decimals ?? 0) / formatUnits(readTotalWeight.data as bigint, tokenUSDCConfig?.decimals ?? 0) * 100);
+    }, [readTartgetWeightOfUSDC.data, readTotalWeight.data]);
+
+    useEffect(() => {
+        setTargetWETH(formatUnits(readTartgetWeightOfWETH?.data as bigint, tokenWethConfig?.decimals ?? 0) / formatUnits(readTotalWeight.data as bigint, tokenWethConfig?.decimals ?? 0) * 100);
+    }, [readTartgetWeightOfWETH.data, readTotalWeight.data]);
+
+
+    useEffect(() => {
+        setWeightBTC(formatUnits(valueBTC as bigint, 8 + tokenBTCConfig?.decimals ?? 0) / formatUnits(dataReadTotalPool.data as bigint, 30) * 100);
+        setWeightETH(formatUnits(valueETH as bigint, 8 + tokenETHConfig?.decimals ?? 0) / formatUnits(dataReadTotalPool.data as bigint, 30) * 100);
+        setWeightUSDC(formatUnits(valueUSDT as bigint, 8 + tokenUSDCConfig?.decimals ?? 0) / formatUnits(dataReadTotalPool.data as bigint, 30) * 100);
+        setWeightWETH(formatUnits(valueWeth as bigint, 8 + tokenWethConfig?.decimals ?? 0) / formatUnits(dataReadTotalPool.data as bigint, 30) * 100);
+    }, [valueBTC, valueETH, valueUSDT, valueWeth, dataReadTotalPool.data]);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClickOpenRemove = () => {
+        setOpenRemove(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleCloseRemove = () => {
+        setOpenRemove(false);
+    };
 
     return (
         <div className="content-container">
@@ -541,6 +764,7 @@ export default function Liquidity() {
                             <BigintDisplay
                                 value={dataReadTotalPool.data as BigInt}
                                 decimals={30}
+                                currency='USD'
                             />
                         }
                     </p>
@@ -552,10 +776,11 @@ export default function Liquidity() {
                             <div className="table-head">Asset</div>
                             <div className="table-head">Amount</div>
                             <div className="table-head">Value</div>
-                            <div className="table-head">Utilization</div>
+                            <div className="table-head">7-day Fees</div>
+                            <div className="table-head">Weight/Target</div>
                         </div>
                         <div className="body-content-lq">
-                            <div className="body-table-liquid">
+                            <div className="body-table-liquid body-table-liquid-1">
                                 <div className="table-content">
                                     <img src={icon3} alt="bank" />
                                 </div>
@@ -574,7 +799,20 @@ export default function Liquidity() {
                                         currency="USD"
                                     />
                                 </div>
-                                <div className="table-content">26%</div>
+                                <div className="table-content">
+                                <BigintDisplay
+                                        value={poolAssetBTC.data[0] as BigInt}
+                                        decimals={tokenBTCConfig?.decimals}
+                                        fractionDigits={5}
+                                    />
+                                </div>
+                                <div className="table-content">
+                                    <span className={weightBTC < targetBTC ? 'green-color' : 'red-color'}>
+                                        <BigintDisplay
+                                            value={weightBTC as BigInt}
+                                            decimals={0}
+                                            fractionDigits={1}
+                                        />%</span>/{targetBTC}%</div>
                             </div>
 
                             <div className="body-table-liquid">
@@ -596,12 +834,25 @@ export default function Liquidity() {
                                         currency="USD"
                                     />
                                 </div>
-                                <div className="table-content">26%</div>
+                                <div className="table-content">
+                                <BigintDisplay
+                                        value={poolAssetETH.data[0] as BigInt}
+                                        decimals={tokenETHConfig?.decimals}
+                                        fractionDigits={5}
+                                    />
+                                </div>
+                                <div className="table-content">
+                                    <span className={weightETH < targetETH ? 'green-color' : 'red-color'}>
+                                        <BigintDisplay
+                                            value={weightETH as BigInt}
+                                            decimals={0}
+                                            fractionDigits={1}
+                                        />%</span>/{targetETH}%</div>
                             </div>
 
                             <div className="body-table-liquid">
                                 <div className="table-content">
-                                    <img src={TIcon} alt="bank" />
+                                    <img style={{ width: '32px' }} src={TIcon} alt="bank" />
                                 </div>
                                 <div className="table-content">
                                     {
@@ -618,10 +869,23 @@ export default function Liquidity() {
                                         currency="USD"
                                     />
                                 </div>
-                                <div className="table-content">26%</div>
+                                <div className="table-content">
+                                <BigintDisplay
+                                        value={poolAssetUSDC.data[0] as BigInt}
+                                        decimals={tokenUSDCConfig?.decimals}
+                                        fractionDigits={5}
+                                    />
+                                </div>
+                                <div className="table-content">
+                                    <span className={weightUSDC < targetUSDC ? 'green-color' : 'red-color'}>
+                                        <BigintDisplay
+                                            value={weightUSDC as BigInt}
+                                            decimals={0}
+                                            fractionDigits={1}
+                                        />%</span>/{targetUSDC}%</div>
                             </div>
 
-                            <div className="body-table-liquid">
+                            <div className="body-table-liquid body-table-liquid-last">
                                 <div className="table-content">
                                     <img style={{ width: '32px' }} src={WETH} alt="bank" />
                                 </div>
@@ -640,7 +904,20 @@ export default function Liquidity() {
                                         currency="USD"
                                     />
                                 </div>
-                                <div className="table-content">26%</div>
+                                <div className="table-content">
+                                <BigintDisplay
+                                        value={poolAssetWETH.data[0] as BigInt}
+                                        decimals={tokenWethConfig?.decimals}
+                                        fractionDigits={5}
+                                    />
+                                </div>
+                                <div className="table-content">
+                                    <span className={weightWETH < targetWETH ? 'green-color' : 'red-color'}>
+                                        <BigintDisplay
+                                            value={weightWETH as BigInt}
+                                            decimals={0}
+                                            fractionDigits={1}
+                                        />%</span>/{targetWETH}%</div>
                             </div>
                         </div>
                     </div>
@@ -675,9 +952,13 @@ export default function Liquidity() {
                                 tokenChange={handleTokenFromChange}
                                 title="Amount"
                                 refresh={refresh}
+                                disable={statusForAdd === ButtonStatus.loading}
+                                disableSelect={statusForAdd === ButtonStatus.loading}
+                                valueChange={handleValueInput}
+                                insufficientBalanceChange={handleInsufficientBalance}
                             />
                         </StyledContainerDiv>
-                        <div className="div" style={{ minHeight: '160px' }}>
+                        <div className="div" style={{ minHeight: '136px' }}>
                             <div className="content-detail content-detail-first">
                                 <p className="title-detail">Receive</p>
                                 <p className="info-detail">0 FLP</p>
@@ -699,10 +980,48 @@ export default function Liquidity() {
                             </div>
                         </div>
                         <div className="button-container">
-                            <button onClick={handleAddLiquid} className="btn-add">
-                                ADD
-                            </button>
+                            {(buttonText != 'Approve') &&
+                                <StyleButton onClick={handleClickOpen} disabled={disableButton} className="btn-add">
+                                    <div>{buttonText}</div>
+                                    <img
+                                        hidden={statusForAdd !== ButtonStatus.loading}
+                                        src={IcLoading}
+                                        alt=""
+                                    ></img>
+                                </StyleButton>
+                            }
+
+                            {(buttonText === 'Approve') &&
+                                <StyleButton onClick={handleAddLiquid} disabled={disableButton} className="btn-add">
+                                    <div>{buttonText}</div>
+                                    <img
+                                        hidden={statusForAdd !== ButtonStatus.loading}
+                                        src={IcLoading}
+                                        alt=""
+                                    ></img>
+                                </StyleButton>
+                            }
                         </div>
+
+                        <Dialog
+                            open={open}
+                            TransitionComponent={Transition}
+                            keepMounted
+                            onClose={handleClose}
+                            aria-describedby="alert-dialog-slide-description"
+                        >
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-slide-description">
+                                    Are you sure to add {' '}
+                                    {formatUnits(inputFromAmount, tokenConfig?.decimals)}
+                                    {tokenConfig?.symbol}
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose}>Disagree</Button>
+                                <Button onClick={handleAddLiquid}>Agree</Button>
+                            </DialogActions>
+                        </Dialog>
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={1}>
                         <StyledContainerDiv>
@@ -710,13 +1029,16 @@ export default function Liquidity() {
                                 tokens={tokensRemove}
                                 amountChange={amountRemoveFromChange}
                                 title="Amount"
-                                refresh={refresh}
+                                refresh={refreshRemove}
+                                disable={statusForRemove === ButtonStatusRemove.loading}
+                                disableSelect={statusForRemove === ButtonStatusRemove.loading}
+                                insufficientBalanceChange={handleInsufficientBalanceRemove}
                             />
                         </StyledContainerDiv>
-                        <div className="div" style={{ minHeight: '160px' }}>
+                        <div className="div" style={{ minHeight: '136px' }}>
                             <div className="content-detail content-detail-first">
                                 <p className="title-detail">
-                                    Receive {calcRemoveLiquidity.data}
+                                    Receive
                                 </p>
                                 <div
                                     className="div"
@@ -726,7 +1048,7 @@ export default function Liquidity() {
                                         <BigintDisplay
                                             value={calcRemoveLiquidity.data as BigInt}
                                             decimals={tokenRemoveConfig?.decimals}
-                                            currency="USD"
+                                            fractionDigits={5}
                                         />
                                     </div>
                                     <p
@@ -752,17 +1074,60 @@ export default function Liquidity() {
                                 <p className="info-detail">
                                     <BigintDisplay
                                         value={minimumReceive as BigInt}
-                                        decimals={tokenConfig.decimals}
+                                        decimals={tokenRemoveConfig.decimals}
+                                        fractionDigits={5}
                                     />
                                     <span> {tokenFromRemove}</span>
                                 </p>
                             </div>
                         </div>
                         <div className="button-container">
-                            <button onClick={handleRemoveLiquid} className="btn-add">
-                                Remove
-                            </button>
+                            {(buttonTextRemove != 'Approve') &&
+                                <StyleButton onClick={handleClickOpenRemove} disabled={disableButtonRemove} className="btn-add">
+                                    <div>{buttonTextRemove}</div>
+                                    <img
+                                        hidden={statusForRemove !== ButtonStatusRemove.loading}
+                                        src={IcLoading}
+                                        alt=""
+                                    ></img>
+                                </StyleButton>
+                            }
+
+                            {(buttonTextRemove === 'Approve') &&
+                                <StyleButton onClick={handleRemoveLiquid} disabled={disableButtonRemove} className="btn-add">
+                                    <div>{buttonTextRemove}</div>
+                                    <img
+                                        hidden={statusForRemove !== ButtonStatusRemove.loading}
+                                        src={IcLoading}
+                                        alt=""
+                                    ></img>
+                                </StyleButton>
+                            }
                         </div>
+                        <Dialog
+                            open={openRemove}
+                            TransitionComponent={TransitionRemove}
+                            keepMounted
+                            onClose={handleCloseRemove}
+                            aria-describedby="alert-dialog-slide-description"
+                        >
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-slide-description">
+                                    Are you sure to remove {' '}
+                                    {formatUnits(inputRemoveFromAmount, lpDecimal)}LP to get
+                                    {' '}
+                                    <BigintDisplay
+                                        value={minimumReceive as BigInt}
+                                        decimals={tokenRemoveConfig.decimals}
+                                        fractionDigits={5}
+                                    />{tokenRemoveConfig?.symbol}
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleCloseRemove}>Disagree</Button>
+                                <Button onClick={handleRemoveLiquid}>Agree</Button>
+                            </DialogActions>
+                        </Dialog>
                     </CustomTabPanel>
                 </Box>
             </div>
@@ -772,4 +1137,28 @@ export default function Liquidity() {
 
 const StyledContainerDiv = style.div`
     margin-bottom: 20px;
+`;
+const StyleButton = style.button`
+    width: 100%;
+    color: #fff;
+    height: 37px;
+    border-radius: 10px;
+    background: #6763e3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    :hover {
+        background: #5552a9;
+    }
+    :disabled {
+        background: #2a2a38;
+    }
+    div {
+        font-weight: 700;
+        font-size: 15px;
+    }
+    img {
+        height: 15px;
+        animation: loading 1.5s linear infinite;
+    }
 `;
