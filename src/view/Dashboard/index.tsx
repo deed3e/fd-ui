@@ -9,7 +9,7 @@ const Dashboard: React.FC = () => {
                 <StyledDivTop>
                     <StyledMainText>Decentralized Perpetual Exchange</StyledMainText>
                     <StyledAltText>
-                        Trade BTC, ETH, BNB and other top cryptocurrencies with up to 30x
+                        Trade BTC, ETH, BNB and other top cryptocurrencies <br /> with up to 30x
                         leverage directly from your wallet
                     </StyledAltText>
                 </StyledDivTop>
@@ -32,10 +32,12 @@ const StyledDashboard = styled.div`
     background-image: url(${DashboardBackground});
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: center top;=0
+    background-position: center top;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    display: flex;
+    flex-direction: column;
 `;
 
 const StyledMainText = styled.p`
@@ -55,17 +57,17 @@ const StyledAltText = styled.p`
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-    width: 643px;
-    height: 79px;
+    text-align: center;
 `;
 
 const StyledDivTop = styled.div`
-    margin-top: 47px;
+    padding-top: 47px;
 `;
 
 const StyledDivBottom = styled.div`
-    margin-bottom: 41px;
+    padding-bottom: 41px;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 20px;
 `;
