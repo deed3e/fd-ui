@@ -45,6 +45,7 @@ const StyledPositionContainer = styled.div`
 `;
 
 const StyledContainer = styled.div`
+   margin-top: 56px;
     display: grid;
     height: 100%;
     grid-template-columns: calc(100% - 400px) 400px;
