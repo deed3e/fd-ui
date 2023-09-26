@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import logoChain from '../../assets/image/logo-bnb.png';
-import logo from '../../assets/svg/logo-tab.svg';
+import { ReactComponent as Logo } from '../../assets/image/logo-navbar.svg';
 import { screenUp } from '../../utils/styles';
 import ConnectWallet from './ConnectWallet';
 
@@ -12,7 +12,7 @@ const Header: React.FC = () => {
                 <StyledNav>
                     <StyledLogoNavItem>
                         <StyledLogoContainer to="/">
-                            <StyledLogo src={logo} />
+                            <Logo />
                         </StyledLogoContainer>
                     </StyledLogoNavItem>
                     <StyledNavItem>
@@ -65,6 +65,10 @@ const StyledLogoContainer = styled(NavLink)`
     margin-right: 20px;
     display: flex;
     align-items: center;
+    svg {
+        height: 28px;
+        width: 28px;
+    }
 `;
 
 const StyledLogo = styled.img`
