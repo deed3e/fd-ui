@@ -311,6 +311,7 @@ const StyledTextTitle = styled.div`
 const StyledContainer = styled.div`
     width: 100%;
     font-weight: 500;
+    padding-top: 56px;
 `;
 
 const StyledBox = styled.div`
