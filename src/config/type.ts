@@ -7,6 +7,8 @@ export type ChainConfig = {
     etherscanName: string;
     explorerUrl: string;
     oracle: Address;
+    chartUrlWs: string;
+    chartUrlHttp: string;
     nativeToken: string;
     wrapNativeToken: string;
     pool: {
