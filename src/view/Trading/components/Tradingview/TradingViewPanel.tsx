@@ -17,6 +17,7 @@ const StyledContainer = styled.div`
     height: inherit;
     .container {
         margin: 0;
+        padding: 0;
         width: 100%;
         flex: 1;
         max-width: 100%;

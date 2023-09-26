@@ -39,7 +39,6 @@ export const ChartContainer = memo(() => {
 
     const subscribe = useCallback(() => {
         if (!ws) return;
-        console.log('subscribe');
         ws.send(
             JSON.stringify({
                 type: 'subscribe',
@@ -98,7 +97,6 @@ export const ChartContainer = memo(() => {
                     close: +res.c[i],
                 });
             }
-            console.log('bars after', bars);
             if (firstDataRequest) {
                 lastBar.current = bars[bars.length - 1];
                 subscribe();
@@ -280,7 +278,6 @@ export const ChartContainer = memo(() => {
     //     checkApiResponse();
     // }, []);
 
-    console.log('render');
     return (
         <StyledContent>
             {/* {loading ? (
