@@ -19,7 +19,7 @@ const Header: React.FC = () => {
                         <StyledNavItemLink to="/">DASHBOARD</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
-                        <StyledNavItemLink to="/trading">TRADING</StyledNavItemLink>
+                        <StyledNavItemLink to="/trading/btc/long">TRADING</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
                         <StyledNavItemLink to="/swap">SWAP</StyledNavItemLink>

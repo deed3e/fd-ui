@@ -8,6 +8,8 @@ export const Config: ChainConfig = {
     explorerUrl: 'https://testnet.bscscan.com/',
     oracle: '0x9244350c288B39bd84223E1b1F1A0f1367bbc8e1',
     router:'0x1e9340C2c513D384b845064bDff2747C9747c9fa',
+    chartUrlHttp:'',
+    chartUrlWs:'wss://ws-feed.pro.coinbase.com',
     pool:{
         address: '0xFE2cD916316186863a3e4a50dc4C2e9C76464C6c',
         lp: 'FLP',
