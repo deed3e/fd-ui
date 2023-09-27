@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 import DashboardBackground from '../../assets/image/bg_dashboard.png';
 import DashboardItem from './components/DashboardItem';
+import { ReactComponent as TradingVolume } from '../../assets/icons/ic_trading_volume.svg';
+import { ReactComponent as AccuredFees } from '../../assets/icons/ic_accured_fees.svg';
+import { ReactComponent as TotalUsers } from '../../assets/icons/ic_total_users.svg';
+import { ReactComponent as UnderManager } from '../../assets/icons/ic_under_manager.svg';
 
 const Dashboard: React.FC = () => {
     return (
@@ -14,10 +18,10 @@ const Dashboard: React.FC = () => {
                     </StyledAltText>
                 </StyledDivTop>
                 <StyledDivBottom>
-                    <DashboardItem></DashboardItem>
-                    <DashboardItem></DashboardItem>
-                    <DashboardItem></DashboardItem>
-                    <DashboardItem></DashboardItem>
+                    <DashboardItem img={<TradingVolume />} title='Total Trading Volume' value='$12345' status='$12345'></DashboardItem>
+                    <DashboardItem img={<UnderManager />} title='Assets Under Manager' value='$12345' status='$12345'></DashboardItem>
+                    <DashboardItem img={<AccuredFees />} title='Accured Fees' value='$12345' status='$12345'></DashboardItem>
+                    <DashboardItem img={<TotalUsers />} title='Total User' value='$12345' status='$12345'></DashboardItem>
                 </StyledDivBottom>
             </StyledDashboard>
         </>
