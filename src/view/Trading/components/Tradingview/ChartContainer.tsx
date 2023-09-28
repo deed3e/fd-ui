@@ -77,10 +77,7 @@ export const ChartContainer = memo(() => {
             }
             const bars: TradingView.Bar[] = [];
             const res = await fetch(
-                //`https://api.exchange.coinbase.com/products/${token}-USD/candles?start=${from}&end=${to}&granularity=${Resolution[interval.current].value}`,
-                `https://api.level.finance/udf/history?symbol=${token}&resolution=${
-                    Resolution[interval.current].server
-                }&from=${from}&to=${to}&countback=2`,
+                `https://benchmarks.pyth.network/v1/shims/tradingview/history?symbol=Crypto.${token}%2FUSD&resolution=${Resolution[interval.current].server}&from=${from}&to=${to}`
             )
                 .then((res) => res.json())
                 .catch((err) => onError(err));
@@ -164,6 +161,7 @@ export const ChartContainer = memo(() => {
                 'no_min_chart_width',
                 'caption_buttons_text_if_possible',
                 'end_of_period_timescale_marks',
+                'hide_left_toolbar_by_default'
             ],
             disabled_features: [
                 'save_chart_properties_to_local_storage',
@@ -178,6 +176,10 @@ export const ChartContainer = memo(() => {
                 'header_undo_redo',
                 'header_symbol_search',
                 'header_widget_buttons_mode',
+                'header_screenshot',
+                'header_settings',
+                'header_indicators',
+                'header_chart_type'
             ],
             client_id: 'fdex.me',
             fullscreen: false,
@@ -212,6 +214,7 @@ export const ChartContainer = memo(() => {
         ws.onmessage = (ev) => {
             if (!ev.data) return;
             const data = JSON.parse(ev.data);
+            console.log('data',data)
             const { product_id, price } = data;
             const symbol =
                 typeof product_id === 'string' ? product_id.split('-')[0] : undefined;
