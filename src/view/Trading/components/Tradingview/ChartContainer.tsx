@@ -5,9 +5,8 @@ import { config } from '../../../../config';
 import { store } from '../../../../utils/store';
 import { DataFeed } from './DataFeed';
 import { TimeZones } from './zone';
-import imgNoChart from '../../../../assets/image/img-nochart-data.png';
 import { useWebSocket } from '../../../../contexts/ApplicationProvider';
-import { type } from 'os';
+import IcLoading from '../../../../assets/image/ic-loading.png';
 
 interface Candle {
     time: number;
@@ -25,7 +24,11 @@ const Resolution = {
     '1D': { server: '1D', value: 24 * 60 * 60 * 1000 },
 };
 
-export const ChartContainer = memo(() => {
+interface IChartContainer {
+    setPrice: (current: number, low: number, high: number) => unknown;
+}
+
+export const ChartContainer: React.FC<IChartContainer> = memo(({ setPrice }) => {
     const interval = useRef<keyof typeof Resolution>('15');
     const lastBar = useRef<Candle>();
     const datafeed = useRef<DataFeed>();
@@ -33,34 +36,31 @@ export const ChartContainer = memo(() => {
     const token = market?.toUpperCase();
     const currentToken = useRef<string>('BTC');
     const [loading, setLoading] = useState<boolean>();
-    const [noChartData, setNoChartData] = useState<boolean>(false);
     const ws = useWebSocket();
-    const [responseData, setResponseData] = useState(null);
 
     const subscribe = useCallback(() => {
         if (!ws) return;
         ws.send(
             JSON.stringify({
                 type: 'subscribe',
-                product_ids: ['BTC-USD'],
+                product_ids: [`${token}-USD`],
                 channels: ['ticker'],
             }),
         );
     }, [token, ws]);
 
-    // const unSubscribe = useCallback(() => {
-    //     if (!ws) return;
-    //     ws.send(
-    //         JSON.stringify({
-    //             method: 'UNSUBSCRIBE',
-    //             data: {
-    //                 market: currentToken.current,
-    //             },
-    //         }),
-    //     );
-    //     lastBar.current = undefined;
-    //     currentToken.current = token;
-    // }, [token, ws]);
+    const unSubscribe = useCallback(() => {
+        if (!ws) return;
+        ws.send(
+            JSON.stringify({
+                method: 'unsubscribe',
+                product_ids: [`${token}-USD`],
+                channels: ['ticker'],
+            }),
+        );
+        lastBar.current = undefined;
+        currentToken.current = token ?? 'BTC';
+    }, [token, ws]);
 
     const getBars = useCallback(
         async (
@@ -77,7 +77,9 @@ export const ChartContainer = memo(() => {
             }
             const bars: TradingView.Bar[] = [];
             const res = await fetch(
-                `https://benchmarks.pyth.network/v1/shims/tradingview/history?symbol=Crypto.${token}%2FUSD&resolution=${Resolution[interval.current].server}&from=${from}&to=${to}`
+                `https://benchmarks.pyth.network/v1/shims/tradingview/history?symbol=Crypto.${token}%2FUSD&resolution=${
+                    Resolution[interval.current].server
+                }&from=${from}&to=${to}`,
             )
                 .then((res) => res.json())
                 .catch((err) => onError(err));
@@ -96,6 +98,11 @@ export const ChartContainer = memo(() => {
             }
             if (firstDataRequest) {
                 lastBar.current = bars[bars.length - 1];
+                setPrice(
+                    lastBar.current?.close,
+                    lastBar.current?.close,
+                    lastBar.current?.close,
+                );
                 subscribe();
             }
             onResult(bars, { noData: false });
@@ -161,7 +168,7 @@ export const ChartContainer = memo(() => {
                 'no_min_chart_width',
                 'caption_buttons_text_if_possible',
                 'end_of_period_timescale_marks',
-                'hide_left_toolbar_by_default'
+                'hide_left_toolbar_by_default',
             ],
             disabled_features: [
                 'save_chart_properties_to_local_storage',
@@ -179,7 +186,7 @@ export const ChartContainer = memo(() => {
                 'header_screenshot',
                 'header_settings',
                 'header_indicators',
-                'header_chart_type'
+                'header_chart_type',
             ],
             client_id: 'fdex.me',
             fullscreen: false,
@@ -187,7 +194,7 @@ export const ChartContainer = memo(() => {
             theme: 'Dark',
             overrides: {
                 'mainSeriesProperties.showCountdown': false,
-                'paneProperties.background': '#161618',
+                'paneProperties.background': '#0F091E',
                 'paneProperties.vertGridProperties.color': '#3737375e',
                 'paneProperties.horzGridProperties.color': '#3737375e',
                 'paneProperties.crossHairProperties.color': '#404040',
@@ -200,7 +207,7 @@ export const ChartContainer = memo(() => {
                 'mainSeriesProperties.candleStyle.downColor': '#E43E53',
                 'mainSeriesProperties.candleStyle.borderUpColor': '#35ca65',
                 'mainSeriesProperties.candleStyle.borderDownColor': '#E43E53',
-                'overrides."painProperties.background': '#161618',
+                'overrides."painProperties.background': '#0F091E',
             },
             custom_css_url: '/css/tradingview_chart.css',
         });
@@ -214,7 +221,6 @@ export const ChartContainer = memo(() => {
         ws.onmessage = (ev) => {
             if (!ev.data) return;
             const data = JSON.parse(ev.data);
-            console.log('data',data)
             const { product_id, price } = data;
             const symbol =
                 typeof product_id === 'string' ? product_id.split('-')[0] : undefined;
@@ -244,6 +250,7 @@ export const ChartContainer = memo(() => {
             }
             lastBar.current = bar;
             datafeed.current?.updateBar(bar);
+            setPrice(data?.price, data?.low_24h, data?.high_24h);
         };
     }, [initDatafeed, initTradingView, interval, lastBar, token, ws]);
 
@@ -255,50 +262,23 @@ export const ChartContainer = memo(() => {
         initDatafeed();
         initTradingView();
         return () => {
-            // unSubscribe();
+            unSubscribe();
         };
     }, [initDatafeed, initTradingView, token]);
 
-    // useEffect(() => {
-    //     if (currentToken?.current !== token) {
-    //         unSubscribe();
-    //     }
-    // }, [
-    //     token,
-    //     unSubscribe
-    // ]);
-
-    // useEffect(() => {
-    //     const checkApiResponse = async () => {
-    //         try {
-    //             const res = await fetch(`${config.apiUrl}/prices`);
-    //             if (!res.ok) setNoChartData(true);
-    //             else setNoChartData(false);
-    //         } catch {
-    //             setNoChartData(true);
-    //         }
-    //     };
-    //     checkApiResponse();
-    // }, []);
-
+    useEffect(() => {
+        if (currentToken?.current !== token) {
+            unSubscribe();
+        }
+    }, [token, unSubscribe]);
     return (
         <StyledContent>
-            {/* {loading ? (
+            {loading && (
                 <StyledLoading>
-                    LOADING
+                    <img src={IcLoading} alt=""></img>
                 </StyledLoading>
-            ) : noChartData ? (
-                <StyledNoChartData>
-                    <img src={imgNoChart} />
-                    <div>No data available</div>
-                </StyledNoChartData>
-            ) : null} */}
-            <div>{responseData}</div>
-            <div
-                id="chart-container"
-                className="container"
-                //hidden={loading || noChartData}
-            ></div>
+            )}
+            <div id="chart-container" className="container" />
         </StyledContent>
     );
 });
@@ -312,33 +292,14 @@ const StyledContent = styled.div`
 
 const StyledLoading = styled.div`
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: #0F091E;
     img {
-        width: 150px;
-        height: 150px;
-        opacity: 0.6;
-    }
-`;
-
-const StyledNoChartData = styled.div`
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    div {
-        margin-top: 7px;
-        color: #979595;
-        font-size: 13px;
+        height: 15px;
+        animation: loading 1.5s linear infinite;
     }
 `;

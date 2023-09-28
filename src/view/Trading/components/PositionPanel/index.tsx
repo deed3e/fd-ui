@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 const PositionPanel: React.FC = () => {
     return (
       <>
@@ -6,5 +8,5 @@ const PositionPanel: React.FC = () => {
     );
   };
   
-  export default PositionPanel;
+  export default memo(PositionPanel);
   

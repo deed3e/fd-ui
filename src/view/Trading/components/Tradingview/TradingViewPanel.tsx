@@ -1,10 +1,14 @@
 import styled from 'styled-components';
 import { ChartContainer } from './ChartContainer';
 
-const TradingViewPanel: React.FC = () => {
+interface ITradingViewPanel {
+    setPrice: (current: number, low: number, high: number) => unknown;
+}
+
+const TradingViewPanel: React.FC<ITradingViewPanel> = ({ setPrice }) => {
     return (
         <StyledContainer>
-            <ChartContainer />
+            <ChartContainer setPrice={setPrice} />
         </StyledContainer>
     );
 };

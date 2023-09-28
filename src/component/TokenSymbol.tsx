@@ -8,6 +8,7 @@ import USDC from '../assets/tokens/USDC.png';
 import DOGE from '../assets/tokens/DOGE.png';
 import ETH from '../assets/tokens/ETH.png';
 import BTC from '../assets/tokens/BTC.png';
+import BNB from '../assets/tokens/BNB.png';
 
 export type TokenSymbolProps = {
   symbol: string;
@@ -23,7 +24,8 @@ const logosBySymbol: { [title: string]: string } = {
   BTC: BTC,
   USDT: USDT,
   USDC: USDC,
-  DOGE: DOGE
+  DOGE: DOGE,
+  BNB:BNB
 };
 
 export const TokenSymbol: React.FC<TokenSymbolProps> = ({ symbol, size = 32 }) => {

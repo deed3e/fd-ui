@@ -3,15 +3,31 @@ import MarketInfoPanel from './components/MarketInfoPanel';
 import PlaceOrderPanel from './components/PlaceOrderPanel';
 import PositionPanel from './components/PositionPanel';
 import TradingViewPanel from './components/Tradingview/TradingViewPanel';
+import { useCallback, useState } from 'react';
+
+export interface MarketInfo {
+    current?: number;
+    low?: number;
+    high?: number;
+}
 
 const Trading: React.FC = () => {
+    const [price, setPrice] = useState<MarketInfo | undefined>();
+    const handleSetPrice = useCallback((current: number, low: number, high: number) => {
+        setPrice({
+            current,
+            low,
+            high,
+        });
+    }, []);
+
     return (
         <StyledContainer>
             <StyledMarketContainer>
-                <MarketInfoPanel />
+                <MarketInfoPanel current={price?.current} low={price?.low} high={price?.high} />
             </StyledMarketContainer>
             <StyledTradingViewContainer>
-                <TradingViewPanel />
+                <TradingViewPanel setPrice={handleSetPrice} />
             </StyledTradingViewContainer>
             <StyledPositionContainer>
                 <PositionPanel />
@@ -45,7 +61,7 @@ const StyledPositionContainer = styled.div`
 `;
 
 const StyledContainer = styled.div`
-   margin-top: 56px;
+    margin-top: 56px;
     display: grid;
     height: 100%;
     grid-template-columns: calc(100% - 400px) 400px;

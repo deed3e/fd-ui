@@ -55,7 +55,7 @@ const StyledHeader = styled.header`
     align-items: center;
     justify-content: center;
     padding: 0 16px;
-    border-bottom: 1px solid #363636;
+    border-bottom: 0.5px solid #363636;
     ${screenUp('lg')`
     padding: 0 25px;
   `}
