@@ -227,9 +227,9 @@ export default function Liquidity() {
     });
 
     const poolAssetBTC = useContractRead({
-        address : getAddressPool(),
-        abi : Pool,
-        functionName : 'poolAssets',
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'poolAssets',
         args: [tokenBTCConfig?.address]
     })
 
@@ -238,23 +238,23 @@ export default function Liquidity() {
 
 
     const poolAssetETH = useContractRead({
-        address : getAddressPool(),
-        abi : Pool,
-        functionName : 'poolAssets',
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'poolAssets',
         args: [tokenETHConfig?.address]
     })
 
     const poolAssetWETH = useContractRead({
-        address : getAddressPool(),
-        abi : Pool,
-        functionName : 'poolAssets',
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'poolAssets',
         args: [tokenWethConfig?.address]
     })
 
     const poolAssetUSDC = useContractRead({
-        address : getAddressPool(),
-        abi : Pool,
-        functionName : 'poolAssets',
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'poolAssets',
         args: [tokenUSDCConfig?.address]
     })
 
@@ -803,11 +803,13 @@ export default function Liquidity() {
                                     />
                                 </div>
                                 <div className="table-content">
-                                {/* <BigintDisplay
+                                {poolAssetBTC != undefined &&
+                                    <BigintDisplay
                                         value={poolAssetBTC.data[0] as BigInt}
                                         decimals={tokenBTCConfig?.decimals}
                                         fractionDigits={5}
-                                    /> */}
+                                    />
+                                }
                                 </div>
                                 <div className="table-content">
                                     <span className={weightBTC < targetBTC ? 'green-color' : 'red-color'}>
@@ -838,11 +840,13 @@ export default function Liquidity() {
                                     />
                                 </div>
                                 <div className="table-content">
-                                {/* <BigintDisplay
-                                        value={poolAssetETH.data[0] as BigInt}
-                                        decimals={tokenETHConfig?.decimals}
-                                        fractionDigits={5}
-                                    /> */}
+                                    {poolAssetETH != undefined &&
+                                        <BigintDisplay
+                                            value={poolAssetETH.data[0] as BigInt}
+                                            decimals={tokenETHConfig?.decimals}
+                                            fractionDigits={5}
+                                        />
+                                    }
                                 </div>
                                 <div className="table-content">
                                     <span className={weightETH < targetETH ? 'green-color' : 'red-color'}>
@@ -873,11 +877,13 @@ export default function Liquidity() {
                                     />
                                 </div>
                                 <div className="table-content">
-                                {/* <BigintDisplay
-                                        value={poolAssetUSDC.data[0] as BigInt}
-                                        decimals={tokenUSDCConfig?.decimals}
-                                        fractionDigits={5}
-                                    /> */}
+                                    {poolAssetUSDC != undefined &&
+                                        <BigintDisplay
+                                            value={poolAssetUSDC.data[0] as BigInt}
+                                            decimals={tokenUSDCConfig?.decimals}
+                                            fractionDigits={5}
+                                        />
+                                    }
                                 </div>
                                 <div className="table-content">
                                     <span className={weightUSDC < targetUSDC ? 'green-color' : 'red-color'}>
@@ -908,11 +914,13 @@ export default function Liquidity() {
                                     />
                                 </div>
                                 <div className="table-content">
-                                {/* <BigintDisplay
-                                        value={poolAssetWETH.data[0] as BigInt}
-                                        decimals={tokenWethConfig?.decimals}
-                                        fractionDigits={5}
-                                    /> */}
+                                    {poolAssetWETH != undefined &&
+                                        <BigintDisplay
+                                            value={poolAssetWETH.data[0] as BigInt}
+                                            decimals={tokenWethConfig?.decimals}
+                                            fractionDigits={5}
+                                        />
+                                    }
                                 </div>
                                 <div className="table-content">
                                     <span className={weightWETH < targetWETH ? 'green-color' : 'red-color'}>
