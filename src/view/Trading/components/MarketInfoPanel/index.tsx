@@ -1,10 +1,10 @@
+import { useParams } from 'react-router-dom';
+
 const MarketInfoPanel: React.FC = () => {
-    return (
-      <>
-        MarketInfoPanel
-      </>
-    );
-  };
-  
-  export default MarketInfoPanel;
-  
+    const { market } = useParams();
+    const token = market?.toUpperCase();
+
+    return <>MarketInfoPanel:{token}</>;
+};
+
+export default MarketInfoPanel;

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import MockERC20 from '../../abis/MockERC20.json';
 import { DropdownSelectToken } from './components/DropdownSelectToken';
 import { ReactComponent as IconArrowDown } from '../../assets/svg/ic-arrow-down.svg';
@@ -16,9 +16,8 @@ import { ReactComponent as IconAddToken } from '../../assets/svg/ic-add-token.sv
 import { TokenSymbol } from '../../component/TokenSymbol';
 import { getPoolAssetSymbol, getWrapNativeTokenSymbol, getTokenConfig } from '../../config';
 import { useAddTokenMetamask } from '../../hooks/useAddTokenMetamask';
-import { useOracle } from '../../hooks/useOracle';
-import { BigintDisplay } from '../../component/BigIntDisplay';
 import IcLoading from '../../assets/image/ic-loading.png';
+import { BigintDisplay } from '../../component/BigIntDisplay';
 
 enum ButtonStatus {
     notConnect,
