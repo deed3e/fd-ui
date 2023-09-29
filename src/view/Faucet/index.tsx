@@ -263,7 +263,7 @@ const StyledBalance = styled.div`
 
 const StyledContainerInput = styled.div`
     position: relative;
-    background-color: black;
+    background-color: #172132;
     border-radius: 10px;
     height: 49px;
     display: flex;

@@ -245,7 +245,7 @@ const StyledBalance = styled.div`
 `;
 const StyledContainerInput = styled.div<{ disable?: boolean }>`
     position: relative;
-    background-color: ${({ disable }) => (disable ? 'rgba(255, 255, 255, 0.1);' : 'black')};
+    background-color: ${({ disable }) => (disable ? '#172132' : 'black')};
     border-radius: 10px;
     height: 49px;
     display: flex;
