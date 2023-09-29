@@ -10,11 +10,11 @@ import {
     useBalance,
     useAccount,
 } from 'wagmi';
-import { parseUnits } from 'viem';
+import { getAddress, parseUnits } from 'viem';
 import { useShowToast } from '../../hooks/useShowToast';
 import { ReactComponent as IconAddToken } from '../../assets/svg/ic-add-token.svg';
 import { TokenSymbol } from '../../component/TokenSymbol';
-import { getPoolAssetSymbol, getWrapNativeTokenSymbol, getTokenConfig } from '../../config';
+import { getPoolAssetSymbol, getWrapNativeTokenSymbol, getTokenConfig,getSymbolByAddress } from '../../config';
 import { useAddTokenMetamask } from '../../hooks/useAddTokenMetamask';
 import IcLoading from '../../assets/image/ic-loading.png';
 import { BigintDisplay } from '../../component/BigIntDisplay';
@@ -40,6 +40,7 @@ const Faucet: React.FC = () => {
     const [amount, setAmount] = useState<string>(
         AmountFaucet[configSelectToken?.symbol ?? ''].toString() ?? '',
     );
+
     const addToken = useAddTokenMetamask();
 
     const tokens = useMemo(() => {
