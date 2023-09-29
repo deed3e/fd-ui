@@ -8,6 +8,7 @@ import {
     getAddressRouter,
     getAddressPool,
     getTokenConfig,
+    getSymbolByAddress,
 } from '../../config';
 import PoolAbi from '../../abis/Pool.json';
 import RouterAbi from '../../abis/Router.json';
@@ -20,7 +21,7 @@ import {
     usePrepareContractWrite,
     useWaitForTransaction,
 } from 'wagmi';
-import { formatUnits, maxUint256, parseUnits } from 'viem';
+import { formatUnits, getAddress, maxUint256, parseUnits } from 'viem';
 import IcLoading from '../../assets/image/ic-loading.png';
 import MockErc20 from '../../abis/MockERC20.json';
 import { BigintDisplay } from '../../component/BigIntDisplay';
@@ -47,6 +48,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { number } from 'zod';
 import { splitDate } from "../../utils/times";
+import { TokenSymbol } from '../../component/TokenSymbol';
 
 enum ButtonStatus {
     notConnect,
@@ -434,19 +436,37 @@ export default function Swap() {
                         <div className="table-head">Receive</div>
                         <div className="table-head">Time</div>
                     </div>
-                    <TableBody>
-                        {swapQuery.data?.map((item: SwapType) => (
-                            <TableRow>
-                                <TableCell>{item.tokenIn}</TableCell>
-                                <TableCell>{item.tokenOut}</TableCell>
-                                <TableCell>{item.amountIn}</TableCell>
-                                <TableCell>{item.amountOut}</TableCell>
-                                <TableCell>
-                                    {splitDate(item.time)}
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
+                        <TableBody>
+                            {swapQuery.data?.map((item: SwapType) => (
+                                <TableRow>
+                                    <TableCell>
+                                        <TokenSymbol symbol={getSymbolByAddress(getAddress(item.tokenIn)) ?? 'BTC' } size={24} />
+                                    </TableCell>
+                                    <TableCell>
+                                        <TokenSymbol symbol={getSymbolByAddress(getAddress(item.tokenOut)) ?? 'BTC' } size={24} />
+                                    </TableCell>
+                                    <TableCell>
+                                        <BigintDisplay
+                                            value={item.amountIn} 
+                                            decimals={getTokenConfig(getAddress(item.tokenIn))?.decimals ?? 0}
+                                            fractionDigits={2}
+                                            threshold={0.01}
+                                            />
+                                    </TableCell>
+                                    <TableCell>
+                                        <BigintDisplay
+                                            value={item.amountOut} 
+                                            decimals={getTokenConfig(getAddress(item.tokenOut))?.decimals ?? 0}
+                                            fractionDigits={2}
+                                            threshold={0.01}
+                                            />
+                                        </TableCell>
+                                    <TableCell>
+                                        {splitDate(item.time)}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
                 </div>
             </div>
             <div className="right-content-container">
