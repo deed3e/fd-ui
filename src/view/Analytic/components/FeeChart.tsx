@@ -65,7 +65,6 @@ const FeeChart: React.FC<{ data: Fee[], loading: boolean }> = ({ data, loading }
                     }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
                     <YAxis tickFormatter={yAxisFormatter} width={30} />
                     <XAxis dataKey="timestamp" tickFormatter={xAxisFormatter} minTickGap={30} />
                     <Tooltip
@@ -91,13 +90,6 @@ const FeeChart: React.FC<{ data: Fee[], loading: boolean }> = ({ data, loading }
                     <Bar dataKey="trade" stackId="a" name="Trade" fill={COLORS[1]} />
                     <Bar dataKey="liquidity" stackId="a" name="Liquidity" fill={COLORS[5]} />
                     <Bar dataKey="liquidation" stackId="a" name="Liquidation" fill={COLORS[3]} />
-                    <Line
-                        type="monotone"
-                        dot={false}
-                        strokeWidth={3}
-                        dataKey="total"
-                        name="Total"
-                    />
                     <Line
                         type="monotone"
                         dot={false}

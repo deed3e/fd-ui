@@ -157,7 +157,7 @@ export default function Swap() {
         return undefined;
     }, [contracInfoRead?.data, contracInfoRead?.isSuccess, tokenToConfig?.decimals]);
 
-    const amountToChange = useCallback((value: BigInt) => {}, []);
+    const amountToChange = useCallback((value: BigInt) => { }, []);
 
     const handleInsufficientBalance = useCallback((check: boolean) => {
         setInsufficientBalance(check);
@@ -383,7 +383,7 @@ export default function Swap() {
             contracInfoRead?.data[0]?.status === 'success' &&
             inputFromAmount !== BigInt(0)
         ) {
-            return (contracInfoRead?.data[0]?.result[1] * BigInt(100 * 1e6)) / inputFromAmount;
+            return contracInfoRead?.data[0]?.result[1] * getPrice[tokenFromConfig?.symbol];
         }
         return BigInt(0);
     }, [contracInfoRead?.data, inputFromAmount]);
@@ -541,11 +541,11 @@ export default function Swap() {
                         ) : (
                             <BigintDisplay
                                 value={fee}
-                                decimals={6}
+                                decimals={tokenFromConfig?.decimals + 8}
                                 fractionDigits={2}
+                                currency='USD'
                             ></BigintDisplay>
-                        )}{' '}
-                        %
+                        )}
                     </p>
                 </div>
 
