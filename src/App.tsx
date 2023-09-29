@@ -3,6 +3,7 @@ import Faucet from './view/Faucet';
 import Swap from './view/Swap';
 import Trading from './view/Trading';
 import Dashboard from './view/Dashboard';
+import Analytic from './view/Analytic';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,6 +21,7 @@ function App() {
                         <Route path="/liquidity" element={<Liquidity />} />
                         <Route path="/trading/:market/:side" element={<Trading />} />
                         <Route path="/swap" element={<Swap />} />
+                        <Route path="/analytic" element={<Analytic />} />
                         <Route path="/faucet" element={<Faucet />} />
                     </Routes>
                 </Modals>

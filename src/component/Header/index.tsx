@@ -28,6 +28,9 @@ const Header: React.FC = () => {
                         <StyledNavItemLink to="/liquidity">LIQUIDITY</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
+                        <StyledNavItemLink to="/analytic">ANALYTIC</StyledNavItemLink>
+                    </StyledNavItem>
+                    <StyledNavItem>
                         <StyledNavItemLink to="/faucet">FAUCET</StyledNavItemLink>
                     </StyledNavItem>
                 </StyledNav>

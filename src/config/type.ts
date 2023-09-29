@@ -11,6 +11,7 @@ export type ChainConfig = {
     chartUrlHttp: string;
     nativeToken: string;
     wrapNativeToken: string;
+    graphql:string;
     pool: {
         address: Address;
         lp: string;
