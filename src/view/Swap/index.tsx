@@ -33,6 +33,9 @@ import {
 import { ReactComponent as IcSwap } from '../../assets/icons/ic-swap.svg';
 import { getSwapsByCondition } from "../../apis/swap";
 import {
+    SwapType
+  } from "../../types";
+import {
     Table,
     TableBody,
     TableCaption,
@@ -41,8 +44,9 @@ import {
     TableHeader,
     TableRow,
   } from "../../component/Table/table";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { number } from 'zod';
+import { splitDate } from "../../utils/times";
 
 enum ButtonStatus {
     notConnect,
@@ -57,17 +61,6 @@ enum ButtonStatus {
     timeOutOracle,
 }
 
-const [wallet, setWallet] = useState("");
-
-useEffect(() => {
-    if (localStorage) setWallet(localStorage.getItem("wallet") || "");
-  }, []);
-
-const swapQuery = useQuery({
-    queryKey: ["getSwapsByCondition", wallet, '1'],
-    queryFn: () => getSwapsByCondition(wallet, '1'),
-  });
-
 const contractPool = {
     address: getAddressPool(),
     abi: PoolAbi,
@@ -81,6 +74,12 @@ const contractRouter = {
 const MIN_VALUE_INPUT = 10; // 10u
 
 export default function Swap() {
+    const { address, isConnected } = useAccount();
+    
+    const swapQuery = useQuery({
+        queryKey: ["getSwapsByCondition", address, '1'],
+        queryFn: () => getSwapsByCondition(address, '1'),
+    });
     const [inputFromAmount, setInputFromAmount] = useState<BigInt>(BigInt(0));
     const [tokenFrom, setTokenFrom] = useState<string>('BTC');
     const [tokenTo, setTokenTo] = useState<string>('BTC');
@@ -94,7 +93,6 @@ export default function Swap() {
     const tokenToConfig = getTokenConfig(tokenTo);
     const getPrice = useOracle([tokenFromConfig?.symbol ?? '', tokenToConfig?.symbol ?? '']);
 
-    const { address, isConnected } = useAccount();
 
     const tokens = useMemo(() => {
         return getPoolAssetSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
@@ -425,6 +423,7 @@ export default function Swap() {
     }, [tokenFromConfig, tokenToConfig]);
 
     return (
+        
         <div className="container">
             <div className="left-content-container">
                 <div className="bottom-left-content-container">
@@ -435,22 +434,20 @@ export default function Swap() {
                         <div className="table-head">Receive</div>
                         <div className="table-head">Time</div>
                     </div>
+                    <TableBody>
+                        {swapQuery.data?.map((item: SwapType) => (
+                            <TableRow>
+                                <TableCell>{item.tokenIn}</TableCell>
+                                <TableCell>{item.tokenOut}</TableCell>
+                                <TableCell>{item.amountIn}</TableCell>
+                                <TableCell>{item.amountOut}</TableCell>
+                                <TableCell>
+                                    {splitDate(item.time)}
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </div>
-            {/* <TableBody>
-              {swapQuery.data.map((item: SwapType) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.id}</TableCell>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.description}</TableCell>
-                  <TableCell>
-                    {splitDate(item.birthDate)}
-                  </TableCell>
-                  <TableCell>{item.gender}</TableCell>
-                  <TableCell>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody> */}
             </div>
             <div className="right-content-container">
                 <StyledContainerDiv>

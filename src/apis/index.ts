@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-axios.defaults.baseURL = 'https://localhost:7106'
+axios.defaults.baseURL = 'https://localhost:7077'
 axios.defaults.headers.common['Content-Type'] = 'application/json'
 
 export const apiGetCall = async (url: string) => {

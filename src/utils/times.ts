@@ -16,3 +16,8 @@ export const delay = (time: number) => {
 export const unixToDate = (unix: number, formatter = 'yyyy-MM-dd'): string => {
   return format(fromUnixTime(unix), formatter);
 };
+
+export function splitDate(date?: Date) {
+  if (!date) return '-'
+  return date.toString().split('T')[0]
+}
