@@ -44,12 +44,17 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     const configSelectToken = getTokenConfig(selectToken);
     const [amount, setAmount] = useState('');
     const [subValue, setSubValue] = useState<BigInt>();
+    const [isSelectWETH,setIsSelectWETH] = useState(false);
 
     const getPrice = useOracle(tokens); //['BTC','ETH']
 
     const balance = useBalance({
         address: address,
         token: getAddress(configSelectToken?.address ?? ''),
+    });
+
+    const balanceWETH = useBalance({
+        address: address,
     });
 
     useEffect(() => {
@@ -125,6 +130,12 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
         return true;
     }, [amount, balance, configSelectToken?.decimals]);
 
+    useEffect(() => {
+        if(selectToken == 'WETH') {
+            setIsSelectWETH(true);
+        }
+    }, [selectToken]);
+
     return (
         <div>
             <StyledHeaderBtn>
@@ -132,7 +143,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
                 <StyledBalance>
                     Balance:{' '}
                     <BigintDisplay
-                        value={balance.data?.value as BigInt}
+                        value={ isSelectWETH ? balanceWETH.data?.value as BigInt : balance.data?.value as BigInt}
                         decimals={configSelectToken?.decimals ?? 1}
                         threshold={configSelectToken?.threshold}
                         fractionDigits={configSelectToken?.fractionDigits}
@@ -172,7 +183,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
                         >
                             <StyledTokenSelect pointer={tokens?.length >= 0}>
                                 <TokenSymbol symbol={selectToken} size={24} />
-                                <span>{selectToken}</span>
+                                <span>{selectToken === 'WETH' ? 'BNB' : selectToken}</span>
                                 <IconArrowDown />
                             </StyledTokenSelect>
                         </DropdownSelectToken>
@@ -245,7 +256,7 @@ const StyledBalance = styled.div`
 `;
 const StyledContainerInput = styled.div<{ disable?: boolean }>`
     position: relative;
-    background-color: ${({ disable }) => (disable ? 'rgba(255, 255, 255, 0.1);' : 'black')};
+    background-color: ${({ disable }) => (disable ? '#172132' : 'black')};
     border-radius: 10px;
     height: 49px;
     display: flex;

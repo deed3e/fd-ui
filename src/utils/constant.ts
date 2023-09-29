@@ -1,3 +1,5 @@
+import { GraphQLClient } from 'graphql-request';
+import { config } from '../config';
 
 // DECIMALS
 export const VALUE_DECIMALS = 30;
@@ -19,4 +21,7 @@ export const LEVERAGES_STEP = 1;
 export const MIN_LEVERAGE = Math.min(...LEVERAGES);
 export const MAX_LEVERAGE = Math.max(...LEVERAGES);
 export const MIN_CONTRACT_LEVERAGE = 1;
+
+//graphql
+export const graphClient = new GraphQLClient(config.graphql);
 

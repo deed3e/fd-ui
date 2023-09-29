@@ -28,6 +28,9 @@ const Header: React.FC = () => {
                         <StyledNavItemLink to="/liquidity">LIQUIDITY</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
+                        <StyledNavItemLink to="/analytic">ANALYTIC</StyledNavItemLink>
+                    </StyledNavItem>
+                    <StyledNavItem>
                         <StyledNavItemLink to="/faucet">FAUCET</StyledNavItemLink>
                     </StyledNavItem>
                 </StyledNav>
@@ -55,7 +58,7 @@ const StyledHeader = styled.header`
     align-items: center;
     justify-content: center;
     padding: 0 16px;
-    border-bottom: 1px solid #363636;
+    border-bottom: 0.5px solid #363636;
     ${screenUp('lg')`
     padding: 0 25px;
   `}

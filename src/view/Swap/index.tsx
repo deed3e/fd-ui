@@ -41,7 +41,8 @@ import {
     TableHeader,
     TableRow,
   } from "../../component/Table/table";
-  import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { number } from 'zod';
 
 enum ButtonStatus {
     notConnect,
@@ -53,7 +54,7 @@ enum ButtonStatus {
     insufficientBalance,
     sameToken,
     minInput, // min 10 u
-    timeOutOracle
+    timeOutOracle,
 }
 
 const [wallet, setWallet] = useState("");
@@ -156,7 +157,7 @@ export default function Swap() {
         return undefined;
     }, [contracInfoRead?.data, contracInfoRead?.isSuccess, tokenToConfig?.decimals]);
 
-    const amountToChange = useCallback((value: BigInt) => { }, []);
+    const amountToChange = useCallback((value: BigInt) => {}, []);
 
     const handleInsufficientBalance = useCallback((check: boolean) => {
         setInsufficientBalance(check);
@@ -167,7 +168,7 @@ export default function Swap() {
         functionName: 'swap',
         args: [tokenFromConfig?.address, tokenToConfig?.address, inputFromAmount, 0],
     });
-   
+
     const prepareContractApproveWrite = usePrepareContractWrite({
         ...contractMockErc20,
         functionName: 'approve',
@@ -280,8 +281,10 @@ export default function Swap() {
     ]);
 
     const handleValueInput = useCallback(
-        (value: number) => {
-            setValueInput(formatUnits(value, tokenFromConfig?.decimals + 8));
+        (value: bigint) => {
+            setValueInput(
+                Number.parseFloat(formatUnits(value, tokenFromConfig?.decimals ?? 0 + 8)),
+            );
         },
         [tokenFromConfig?.decimals],
     );
@@ -291,7 +294,11 @@ export default function Swap() {
             return ButtonStatus.notConnect;
         } else if (tokenFrom === tokenTo) {
             return ButtonStatus.sameToken;
-        } else if (contracInfoRead?.isSuccess && contracInfoRead?.data && contracInfoRead?.data[0]?.status === 'failure') {
+        } else if (
+            contracInfoRead?.isSuccess &&
+            contracInfoRead?.data &&
+            contracInfoRead?.data[0]?.status === 'failure'
+        ) {
             if (contracInfoRead?.data[0]?.error?.message.includes('TimeOutOracle')) {
                 return ButtonStatus.timeOutOracle;
             }
@@ -370,18 +377,16 @@ export default function Swap() {
         }
     }, [contractApproveWrite, contractRouterWrite, status]);
 
-    const feeAmount = useMemo(() => {
+    const fee = useMemo(() => {
         if (
             contracInfoRead?.data &&
             contracInfoRead?.data[0]?.status === 'success' &&
-            getPrice[tokenFromConfig?.symbol ?? '']
+            inputFromAmount !== BigInt(0)
         ) {
-            return (
-                contracInfoRead?.data[0]?.result[1] * getPrice[tokenFromConfig?.symbol ?? '']
-            );
+            return (contracInfoRead?.data[0]?.result[1] * BigInt(100 * 1e6)) / inputFromAmount;
         }
-        return undefined;
-    }, [contracInfoRead?.data, getPrice, tokenFromConfig?.symbol]);
+        return BigInt(0);
+    }, [contracInfoRead?.data, inputFromAmount]);
 
     const minAmountOut = useMemo(() => {
         if (
@@ -512,7 +517,7 @@ export default function Swap() {
 
                 <div className="content-detail">
                     <p className="title-detail">Slipage</p>
-                    <p className="info-detail">0.1%</p>
+                    <p className="info-detail">0.1 %</p>
                 </div>
 
                 <div className="content-detail">
@@ -531,11 +536,16 @@ export default function Swap() {
                 <div className="content-detail">
                     <p className="title-detail">Fees</p>
                     <p className="info-detail">
-                        <BigintDisplay
-                            value={feeAmount}
-                            decimals={8 + tokenFromConfig?.decimals}
-                            currency="USD"
-                        ></BigintDisplay>
+                        {fee === BigInt(0) ? (
+                            0
+                        ) : (
+                            <BigintDisplay
+                                value={fee}
+                                decimals={6}
+                                fractionDigits={2}
+                            ></BigintDisplay>
+                        )}{' '}
+                        %
                     </p>
                 </div>
 

@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 const PlaceOrderPanel: React.FC = () => {
     return (
       <>
@@ -6,5 +8,5 @@ const PlaceOrderPanel: React.FC = () => {
     );
   };
   
-  export default PlaceOrderPanel;
+  export default memo(PlaceOrderPanel);
   

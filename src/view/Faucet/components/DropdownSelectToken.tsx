@@ -60,7 +60,7 @@ export const DropdownSelectToken: React.FC<DropdownSelectTokenProps> = ({
                             active={token?.symbol === selectedToken}
                         >
                             <TokenSymbol symbol={token.symbol} size={28} />
-                            <div className="info">{token?.symbol}</div>
+                            <div className="info">{token?.symbol === 'WETH' ? 'BNB' : token?.symbol}</div>
                         </StyleDropdownItem>
                     ))}
                 </StyleDropdownList>
