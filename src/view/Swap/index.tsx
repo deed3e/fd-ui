@@ -31,6 +31,17 @@ import {
     StatusHistoryTransaction,
 } from '../../component/TransactionHistory';
 import { ReactComponent as IcSwap } from '../../assets/icons/ic-swap.svg';
+import { getSwapsByCondition } from "../../apis/swap";
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+  } from "../../component/Table/table";
+  import { useMutation, useQuery } from "@tanstack/react-query";
 
 enum ButtonStatus {
     notConnect,
@@ -44,6 +55,17 @@ enum ButtonStatus {
     minInput, // min 10 u
     timeOutOracle
 }
+
+const [wallet, setWallet] = useState("");
+
+useEffect(() => {
+    if (localStorage) setWallet(localStorage.getItem("wallet") || "");
+  }, []);
+
+const swapQuery = useQuery({
+    queryKey: ["getSwapsByCondition", wallet, '1'],
+    queryFn: () => getSwapsByCondition(wallet, '1'),
+  });
 
 const contractPool = {
     address: getAddressPool(),
@@ -409,6 +431,21 @@ export default function Swap() {
                         <div className="table-head">Time</div>
                     </div>
                 </div>
+            {/* <TableBody>
+              {swapQuery.data.map((item: SwapType) => (
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium">{item.id}</TableCell>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.description}</TableCell>
+                  <TableCell>
+                    {splitDate(item.birthDate)}
+                  </TableCell>
+                  <TableCell>{item.gender}</TableCell>
+                  <TableCell>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody> */}
             </div>
             <div className="right-content-container">
                 <StyledContainerDiv>
