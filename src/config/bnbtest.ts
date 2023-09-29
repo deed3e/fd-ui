@@ -10,6 +10,7 @@ export const Config: ChainConfig = {
     router:'0x1b43C6D51Fe9cc0d4d6D0C62C0F665391d991831',
     chartUrlHttp:'',
     chartUrlWs:'wss://ws-feed.pro.coinbase.com',
+    graphql:'https://api.thegraph.com/subgraphs/name/deed3e/fdex',
     pool:{
         address: '0x550bABd28C31402CCB649607b22884Fc3C0ce396',
         lp: 'FLP',

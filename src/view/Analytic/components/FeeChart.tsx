@@ -2,67 +2,58 @@ import React, { PureComponent } from 'react';
 import {
     BarChart,
     Bar,
-    Cell,
     XAxis,
     YAxis,
     CartesianGrid,
     Tooltip,
     Legend,
     ResponsiveContainer,
+    Line,
+    ComposedChart,
 } from 'recharts';
 import styled from 'styled-components';
+import { Fee } from '..';
+import {
+    tooltipFormatter,
+    tooltipLabelFormatter,
+    xAxisFormatter,
+    yAxisFormatter,
+} from '../../../utils/helpers';
 
-const data = [
-    {
-        name: 'Page A',
-        uv: 4000,
-        pv: 2400,
-        amt: 2400,
-    },
-    {
-        name: 'Page B',
-        uv: 3000,
-        pv: 1398,
-        amt: 2210,
-    },
-    {
-        name: 'Page C',
-        uv: 2000,
-        pv: 9800,
-        amt: 2290,
-    },
-    {
-        name: 'Page D',
-        uv: 2780,
-        pv: 3908,
-        amt: 2000,
-    },
-    {
-        name: 'Page E',
-        uv: 1890,
-        pv: 4800,
-        amt: 2181,
-    },
-    {
-        name: 'Page F',
-        uv: 2390,
-        pv: 3800,
-        amt: 2500,
-    },
-    {
-        name: 'Page G',
-        uv: 3490,
-        pv: 4300,
-        amt: 2100,
-    },
+export const COLORS = [
+    '#f69b24',
+    '#2cb060',
+    '#ff45ca',
+    '#33f7ff',
+    '#8e4efe',
+    '#ab6100',
+    '#c90000',
+    '#7b7b7b',
+    '#6464ff',
+    'purple',
+    '#0ecb81',
+    '#E43E53',
+    '#3ac954',
+    '#ffb313',
 ];
 
-const FeeChart: React.FC = () => {
+const FeeChart: React.FC<{ data: Fee[], loading: boolean }> = ({ data, loading }) => {
+    // const renderLegend = (props: any): string[] => {
+    //     const { payload } = props;
+    //     const data = payload.map((entry: any, index: number) => {
+    //         if (entry.value !== 'Total') {
+    //             console.log('entry', entry)
+    //             return entry.value
+    //         }
+    //     }
+    //     )
+    //     return data;
+    // }
     return (
         <StyledContainer>
             <ContainerHeader>Fees</ContainerHeader>
             <ResponsiveContainer height="88%" width="95%">
-                <BarChart
+                <ComposedChart
                     width={500}
                     height={300}
                     data={data}
@@ -75,13 +66,47 @@ const FeeChart: React.FC = () => {
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="pv" stackId="a" fill="#8884d8" />
-                    <Bar dataKey="amt" stackId="a" fill="#82ca9d" />
-                    <Bar dataKey="uv" fill="#ffc658" />
-                </BarChart>
+                    <YAxis tickFormatter={yAxisFormatter} width={30} />
+                    <XAxis dataKey="timestamp" tickFormatter={xAxisFormatter} minTickGap={30} />
+                    <Tooltip
+                        formatter={tooltipFormatter}
+                        labelFormatter={tooltipLabelFormatter}
+                        contentStyle={{
+                            backgroundColor: '#29292c',
+                            textAlign: 'left',
+                            border: 'none',
+                        }}
+                        itemStyle={{
+                            paddingTop: 4,
+                            fontSize: 12,
+                        }}
+                        labelStyle={{
+                            fontSize: 12,
+                            color: '#adabab',
+                            paddingBottom: 2,
+                        }}
+                    />
+                    <Legend  />
+                    <Bar dataKey="swap" stackId="a" name="Swap" fill={COLORS[0]} />
+                    <Bar dataKey="trade" stackId="a" name="Trade" fill={COLORS[1]} />
+                    <Bar dataKey="liquidity" stackId="a" name="Liquidity" fill={COLORS[5]} />
+                    <Bar dataKey="liquidation" stackId="a" name="Liquidation" fill={COLORS[3]} />
+                    <Line
+                        type="monotone"
+                        dot={false}
+                        strokeWidth={3}
+                        dataKey="total"
+                        name="Total"
+                    />
+                    <Line
+                        type="monotone"
+                        dot={false}
+                        strokeWidth={3}
+                        stroke={COLORS[13]}
+                        dataKey="cumulative"
+                        name="Cumulative"
+                    />
+                </ComposedChart>
             </ResponsiveContainer>
         </StyledContainer>
     );
