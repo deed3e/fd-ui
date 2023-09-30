@@ -13,7 +13,7 @@ const Dashboard: React.FC = () => {
                 <StyledDivTop>
                     <StyledMainText>Decentralized Perpetual Exchange</StyledMainText>
                     <StyledAltText>
-                        Trade BTC, ETH, BNB and other top cryptocurrencies <br /> with up to 30x
+                        Trade BTC, ETH, BNB and other top cryptocurrencies with up to<br />30x
                         leverage directly from your wallet
                     </StyledAltText>
                 </StyledDivTop>
@@ -46,22 +46,24 @@ const StyledDashboard = styled.div`
 
 const StyledMainText = styled.p`
     color: white;
-    font-family: IBM Plex Mono;
+    font-family: Jockey One;
     font-size: 36px;
     font-style: normal;
-    font-weight: 600;
+    font-weight: 400;
     line-height: normal;
     text-align: center;
+    margin-bottom: 7px;
 `;
 
 const StyledAltText = styled.p`
     color: rgba(255, 255, 255, 0.5);
     font-family: IBM Plex Mono;
-    font-size: 20px;
+    font-size: 12px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
     text-align: center;
+    margin-top: 7px;
 `;
 
 const StyledDivTop = styled.div`
