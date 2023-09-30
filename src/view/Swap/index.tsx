@@ -50,6 +50,7 @@ import { TokenSymbol } from '../../component/TokenSymbol';
 import { Diversity1Outlined } from '@mui/icons-material';
 import ContentLoader from '../../component/ContentLoader';
 import { differenceInSeconds, differenceInMinutes, differenceInHours, parseISO } from 'date-fns';
+import { error } from 'console';
 
 enum ButtonStatus {
     notConnect,
@@ -78,11 +79,6 @@ const MIN_VALUE_INPUT = 10; // 10u
 
 export default function Swap() {
     const { address, isConnected } = useAccount();
-
-    const swapQuery = useQuery({
-        queryKey: ['getSwapsByCondition', address, '1'],
-        queryFn: () => getSwapsByCondition(address, '1'),
-    });
     const [inputFromAmount, setInputFromAmount] = useState<BigInt>(BigInt(0));
     const [tokenFrom, setTokenFrom] = useState<string>('BTC');
     const [tokenTo, setTokenTo] = useState<string>('BTC');
@@ -90,11 +86,26 @@ export default function Swap() {
     const [pickTokenTo, setPickTokenTo] = useState<string>('USDC');
     const [valueInput, setValueInput] = useState<number>(0);
     const [refresh, setRefesh] = useState<boolean>();
+    const [loading, setLoading] = useState<boolean>(true);
     const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
     const showToast = useShowToast();
     const tokenFromConfig = getTokenConfig(tokenFrom);
     const tokenToConfig = getTokenConfig(tokenTo);
     const getPrice = useOracle([tokenFromConfig?.symbol ?? '', tokenToConfig?.symbol ?? '']);
+
+    const swapQuery = useQuery({
+        queryKey: ['getSwapsByCondition', address, '1'],
+        queryFn: () => getSwapsByCondition(address, '1'),
+    });
+
+    useEffect(()=>{
+        if(swapQuery?.data?.length || swapQuery?.error){
+            setLoading(false);
+        }else if(swapQuery?.data?.length === 0){
+            //case no data
+            setLoading(false);
+        }
+    },[swapQuery])
 
     const tokens = useMemo(() => {
         return getPoolAssetSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
@@ -464,7 +475,7 @@ export default function Swap() {
                             <div>{getTimeDistance(item.time)}</div>
                         </StyledTableRow>
                         ))}
-                        <ContentLoader.HistorySwap/>
+                       {loading && <ContentLoader.HistorySwap/> } 
                     </StyledTableBody>
                 </div>
             </div>
@@ -625,7 +636,6 @@ const StyledTableRow = styled(StyledHeader)`
     background: none;
     :hover {
         background: #231844;
-        animation: zoom-in 500ms ease-in;
         color:#fff;
     }
     .token {
