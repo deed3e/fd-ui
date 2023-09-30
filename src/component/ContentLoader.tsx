@@ -101,6 +101,26 @@ const PriceContentLoader: React.FC = () => {
     </div>
   );
 };
+const HistorySwap: React.FC = () => {
+  return (
+    <div>
+      <ContentLoader
+        speed={2}
+        height={50}
+        width={'100%'}
+        backgroundColor="#24242ab8"
+        foregroundColor="#4f4f54"
+        viewBox="0 0 2000 100"
+      >
+        <rect x="85" y="0" rx="95" ry="95" width="95" height="95" />
+        <rect x="145" y="0" rx="95" ry="95" width="95" height="95" />
+        <rect x="320" y="32" rx="3" ry="3" width="300" height="46" />
+        <rect x="960" y="32" rx="3" ry="3" width="300" height="46" />
+        <rect x="1620" y="32" rx="3" ry="3" width="300" height="46" />
+      </ContentLoader>
+    </div>
+  );
+};
 
 
-export default {OrderContentLoader,PriceContentLoader};
+export default {OrderContentLoader,PriceContentLoader,HistorySwap};
