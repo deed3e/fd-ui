@@ -49,6 +49,7 @@
     background: rgba(54, 54, 54, 0.5);
     margin-left: 20px;
     max-height: 425px;
+    z-index: 0;
 }
 
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.MuiTableContainer-root.css-11xur9t-MuiPaper-root-MuiTableContainer-root {
@@ -86,7 +87,7 @@ button#simple-tab-1 {
 }
 
 .is-Active {
-    background: #231844 !important;
+    background: var(--nav-dark-blue, #0F091E) !important;
 }
 
 button#simple-tab-0 {
@@ -207,7 +208,7 @@ button.MuiButtonBase-root.MuiButton-root.MuiButton-contained {
 .header-table-liquid {
     display: flex;
     text-align: center;
-    background: #231844;
+    background: var(--nav-dark-blue, #0F091E);
     padding: 10px 0px;
     border-radius: 15px 15px 0px 0px;
 
@@ -241,7 +242,7 @@ button.MuiButtonBase-root.MuiButton-root.MuiButton-contained {
 
 .button-container {
     text-align: center;
-    padding-bottom: 20px;
+    padding-bottom: 0px;
 
     .btn-add {
         color: var(--d-9-d-9-d-9, #d9d9d9);
@@ -267,7 +268,7 @@ span.MuiTabs-indicator.css-1aquho2-MuiTabs-indicator {
 }
 
 .green-color {
-    color: var(--green, #19AB72);
+    color: var(--green, #19ab72);
 }
 
 .red-color {
@@ -275,5 +276,65 @@ span.MuiTabs-indicator.css-1aquho2-MuiTabs-indicator {
 }
 
 .css-hz1bth-MuiDialog-container {
-    height: 32% !important;
+    height: 40% !important;
+}
+
+.table-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .target-percent {
+        min-width: 50px;
+    }
+}
+
+.MuiBox-root.css-19kzrtu {
+    padding-bottom: 0;
+}
+
+.header-popup {
+    padding: 10px;
+    background-color: var(--nav-dark-blue, #0f091e);
+    .content-header-popup {
+        margin: 0;
+        color: var(--white, #fff);
+        font-family: IBM Plex Mono;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+    }
+}
+
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation24.MuiDialog-paper.MuiDialog-paperScrollPaper.MuiDialog-paperWidthSm.css-1t1j96h-MuiPaper-root-MuiDialog-paper {
+    // padding: 10px;
+    width: 350px;
+    overflow: hidden;
+    background: var(--nav-dark-blue, #0f091e);
+}
+
+.body-content-popup {
+    background-color: #363636;
+    padding: 10px;
+}
+
+.button-popup {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    .disagree-btn {
+        color: #fff;
+        flex: 1;
+        background-color: red;
+        border-radius: 0;
+    }
+    
+    .agree-btn {
+        border-radius: 0;
+        color: #fff;
+        flex: 1;
+        background: var(--primary-color, #6763E3);
+    }
 }

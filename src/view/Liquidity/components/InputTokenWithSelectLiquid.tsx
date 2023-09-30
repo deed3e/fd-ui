@@ -1,15 +1,12 @@
-import { DropdownSelectToken } from '../../view/Faucet/components/DropdownSelectToken';
 import styled from 'styled-components';
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { ReactComponent as IconArrowDown } from '../../assets/svg/ic-arrow-down.svg';
 import { useBalance, useAccount } from 'wagmi';
 import { getAddress, parseUnits } from 'viem';
-import { TokenSymbol } from '../../component/TokenSymbol';
-import { getTokenConfig } from '../../config';
-import { useOracle } from '../../hooks/useOracle';
-import { BigintDisplay } from '../../component/BigIntDisplay';
+import { getTokenConfig } from '../../../config';
+import { useOracle } from '../../../hooks/useOracle';
+import { BigintDisplay } from '../../../component/BigIntDisplay';
 
-interface InputTokenWithSelectProps {
+interface InputTokenWithSelectLiquidProps {
     refresh?: boolean;
     tokens: string[];
     title: string;
@@ -24,7 +21,7 @@ interface InputTokenWithSelectProps {
     valueChange?: (symbol: number) => unknown;
 }
 
-const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
+const InputTokenWithSelectLiquid: React.FC<InputTokenWithSelectLiquidProps> = ({
     refresh,
     tokens,
     title = 'Amount',
@@ -51,10 +48,6 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     const balance = useBalance({
         address: address,
         token: getAddress(configSelectToken?.address ?? ''),
-    });
-
-    const balanceWETH = useBalance({
-        address: address,
     });
 
     useEffect(() => {
@@ -138,19 +131,6 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
 
     return (
         <div>
-            <StyledHeaderBtn>
-                <StyledAmount>{title}</StyledAmount>
-                <StyledBalance>
-                    Balance:{' '}
-                    <BigintDisplay
-                        value={ isSelectWETH ? balanceWETH.data?.value as BigInt : balance.data?.value as BigInt}
-                        decimals={configSelectToken?.decimals ?? 1}
-                        threshold={configSelectToken?.threshold}
-                        fractionDigits={configSelectToken?.fractionDigits}
-                    />{' '}
-                    {configSelectToken?.symbol === 'WETH' ? 'BNB' : configSelectToken?.symbol}
-                </StyledBalance>
-            </StyledHeaderBtn>
             <StyledBodyBtn>
                 <StyledContainerInput disable={disable}>
                     <StyledWrapInputAndSubValue>
@@ -172,29 +152,13 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
                             />
                         </StyledSubValue>
                     </StyledWrapInputAndSubValue>
-                    {isShowMax && <StyledMaxValue>Max</StyledMaxValue>}
-                    <StyledSelectToken>
-                        <DropdownSelectToken
-                            selectedToken={selectToken}
-                            tokens={tokens}
-                            position={'right'}
-                            onSelect={onDropDownItemClick}
-                            disable={disableSelect}
-                        >
-                            <StyledTokenSelect pointer={tokens?.length >= 0}>
-                                <TokenSymbol symbol={selectToken} size={24} />
-                                <span>{selectToken === 'WETH' ? 'BNB' : selectToken}</span>
-                                <IconArrowDown />
-                            </StyledTokenSelect>
-                        </DropdownSelectToken>
-                    </StyledSelectToken>
                 </StyledContainerInput>
             </StyledBodyBtn>
         </div>
     );
 };
 
-export default InputTokenWithSelect;
+export default InputTokenWithSelectLiquid;
 
 const StyledInput = styled.input<{ isOverBalance?: boolean }>`
     flex: 1;
@@ -217,24 +181,6 @@ const StyledSubValue = styled.div<{ show: boolean }>`
     transition: all 0.2s linear;
     word-break: break-word;
 `;
-const StyledMaxValue = styled.div`
-    position: absolute;
-    justify-self: end;
-    right: 22%;
-    align-self: center;
-    color: #6763e3;
-    cursor: pointer;
-    :hover {
-        color: #9b99c3;
-    }
-`;
-const StyledSelectToken = styled.div`
-    justify-self: self-end;
-    align-self: center;
-    display: flex;
-    align-items: center;
-`;
-
 const StyledWrapInputAndSubValue = styled.div`
     width: -webkit-fill-available;
     display: flex;
@@ -242,17 +188,6 @@ const StyledWrapInputAndSubValue = styled.div`
     justify-content: center;
     align-items: self-start;
     overflow: hidden;
-`;
-
-const StyledAmount = styled.div`
-font-family: 'IBM Plex Mono', monospace;
-`;
-
-const StyledBalance = styled.div`
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 12px;
-    font-weight: 300;
-    font-family: 'IBM Plex Mono', monospace;
 `;
 const StyledContainerInput = styled.div<{ disable?: boolean }>`
     position: relative;
@@ -267,39 +202,4 @@ const StyledContainerInput = styled.div<{ disable?: boolean }>`
 const StyledBodyBtn = styled.div`
     margin-top: 4.4px;
     margin-bottom: 5px;
-`;
-const StyledHeaderBtn = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`;
-
-const StyledToken = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: fit-content;
-    padding: 2px;
-    border-radius: 1000px;
-    border: solid 1px #363636;
-    font-size: 14px;
-    font-weight: 500;
-    color: #fff;
-    span {
-        padding-right: 6px;
-        padding-left: 6px;
-    }
-    svg {
-        width: 8px;
-        margin-right: 6px;
-        path {
-            fill: #adabab;
-        }
-    }
-`;
-const StyledTokenSelect = styled(StyledToken) <{ pointer?: boolean }>`
-    cursor: ${({ pointer }) => (pointer ? 'pointer' : 'auto')};
-    :hover {
-        border: 1px solid #515050;
-    }
 `;
