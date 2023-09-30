@@ -19,6 +19,7 @@ import WETH from '../../assets/tokens/WETH2.png';
 import { useOracle } from '../../hooks/useOracle';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import InputTokenWithSelect from '../../component/InputToken/InputTokenWithSelect';
+import InputTokenWithSelectLiquid from './components/InputTokenWithSelectLiquid';
 import InputToken from '../../component/InputToken/InputToken';
 import SelectToken from '../../component/InputToken/selectToken';
 
@@ -194,7 +195,6 @@ export default function Liquidity() {
         token: getAddress(tokenWethConfig?.address ?? ''),
     });
 
-
     console.log('balanceWeth', balanceWeth);
 
     const poolAssetBTC = useContractRead({
@@ -282,7 +282,6 @@ export default function Liquidity() {
     const handleTokenRemoveFromChange = useCallback((symbol: string) => {
         setTokenFromRemove(symbol);
     }, []);
-
 
     const tokenConfig = getTokenConfig(tokenFrom);
     const tokenRemoveConfig = getTokenConfig(tokenFromRemove);
@@ -850,7 +849,7 @@ export default function Liquidity() {
             const localStore: IHistoryTransaction[] | undefined = store.get(address ?? 'guest');
             const current = {
                 hash: contractWriteRemoveLiquidity?.data?.hash,
-                title: `Remove ${formatUnits(
+                title: `Remove liquidity ${formatUnits(
                     inputRemoveFromAmount as bigint,
                     tokenRemoveConfig?.decimals ?? 0,
                 )} ${tokenRemoveConfig?.symbol} `,
@@ -880,7 +879,7 @@ export default function Liquidity() {
             const localStore: IHistoryTransaction[] | undefined = store.get(address ?? 'guest');
             const current = {
                 hash: contractWriteAddLiquidity?.data?.hash,
-                title: `Add ${formatUnits(
+                title: `Add liquidity ${formatUnits(
                     inputFromAmount as bigint,
                     tokenConfig?.decimals ?? 0,
                 )} ${tokenConfig?.symbol} `,
@@ -949,28 +948,32 @@ export default function Liquidity() {
                                     />
                                 </div>
                                 <div className="table-content">
-                                    {poolAssetBTC.data != undefined && (
+                                    {/* {poolAssetBTC.data != undefined && (
                                         <BigintDisplay
                                             value={poolAssetBTC.data[0] as BigInt}
                                             decimals={tokenBTCConfig?.decimals}
                                             fractionDigits={5}
                                         />
-                                    )}
+                                    )} */}
                                 </div>
                                 <div className="table-content">
-                                    <span
-                                        className={
-                                            weightBTC < targetBTC ? 'green-color' : 'red-color'
-                                        }
-                                    >
-                                        <BigintDisplay
-                                            value={weightBTC as BigInt}
-                                            decimals={0}
-                                            fractionDigits={1}
-                                        />
-                                        %
-                                    </span>
-                                    /{targetBTC}%
+                                    <div className="target-percent">
+                                        <span
+                                            className={
+                                                weightBTC < targetBTC
+                                                    ? 'green-color'
+                                                    : 'red-color'
+                                            }
+                                        >
+                                            <BigintDisplay
+                                                value={weightBTC as BigInt}
+                                                decimals={0}
+                                                fractionDigits={1}
+                                            />
+                                            %
+                                        </span>
+                                    </div>
+                                    <div className=""> /{targetBTC}% </div>
                                 </div>
                             </div>
 
@@ -994,28 +997,32 @@ export default function Liquidity() {
                                     />
                                 </div>
                                 <div className="table-content">
-                                    {poolAssetETH.data != undefined && (
+                                    {/* {poolAssetETH.data != undefined && (
                                         <BigintDisplay
                                             value={poolAssetETH.data[0] as BigInt}
                                             decimals={tokenETHConfig?.decimals}
                                             fractionDigits={5}
                                         />
-                                    )}
+                                    )} */}
                                 </div>
                                 <div className="table-content">
-                                    <span
-                                        className={
-                                            weightETH < targetETH ? 'green-color' : 'red-color'
-                                        }
-                                    >
-                                        <BigintDisplay
-                                            value={weightETH as BigInt}
-                                            decimals={0}
-                                            fractionDigits={1}
-                                        />
-                                        %
-                                    </span>
-                                    /{targetETH}%
+                                    <div className="target-percent">
+                                        <span
+                                            className={
+                                                weightETH < targetETH
+                                                    ? 'green-color'
+                                                    : 'red-color'
+                                            }
+                                        >
+                                            <BigintDisplay
+                                                value={weightETH as BigInt}
+                                                decimals={0}
+                                                fractionDigits={1}
+                                            />
+                                            %
+                                        </span>
+                                    </div>
+                                    <div className="">/{targetETH}% </div>
                                 </div>
                             </div>
 
@@ -1039,30 +1046,32 @@ export default function Liquidity() {
                                     />
                                 </div>
                                 <div className="table-content">
-                                    {poolAssetUSDC.data != undefined && (
+                                    {/* {poolAssetUSDC.data != undefined && (
                                         <BigintDisplay
                                             value={poolAssetUSDC.data[0] as BigInt}
                                             decimals={tokenUSDCConfig?.decimals}
                                             fractionDigits={5}
                                         />
-                                    )}
+                                    )} */}
                                 </div>
                                 <div className="table-content">
-                                    <span
-                                        className={
-                                            weightUSDC < targetUSDC
-                                                ? 'green-color'
-                                                : 'red-color'
-                                        }
-                                    >
-                                        <BigintDisplay
-                                            value={weightUSDC as BigInt}
-                                            decimals={0}
-                                            fractionDigits={1}
-                                        />
-                                        %
-                                    </span>
-                                    /{targetUSDC}%
+                                    <div className="target-percent">
+                                        <span
+                                            className={
+                                                weightUSDC < targetUSDC
+                                                    ? 'green-color'
+                                                    : 'red-color'
+                                            }
+                                        >
+                                            <BigintDisplay
+                                                value={weightUSDC as BigInt}
+                                                decimals={0}
+                                                fractionDigits={1}
+                                            />
+                                            %
+                                        </span>
+                                    </div>
+                                    <div className="">/{targetUSDC}%</div>
                                 </div>
                             </div>
 
@@ -1086,30 +1095,32 @@ export default function Liquidity() {
                                     />
                                 </div>
                                 <div className="table-content">
-                                    {poolAssetWETH.data != undefined && (
+                                    {/* {poolAssetWETH.data != undefined && (
                                         <BigintDisplay
                                             value={poolAssetWETH.data[0] as BigInt}
                                             decimals={tokenWethConfig?.decimals}
                                             fractionDigits={5}
                                         />
-                                    )}
+                                    )} */}
                                 </div>
                                 <div className="table-content">
-                                    <span
-                                        className={
-                                            weightWETH < targetWETH
-                                                ? 'green-color'
-                                                : 'red-color'
-                                        }
-                                    >
-                                        <BigintDisplay
-                                            value={weightWETH as BigInt}
-                                            decimals={0}
-                                            fractionDigits={1}
-                                        />
-                                        %
-                                    </span>
-                                    /{targetWETH}%
+                                    <div className="target-percent">
+                                        <span
+                                            className={
+                                                weightWETH < targetWETH
+                                                    ? 'green-color'
+                                                    : 'red-color'
+                                            }
+                                        >
+                                            <BigintDisplay
+                                                value={weightWETH as BigInt}
+                                                decimals={0}
+                                                fractionDigits={1}
+                                            />
+                                            %
+                                        </span>
+                                    </div>
+                                    <div className="">/{targetWETH}%</div>
                                 </div>
                             </div>
                         </div>
@@ -1211,17 +1222,65 @@ export default function Liquidity() {
                             onClose={handleClose}
                             aria-describedby="alert-dialog-slide-description"
                         >
-                            <DialogContent>
-                                <DialogContentText id="alert-dialog-slide-description">
-                                    Are you sure to add{' '}
+                            <div>
+                                <div id="alert-dialog-slide-description">
+                                    {/* Are you sure to add{' '}
                                     {formatUnits(inputFromAmount, tokenConfig?.decimals)}
-                                    {tokenConfig?.symbol}
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleClose}>Disagree</Button>
-                                <Button onClick={handleAddLiquid}>Agree</Button>
-                            </DialogActions>
+                                    {tokenConfig?.symbol} */}
+                                    <div className="popup-liquidity-container">
+                                        <div className="header-popup">
+                                            <p className="content-header-popup">
+                                                Add {tokenConfig?.symbol}
+                                            </p>
+                                        </div>
+                                        <div className="body-content-popup">
+                                            <StyledContainerDiv>
+                                                <InputTokenWithSelectLiquid
+                                                    tokens={tokens}
+                                                    title="Amount"
+                                                    disable={true}
+                                                    value={formatUnits(
+                                                        inputFromAmount,
+                                                        tokenConfig?.decimals,
+                                                    )}
+                                                />
+                                            </StyledContainerDiv>
+
+                                            <div className="div">
+                                                <div className="content-detail content-detail-first">
+                                                    <p className="title-detail">Receive</p>
+                                                    <p className="info-detail">0 FLP</p>
+                                                </div>
+
+                                                <div className="content-detail">
+                                                    <p className="title-detail">Slipage</p>
+                                                    <p className="info-detail">0.1 %</p>
+                                                </div>
+
+                                                <div className="content-detail">
+                                                    <p className="title-detail">
+                                                        Minimun Received
+                                                    </p>
+                                                    <p className="info-detail">0 FLP</p>
+                                                </div>
+
+                                                <div className="content-detail">
+                                                    <p className="title-detail">Fees</p>
+                                                    <p className="info-detail">-</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="button-popup">
+                                    <Button className="disagree-btn" onClick={handleClose}>
+                                        Disagree
+                                    </Button>
+                                    <Button className="agree-btn" onClick={handleAddLiquid}>
+                                        Agree
+                                    </Button>
+                                </div>
+                            </div>
                         </Dialog>
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={1}>
@@ -1311,6 +1370,7 @@ export default function Liquidity() {
                                 </StyleButton>
                             )}
                         </div>
+
                         <Dialog
                             open={openRemove}
                             TransitionComponent={TransitionRemove}
@@ -1318,22 +1378,105 @@ export default function Liquidity() {
                             onClose={handleCloseRemove}
                             aria-describedby="alert-dialog-slide-description"
                         >
-                            <DialogContent>
-                                <DialogContentText id="alert-dialog-slide-description">
-                                    Are you sure to remove{' '}
-                                    {formatUnits(inputRemoveFromAmount, lpDecimal)}LP to get{' '}
-                                    <BigintDisplay
-                                        value={minimumReceive as BigInt}
-                                        decimals={tokenRemoveConfig.decimals}
-                                        fractionDigits={5}
-                                    />
-                                    {tokenRemoveConfig?.symbol}
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleCloseRemove}>Disagree</Button>
-                                <Button onClick={handleRemoveLiquid}>Agree</Button>
-                            </DialogActions>
+                            <div>
+                                <div id="alert-dialog-slide-description">
+                                    {/* Are you sure to add{' '}
+                                    {formatUnits(inputFromAmount, tokenConfig?.decimals)}
+                                    {tokenConfig?.symbol} */}
+                                    <div className="popup-liquidity-container">
+                                        <div className="header-popup">
+                                            <p className="content-header-popup">
+                                                Remove LP to get {tokenRemoveConfig?.symbol}
+                                            </p>
+                                        </div>
+                                        <div className="body-content-popup">
+                                            <StyledContainerDiv>
+                                                <InputTokenWithSelectLiquid
+                                                    tokens={tokensRemove}
+                                                    title="Amount"
+                                                    disable={true}
+                                                    value={formatUnits(
+                                                        inputRemoveFromAmount,
+                                                        lpDecimal,
+                                                    )}
+                                                />
+                                            </StyledContainerDiv>
+
+                                            <div className="div" style={{ minHeight: '136px' }}>
+                                                <div className="content-detail content-detail-first">
+                                                    <p className="title-detail">Receive</p>
+                                                    <div
+                                                        className="div"
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                        }}
+                                                    >
+                                                        <div style={{color:'#fff'}}>
+                                                            <BigintDisplay
+                                                                value={
+                                                                    calcRemoveLiquidity.data as BigInt
+                                                                }
+                                                                decimals={
+                                                                    tokenRemoveConfig?.decimals
+                                                                }
+                                                                fractionDigits={5}
+                                                            />
+                                                        </div>
+                                                        <p
+                                                            className="info-detail"
+                                                            style={{
+                                                                marginLeft: '5px',
+                                                                marginBottom: '0px',
+                                                            }}
+                                                        >
+                                                            <SelectToken
+                                                                tokens={tokensRemove}
+                                                                tokenChange={
+                                                                    handleTokenRemoveFromChange
+                                                                }
+                                                                title="Amount"
+                                                                refresh={refresh}
+                                                            />
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="content-detail">
+                                                    <p className="title-detail">Slipage</p>
+                                                    <p className="info-detail">0.1 %</p>
+                                                </div>
+
+                                                <div className="content-detail">
+                                                    <p className="title-detail">
+                                                        Minimun Received
+                                                    </p>
+                                                    <p className="info-detail">
+                                                        <BigintDisplay
+                                                            value={minimumReceive as BigInt}
+                                                            decimals={
+                                                                tokenRemoveConfig.decimals
+                                                            }
+                                                            fractionDigits={5}
+                                                        />
+                                                        <span> {tokenFromRemove}</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="button-popup">
+                                    <Button
+                                        className="disagree-btn"
+                                        onClick={handleCloseRemove}
+                                    >
+                                        Disagree
+                                    </Button>
+                                    <Button className="agree-btn" onClick={handleRemoveLiquid}>
+                                        Agree
+                                    </Button>
+                                </div>
+                            </div>
                         </Dialog>
                     </CustomTabPanel>
                 </Box>

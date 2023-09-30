@@ -80,7 +80,6 @@ const StyledDropdownMenu = styled(DropdownMenu)`
     ::-webkit-scrollbar {
         width: 8px;
     }
-
     ::-webkit-scrollbar-track {
         border-radius: 8px;
         background: #29292c;

@@ -61,6 +61,7 @@ const StyledHeader = styled.header`
     border-bottom: 0.5px solid #363636;
     ${screenUp('lg')`
     padding: 0 25px;
+    z-index: 1000;
   `}
 `;
 
