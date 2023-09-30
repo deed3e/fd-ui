@@ -29,11 +29,11 @@ export function getTimeDistance(date?: Date){
   }
   const distance = differenceInSeconds(new Date(), parseISO(date.toString()))
   if(distance < 60){
-    return distance + ' s'
+    return distance + ' s ago'
   }else if(distance < 60 * 60){
-    return Math.round(distance / 60) + ' m'
+    return Math.round(distance / 60) + ' m ago'
   }else if(distance < 60 * 60 * 24){
-    return Math.round(distance / 60 / 60) + ' h'
+    return Math.round(distance / 60 / 60) + ' h ago'
   }else {
     return date.toString().split('T')[0]
   }
