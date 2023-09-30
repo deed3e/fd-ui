@@ -7,3 +7,14 @@ export const swapSchema = z.object({
     amountOut: z.bigint(),
     time: z.date()
 })
+
+export const dashboardItemDataSchema = z.object({
+    totalUserCount: z.string(),
+    totalUserCountChange: z.string(),
+    accuredFees: z.string(),
+    accuredFeesChange: z.string(),
+    totalTradingVolumn: z.string(),
+    totalTradingVolumnChange: z.string(),
+    assetsUnderManagement: z.string(),
+    assetsUnderManagementChange: z.string()
+})
