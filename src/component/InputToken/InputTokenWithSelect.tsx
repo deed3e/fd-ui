@@ -148,7 +148,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
                         threshold={configSelectToken?.threshold}
                         fractionDigits={configSelectToken?.fractionDigits}
                     />{' '}
-                    {configSelectToken?.symbol}
+                    {configSelectToken?.symbol === 'WETH' ? 'BNB' : configSelectToken?.symbol}
                 </StyledBalance>
             </StyledHeaderBtn>
             <StyledBodyBtn>

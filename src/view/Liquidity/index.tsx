@@ -35,9 +35,6 @@ import {
 // start dialog
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 
@@ -335,6 +332,13 @@ export default function Liquidity() {
         args: [tokenConfig?.address, inputFromAmount, 0],
     });
 
+    const contractWriteAddLiquidityForBNB = useContractWrite({
+        address: address,
+        abi: Router,
+        functionName: 'addLiquidity',
+        args: ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', inputFromAmount, 0, 0.01],
+    });
+
     const contractWriteRemoveLiquidity = useContractWrite({
         address: getAddressRouter(),
         abi: Router,
@@ -343,18 +347,21 @@ export default function Liquidity() {
     });
 
     const handleAddLiquid = useCallback(() => {
-        if (dataAlowance?.data < inputFromAmount) {
-            contractWriteApprove.write();
-            setRefesh(!refresh);
+        if (tokenFrom != 'WETH') {
+            if (dataAlowance?.data < inputFromAmount) {
+                contractWriteApprove.write();
+                setRefesh(!refresh);
+            } else {
+                contractWriteAddLiquidity.write();
+                setRefesh(!refresh);
+                setOpen(false);
+            }
         } else {
-            contractWriteAddLiquidity.write();
-            setRefesh(!refresh);
-            setOpen(false);
+            contractWriteAddLiquidityForBNB.write();
         }
     }, [tokenFrom, inputFromAmount, dataAlowance.data]);
 
     const handleRemoveLiquid = useCallback(() => {
-        debugger;
         if (dataAlowanceRemove?.data < inputRemoveFromAmount) {
             contractWriteApproveRemove.write();
             setRefeshRemove(!refreshRemove);
@@ -367,6 +374,10 @@ export default function Liquidity() {
 
     const { isLoading, isSuccess, isError } = useWaitForTransaction({
         hash: contractWriteAddLiquidity.data?.hash,
+    });
+
+    const waitForAddBNB = useWaitForTransaction({
+        hash: contractWriteAddLiquidityForBNB.data?.hash,
     });
 
     const waitForRemoveLiquid = useWaitForTransaction({
@@ -458,7 +469,7 @@ export default function Liquidity() {
                 'warning',
             );
         }
-    }, [inputFromAmount, tokenConfig?.symbol, isLoading, showToast]);
+    }, [inputFromAmount, tokenConfig?.symbol, isLoading, waitForAddBNB.isLoading, showToast]);
 
     useEffect(() => {
         if (waitForRemoveLiquid.isLoading) {
@@ -479,7 +490,7 @@ export default function Liquidity() {
     ]);
 
     useEffect(() => {
-        if (isSuccess) {
+        if (isSuccess || waitForAddBNB.isSuccess) {
             showToast(
                 `Success add ${formatUnits(
                     inputFromAmount as bigint,
@@ -490,8 +501,9 @@ export default function Liquidity() {
             );
             dataAlowance.refetch();
             contractWriteAddLiquidity.reset();
+            contractWriteAddLiquidityForBNB.reset();
         }
-    }, [inputFromAmount, tokenConfig?.symbol, isSuccess, showToast]);
+    }, [inputFromAmount, tokenConfig?.symbol, isSuccess, waitForAddBNB.isSuccess, showToast]);
 
     useEffect(() => {
         if (waitForRemoveLiquid.isSuccess) {
@@ -521,13 +533,20 @@ export default function Liquidity() {
             balanceWeth.refetch();
             dataReadTotalPool.refetch();
         }
-    }, [balanceBTC, balanceETH, balanceUSDC, balanceWeth, isSuccess]);
+    }, [balanceBTC, balanceETH, balanceUSDC, balanceWeth, isSuccess, waitForAddBNB.isSuccess]);
 
     const calcRemoveLiquidity = useContractRead({
         address: getAddressPool(),
         abi: Pool,
         functionName: 'calcRemoveLiquidity',
         args: [tokenRemoveConfig?.address, inputRemoveFromAmount],
+    });
+
+    const calcAddLiquidity = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'calcAddLiquidity',
+        args: [tokenConfig?.address, inputFromAmount],
     });
 
     useEffect(() => {
@@ -538,6 +557,15 @@ export default function Liquidity() {
             setMinimumReceive(result);
         }
     }, [calcRemoveLiquidity.data, tokenFromRemove, inputRemoveFromAmount]);
+
+    useEffect(() => {
+        if (calcAddLiquidity.data != undefined) {
+            const initialNumber = BigInt(calcAddLiquidity.data[0]);
+            const percentageToReduce = BigInt(999); // Giảm 0.1%
+            const result = (initialNumber * percentageToReduce) / BigInt(1000); // Chia cho 1000 để lấy phần thập phân
+            setMinimumReceive(result);
+        }
+    }, [calcAddLiquidity.data, tokenFrom, inputFromAmount]);
 
     const handleValueInput = useCallback(
         (value: number) => {
@@ -571,6 +599,7 @@ export default function Liquidity() {
         tokenFrom,
         valueInput,
         isLoading,
+        waitForAddBNB.isLoading,
         waitForRemoveLiquid?.isLoading,
         useForApprove.isLoading,
         useForApproveRemove.isLoading,
@@ -1249,7 +1278,19 @@ export default function Liquidity() {
                                             <div className="div">
                                                 <div className="content-detail content-detail-first">
                                                     <p className="title-detail">Receive</p>
-                                                    <p className="info-detail">0 FLP</p>
+                                                    <p className="info-detail">
+                                                        <div>
+                                                            <BigintDisplay
+                                                                value={
+                                                                    calcAddLiquidity?.data[0] as BigInt
+                                                                }
+                                                                decimals={
+                                                                    tokenRemoveConfig?.decimals
+                                                                }
+                                                                fractionDigits={5}
+                                                            />
+                                                        </div>
+                                                    </p>
                                                 </div>
 
                                                 <div className="content-detail">
@@ -1412,7 +1453,7 @@ export default function Liquidity() {
                                                             alignItems: 'center',
                                                         }}
                                                     >
-                                                        <div style={{color:'#fff'}}>
+                                                        <div style={{ color: '#fff' }}>
                                                             <BigintDisplay
                                                                 value={
                                                                     calcRemoveLiquidity.data as BigInt
