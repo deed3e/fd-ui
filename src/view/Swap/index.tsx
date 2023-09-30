@@ -543,8 +543,8 @@ export default function Swap() {
                         <BigintDisplay
                             value={minAmountOut}
                             decimals={30}
-                            fractionDigits={tokenToConfig?.fractionDigits + 2}
-                            threshold={tokenToConfig?.threshold}
+                            fractionDigits={tokenToConfig.fractionDigits??0 + 2}
+                            threshold={tokenToConfig?.threshold}                      
                         ></BigintDisplay>{' '}
                         {tokenToConfig?.symbol}
                     </p>
@@ -560,9 +560,8 @@ export default function Swap() {
                                 value={fee}
                                 decimals={tokenFromConfig?.decimals + 8}
                                 fractionDigits={2}
-                                currency='USD'
                             ></BigintDisplay>
-                        )}
+                        )}{' '}$
                     </p>
                 </div>
 
