@@ -39,7 +39,7 @@ const SelectToken: React.FC<SelectTokenProps> = ({
                     >
                         <StyledTokenSelect pointer={tokens?.length >= 0}>
                             <TokenSymbol symbol={selectToken} size={24} />
-                            <span>{selectToken}</span>
+                            <span>{selectToken === 'WETH' ? 'BNB' : selectToken}</span>
                             <IconArrowDown />
                         </StyledTokenSelect>
                     </DropdownSelectToken>

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { useAccount, useContractRead } from 'wagmi';
+import { useAccount, useContractRead,useBalance } from 'wagmi';
 import { parseUnits } from 'viem';
 import { getTokenConfig, getLpSymbol } from '../../config';
 import { BigintDisplay } from '../../component/BigIntDisplay';
@@ -42,6 +42,7 @@ const InputToken: React.FC<InputTokenProps> = ({
         args: [address],
     });
 
+    
     const handleInputHandle = useCallback(
         (ev: ChangeEvent<HTMLInputElement>) => {
             const tmp = ev.target.value;

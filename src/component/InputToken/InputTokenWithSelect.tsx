@@ -93,17 +93,18 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     }, [pickToken]);
 
     useEffect(() => {
-        const balanceUser = balance?.data?.value ?? BigInt(0);
+        const balanceUser = isSelectWETH ?  balanceWETH.data?.value ?? BigInt(0) :  balance?.data?.value ?? BigInt(0);
         if (insufficientBalanceChange) {
             insufficientBalanceChange(
                 balanceUser < parseUnits(amount, configSelectToken?.decimals ?? 0),
             );
         }
-    }, [amount, balance, insufficientBalanceChange, configSelectToken]);
+    }, [amount, balance,balanceWETH, insufficientBalanceChange, configSelectToken]);
 
     useEffect(() => {
         balance.refetch();
-    }, [balance, refresh]);
+        balanceWETH.refetch();
+    }, [balance,balanceWETH, refresh]);
 
     const onDropDownItemClick = useCallback((symbol: string) => {
         setSelectToken(symbol);
@@ -124,15 +125,17 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
         if (disableOverBalance) {
             return false;
         }
-        if (balance.data) {
-            return parseUnits(amount, configSelectToken?.decimals ?? 0) > balance.data?.value
+        if (balance.data || balanceWETH.data) {
+            return parseUnits(amount, configSelectToken?.decimals ?? 0) > (isSelectWETH ? balanceWETH.data?.value : balance.data?.value)
         }
         return true;
-    }, [amount, balance, configSelectToken?.decimals]);
+    }, [amount, balance,balanceWETH, configSelectToken?.decimals]);
 
     useEffect(() => {
         if(selectToken == 'WETH') {
             setIsSelectWETH(true);
+        }else {
+            setIsSelectWETH(false);
         }
     }, [selectToken]);
 
