@@ -38,17 +38,7 @@ export const COLORS = [
 ];
 
 const FeeChart: React.FC<{ data: Fee[], loading: boolean }> = ({ data, loading }) => {
-    // const renderLegend = (props: any): string[] => {
-    //     const { payload } = props;
-    //     const data = payload.map((entry: any, index: number) => {
-    //         if (entry.value !== 'Total') {
-    //             console.log('entry', entry)
-    //             return entry.value
-    //         }
-    //     }
-    //     )
-    //     return data;
-    // }
+   
     return (
         <StyledContainer>
             <ContainerHeader>Fees</ContainerHeader>
@@ -58,9 +48,9 @@ const FeeChart: React.FC<{ data: Fee[], loading: boolean }> = ({ data, loading }
                     height={300}
                     data={data}
                     margin={{
-                        top: 20,
-                        right: 30,
-                        left: 20,
+                        top: 12,
+                        right: 15,
+                        left: 15,
                         bottom: 5,
                     }}
                 >

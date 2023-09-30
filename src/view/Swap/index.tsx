@@ -32,10 +32,8 @@ import {
     StatusHistoryTransaction,
 } from '../../component/TransactionHistory';
 import { ReactComponent as IcSwap } from '../../assets/icons/ic-swap.svg';
-import { getSwapsByCondition } from "../../apis/swap";
-import {
-    SwapType
-  } from "../../types";
+import { getSwapsByCondition } from '../../apis/swap';
+import { SwapType } from '../../types';
 import {
     Table,
     TableBody,
@@ -44,11 +42,15 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-  } from "../../component/Table/table";
-import { useQuery } from "@tanstack/react-query";
+} from '../../component/Table/table';
+import { useQuery } from '@tanstack/react-query';
 import { number } from 'zod';
-import { splitDate } from "../../utils/times";
+import { getTimeDistance } from '../../utils/times';
 import { TokenSymbol } from '../../component/TokenSymbol';
+import { Diversity1Outlined } from '@mui/icons-material';
+import ContentLoader from '../../component/ContentLoader';
+import { differenceInSeconds, differenceInMinutes, differenceInHours, parseISO } from 'date-fns';
+import { error } from 'console';
 
 enum ButtonStatus {
     notConnect,
@@ -77,11 +79,6 @@ const MIN_VALUE_INPUT = 10; // 10u
 
 export default function Swap() {
     const { address, isConnected } = useAccount();
-    
-    const swapQuery = useQuery({
-        queryKey: ["getSwapsByCondition", address, '1'],
-        queryFn: () => getSwapsByCondition(address, '1'),
-    });
     const [inputFromAmount, setInputFromAmount] = useState<BigInt>(BigInt(0));
     const [tokenFrom, setTokenFrom] = useState<string>('BTC');
     const [tokenTo, setTokenTo] = useState<string>('BTC');
@@ -89,12 +86,26 @@ export default function Swap() {
     const [pickTokenTo, setPickTokenTo] = useState<string>('USDC');
     const [valueInput, setValueInput] = useState<number>(0);
     const [refresh, setRefesh] = useState<boolean>();
+    const [loading, setLoading] = useState<boolean>(true);
     const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
     const showToast = useShowToast();
     const tokenFromConfig = getTokenConfig(tokenFrom);
     const tokenToConfig = getTokenConfig(tokenTo);
     const getPrice = useOracle([tokenFromConfig?.symbol ?? '', tokenToConfig?.symbol ?? '']);
 
+    const swapQuery = useQuery({
+        queryKey: ['getSwapsByCondition', address, '1'],
+        queryFn: () => getSwapsByCondition(address, '1'),
+    });
+
+    useEffect(()=>{
+        if(swapQuery?.data?.length || swapQuery?.error){
+            setLoading(false);
+        }else if(swapQuery?.data?.length === 0){
+            //case no data
+            setLoading(false);
+        }
+    },[swapQuery])
 
     const tokens = useMemo(() => {
         return getPoolAssetSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
@@ -157,7 +168,7 @@ export default function Swap() {
         return undefined;
     }, [contracInfoRead?.data, contracInfoRead?.isSuccess, tokenToConfig?.decimals]);
 
-    const amountToChange = useCallback((value: BigInt) => { }, []);
+    const amountToChange = useCallback((value: BigInt) => {}, []);
 
     const handleInsufficientBalance = useCallback((check: boolean) => {
         setInsufficientBalance(check);
@@ -425,48 +436,47 @@ export default function Swap() {
     }, [tokenFromConfig, tokenToConfig]);
 
     return (
-        
         <div className="container">
             <div className="left-content-container">
                 <div className="bottom-left-content-container">
-                    <div className="header-table">
-                        <div className="table-head">From</div>
-                        <div className="table-head">To</div>
-                        <div className="table-head">Amount</div>
-                        <div className="table-head">Receive</div>
-                        <div className="table-head">Time</div>
-                    </div>
-                        <TableBody>
-                            {swapQuery.data?.map((item: SwapType) => (
-                                <TableRow>
-                                    <TableCell>
-                                        <TokenSymbol symbol={getSymbolByAddress(getAddress(item.tokenIn)) ?? 'BTC' } size={24} />
-                                    </TableCell>
-                                    <TableCell>
-                                        <TokenSymbol symbol={getSymbolByAddress(getAddress(item.tokenOut)) ?? 'BTC' } size={24} />
-                                    </TableCell>
-                                    <TableCell>
-                                        <BigintDisplay
-                                            value={item.amountIn} 
-                                            decimals={getTokenConfig(getAddress(item.tokenIn))?.decimals ?? 0}
-                                            fractionDigits={2}
-                                            threshold={0.01}
-                                            />
-                                    </TableCell>
-                                    <TableCell>
-                                        <BigintDisplay
-                                            value={item.amountOut} 
-                                            decimals={getTokenConfig(getAddress(item.tokenOut))?.decimals ?? 0}
-                                            fractionDigits={2}
-                                            threshold={0.01}
-                                            />
-                                        </TableCell>
-                                    <TableCell>
-                                        {splitDate(item.time)}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
+                    <StyledHeader>
+                        <div className="token">From/To</div>
+                        <div>Amount</div>
+                        <div>Receive</div>
+                        <div>Time</div>
+                    </StyledHeader>
+                    <StyledTableBody>
+                        {swapQuery.data?.map((item: SwapType) => (
+                        <StyledTableRow>
+                            <div className="token">
+                                <div>
+                                    <TokenSymbol symbol={getSymbolByAddress(getAddress(item.tokenIn)) ?? 'BTC'} />
+                                </div>
+                                <div className="token-to">
+                                    <TokenSymbol symbol={getSymbolByAddress(getAddress(item.tokenOut)) ?? 'BTC'} />
+                                </div>
+                            </div>
+                            <div>
+                            <BigintDisplay
+                                value={item.amountIn}
+                                decimals={getTokenConfig(getSymbolByAddress(getAddress(item.tokenIn))?? 'BTC')?.decimals ?? 0}
+                                fractionDigits={5}
+                                threshold={0.00001}
+                            />
+                            </div>
+                            <div>
+                            <BigintDisplay
+                                value={item.amountOut}
+                                decimals={getTokenConfig(getSymbolByAddress(getAddress(item.tokenOut))?? 'BTC')?.decimals ?? 0}
+                                fractionDigits={5}
+                                threshold={0.00001}
+                            />
+                            </div>
+                            <div>{getTimeDistance(item.time)}</div>
+                        </StyledTableRow>
+                        ))}
+                       {loading && <ContentLoader.HistorySwap/> } 
+                    </StyledTableBody>
                 </div>
             </div>
             <div className="right-content-container">
@@ -543,7 +553,7 @@ export default function Swap() {
                         <BigintDisplay
                             value={minAmountOut}
                             decimals={30}
-                            fractionDigits={tokenToConfig?.fractionDigits + 2}
+                            fractionDigits={tokenToConfig.fractionDigits ?? 0 + 2}
                             threshold={tokenToConfig?.threshold}
                         ></BigintDisplay>{' '}
                         {tokenToConfig?.symbol}
@@ -560,9 +570,9 @@ export default function Swap() {
                                 value={fee}
                                 decimals={tokenFromConfig?.decimals + 8}
                                 fractionDigits={2}
-                                currency='USD'
                             ></BigintDisplay>
-                        )}
+                        )}{' '}
+                        $
                     </p>
                 </div>
 
@@ -581,6 +591,67 @@ export default function Swap() {
     );
 }
 
+// .header-table {
+//     background: #0F091E;
+//     display: grid;
+//     grid-template-columns: 2fr 3fr 3fr 3fr;
+//     justify-items: start;
+//     padding: 6px 0px;
+//     :first-child{
+//         justify-items: center;
+//      }
+//     .table-head {
+//         flex: 1;
+//         color: rgba(255, 255, 255,0.7);
+//         font-family: IBM Plex Mono;
+//         font-size: 14px;
+//         font-style: normal;
+//         font-weight: 400;
+//         line-height: normal;
+//         text-align: center;
+//     }
+// }
+
+const StyledTableBody = styled.div`
+    width: 100%;
+`;
+
+const StyledHeader = styled.div`
+    display: grid;
+    grid-template-columns: 2.5fr 5fr 5fr 3fr;
+    align-items: center;
+    padding: 8px 0;
+    background: #0f091e;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    .token {
+        justify-self: center;
+    }
+`;
+
+const StyledTableRow = styled(StyledHeader)`
+  font-size: 15px;
+    margin-top: 5px;
+    margin-bottom: 4px;
+    background: none;
+    :hover {
+        background: #231844;
+        color:#fff;
+    }
+    .token {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .token-to {
+            margin-left: -10px;
+        }
+        div {
+            height: 32px;
+            margin: 3px 0;
+        }
+    }
+`;
+
 const StyledIconSwap = styled.div`
     cursor: pointer;
     :hover {
@@ -596,6 +667,7 @@ const StyledContainerIconSwap = styled.div`
     justify-content: center;
     align-items: center;
 `;
+
 const StyledWrapButton = styled.div`
     display: flex;
     justify-content: center;
@@ -603,6 +675,7 @@ const StyledWrapButton = styled.div`
     margin-top: 18px;
     margin-bottom: 5px;
 `;
+
 const StyleButton = styled.button`
     width: 100%;
     color: #fff;
@@ -632,7 +705,7 @@ const StyledContainerDiv = styled.div`
     margin-bottom: 20px;
 `;
 
-export const StyledToken = styled.div`
+const StyledToken = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
