@@ -5,8 +5,27 @@ import { ReactComponent as TradingVolume } from '../../assets/icons/ic_trading_v
 import { ReactComponent as AccuredFees } from '../../assets/icons/ic_accured_fees.svg';
 import { ReactComponent as TotalUsers } from '../../assets/icons/ic_total_users.svg';
 import { ReactComponent as UnderManager } from '../../assets/icons/ic_under_manager.svg';
+import { useContractRead } from 'wagmi';
+import { getAddressPool } from '../../config';
+import Pool from '../../abis/Pool.json';
+import { BigintDisplay } from '../../component/BigIntDisplay';
+import { getDashboardItemData } from '../../apis/dashboard';
+import { DashboardItemDataType, SwapType } from '../../types';
+import { useQuery } from '@tanstack/react-query';
 
 const Dashboard: React.FC = () => {
+
+    const dataReadTotalPool = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'getPoolValue',
+    });
+
+    const dashboardItemDataQuery = useQuery({
+        queryKey: ['getSwapsByCondition'],
+        queryFn: () => getDashboardItemData(),
+    });
+
     return (
         <>
             <StyledDashboard>
@@ -18,10 +37,12 @@ const Dashboard: React.FC = () => {
                     </StyledAltText>
                 </StyledDivTop>
                 <StyledDivBottom>
-                    <DashboardItem img={<TradingVolume />} title='Total Trading Volume' value='$12345' status='$12345'></DashboardItem>
-                    <DashboardItem img={<UnderManager />} title='Assets Under Manager' value='$12345' status='$12345'></DashboardItem>
-                    <DashboardItem img={<AccuredFees />} title='Accured Fees' value='$12345' status='$12345'></DashboardItem>
-                    <DashboardItem img={<TotalUsers />} title='Total User' value='$12345' status='$12345'></DashboardItem>
+                        <>
+                            <DashboardItem img={<TradingVolume />} title='Total Trading Volume' value={<BigintDisplay value={dashboardItemDataQuery.data?.totalTradingVolumn as BigInt} decimals={30} currency="USD" />} status={<BigintDisplay value={dashboardItemDataQuery.data?.totalTradingVolumnChange as BigInt} decimals={30} fractionDigits={2} threshold={0.01} currency="USD" />}></DashboardItem>
+                            <DashboardItem img={<UnderManager />} title='Assets Under Manager' value={<BigintDisplay value={dataReadTotalPool.data as BigInt} decimals={30} currency="USD" />} status={<BigintDisplay value={dashboardItemDataQuery.data?.assetsUnderManagementChange as BigInt} decimals={30} fractionDigits={2} threshold={0.01} currency="USD" />}></DashboardItem>
+                            <DashboardItem img={<AccuredFees />} title='Accured Fees' value={<BigintDisplay value={dashboardItemDataQuery.data?.accuredFees as BigInt} decimals={30} fractionDigits={2} threshold={0.01} currency="USD" />} status={<BigintDisplay value={dashboardItemDataQuery.data?.accuredFeesChange as BigInt} decimals={30} fractionDigits={2} threshold={0.01} currency="USD" />}></DashboardItem>
+                            <DashboardItem img={<TotalUsers />} title='Total User' value={dashboardItemDataQuery.data?.totalUserCount} status={dashboardItemDataQuery.data?.totalUserCountChange}></DashboardItem>
+                        </>
                 </StyledDivBottom>
             </StyledDashboard>
         </>
