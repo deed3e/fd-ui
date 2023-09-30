@@ -45,10 +45,11 @@ import {
 } from '../../component/Table/table';
 import { useQuery } from '@tanstack/react-query';
 import { number } from 'zod';
-import { splitDate } from '../../utils/times';
+import { getTimeDistance } from '../../utils/times';
 import { TokenSymbol } from '../../component/TokenSymbol';
 import { Diversity1Outlined } from '@mui/icons-material';
 import ContentLoader from '../../component/ContentLoader';
+import { differenceInSeconds, differenceInMinutes, differenceInHours, parseISO } from 'date-fns';
 
 enum ButtonStatus {
     notConnect,
@@ -435,62 +436,34 @@ export default function Swap() {
                     </StyledHeader>
                     <StyledTableBody>
                         {swapQuery.data?.map((item: SwapType) => (
-                            <></>
-                            // <StyledTableRow>
-                            //     <StyledCell>
-                            //         <TokenSymbol symbol={getSymbolByAddress(getAddress(item.tokenIn)) ?? 'BTC' } size={24} />
-                            //     </StyledCell>
-                            //     <TableCell>
-                            //         <TokenSymbol symbol={getSymbolByAddress(getAddress(item.tokenOut)) ?? 'BTC' } size={24} />
-                            //     </TableCell>
-                            //     <TableCell>
-                            //         <BigintDisplay
-                            //             value={item.amountIn}
-                            //             decimals={getTokenConfig(getAddress(item.tokenIn))?.decimals ?? 0}
-                            //             fractionDigits={2}
-                            //             threshold={0.01}
-                            //             />
-                            //     </TableCell>
-                            //     <TableCell>
-                            //         <BigintDisplay
-                            //             value={item.amountOut}
-                            //             decimals={getTokenConfig(getAddress(item.tokenOut))?.decimals ?? 0}
-                            //             fractionDigits={2}
-                            //             threshold={0.01}
-                            //             />
-                            //         </TableCell>
-                            //     <TableCell>
-                            //         {splitDate(item.time)}
-                            //     </TableCell>
-                            // </StyledTableRow>
+                        <StyledTableRow>
+                            <div className="token">
+                                <div>
+                                    <TokenSymbol symbol={getSymbolByAddress(getAddress(item.tokenIn)) ?? 'BTC'} />
+                                </div>
+                                <div className="token-to">
+                                    <TokenSymbol symbol={getSymbolByAddress(getAddress(item.tokenOut)) ?? 'BTC'} />
+                                </div>
+                            </div>
+                            <div>
+                            <BigintDisplay
+                                value={item.amountIn}
+                                decimals={getTokenConfig(getSymbolByAddress(getAddress(item.tokenIn))?? 'BTC')?.decimals ?? 0}
+                                fractionDigits={5}
+                                threshold={0.00001}
+                            />
+                            </div>
+                            <div>
+                            <BigintDisplay
+                                value={item.amountOut}
+                                decimals={getTokenConfig(getSymbolByAddress(getAddress(item.tokenOut))?? 'BTC')?.decimals ?? 0}
+                                fractionDigits={5}
+                                threshold={0.00001}
+                            />
+                            </div>
+                            <div>{getTimeDistance(item.time)}</div>
+                        </StyledTableRow>
                         ))}
-                        <StyledTableRow>
-                            <div className="token">
-                                <div>
-                                    <TokenSymbol symbol={'BTC'} />
-                                </div>
-                                <div className="token-to">
-                                    <TokenSymbol symbol={'ETH'} />
-                                </div>
-                            </div>
-                            <div>1,456,456.56</div>
-                            <div>1,456.56</div>
-                            <div>1m ago</div>
-                        </StyledTableRow>
-                        <StyledTableRow>
-                            <div className="token">
-                                <div>
-                                    <TokenSymbol symbol={'BTC'} />
-                                </div>
-                                <div className="token-to">
-                                    <TokenSymbol symbol={'ETH'} />
-                                </div>
-                            </div>
-                            <div>0.006</div>
-                            <div>1,456.56</div>
-                            <div>Sep 30,2023</div>
-                        </StyledTableRow>
-                         {/* dòng 494 là lúc loading nhé khi nào load xong data thì ẩn nó đi */}
                         <ContentLoader.HistorySwap/>
                     </StyledTableBody>
                 </div>

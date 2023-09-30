@@ -1,5 +1,6 @@
 import { fromUnixTime } from 'date-fns';
 import format from 'date-fns/format';
+import { differenceInSeconds, differenceInMinutes, differenceInHours, parseISO } from 'date-fns';
 
 export const isPast = (linuxTimestamp: number) => {
   return linuxTimestamp * 1000 < Date.now();
@@ -20,4 +21,20 @@ export const unixToDate = (unix: number, formatter = 'yyyy-MM-dd'): string => {
 export function splitDate(date?: Date) {
   if (!date) return '-'
   return date.toString().split('T')[0]
+}
+
+export function getTimeDistance(date?: Date){
+  if (!date){
+    return '-'
+  }
+  const distance = differenceInSeconds(new Date(), parseISO(date.toString()))
+  if(distance < 60){
+    return distance + ' s'
+  }else if(distance < 60 * 60){
+    return Math.round(distance / 60) + ' m'
+  }else if(distance < 60 * 60 * 24){
+    return Math.round(distance / 60 / 60) + ' h'
+  }else {
+    return date.toString().split('T')[0]
+  }
 }
