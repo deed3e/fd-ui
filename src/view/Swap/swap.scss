@@ -22,7 +22,7 @@
 .bottom-left-content-container {
     padding: 10px;
     background: rgba(54, 54, 54, 0.5);
-    min-height: 200px;
+    min-height: 100px;
 }
 
 .left-swap-icon-container {
@@ -62,23 +62,6 @@
     }
 }
 
-.header-table {
-    background: var(--gray, #363636);
-    display: flex;
-    align-items: center;
-    padding: 6px 0px;
-
-    .table-head {
-        flex: 1;
-        color: var(--white, #fff);
-        font-family: IBM Plex Mono;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-        text-align: center;
-    }
-}
 
 .content-right-header {
     display: flex;
