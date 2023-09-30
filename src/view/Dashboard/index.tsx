@@ -68,10 +68,7 @@ const StyledDashboard = styled.div`
 const StyledMainText = styled.p`
     color: white;
     font-family: Jockey One;
-    font-size: 36px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
+    font-size: 38px;
     text-align: center;
     margin-bottom: 7px;
 `;
@@ -79,10 +76,7 @@ const StyledMainText = styled.p`
 const StyledAltText = styled.p`
     color: rgba(255, 255, 255, 0.5);
     font-family: IBM Plex Mono;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
+    font-size: 13px;
     text-align: center;
     margin-top: 7px;
 `;
