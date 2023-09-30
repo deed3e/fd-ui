@@ -5,7 +5,7 @@ import styled from 'styled-components';
 export type DashboardItemProps = {
     img: JSX.Element;
     title: string;
-    value: string;
+    value: JSX.Element;
     status: string;
 };
 
@@ -22,7 +22,7 @@ const DashboardItem: React.FC<DashboardItemProps> = ({
                     {img}
                     <StyledTitle>{title}</StyledTitle>
                 </StyledTitleContainer>
-                <StyledValue>{value}</StyledValue>
+                {value}
                 <StyledStatus>{status}</StyledStatus>
             </StyledItemFrame>
         </>
@@ -63,15 +63,15 @@ const StyledTitle = styled.p`
     line-height: normal;
 `
 
-const StyledValue = styled.p`
-    margin: 0;
-    color: #fff;
-    font-weight: 700;
-    font-size: 28px;
-    font-style: normal;
-    font-family: IBM Plex Mono;
-    line-height: normal;
-`
+// const StyledValue = styled.div`
+//     margin: 0;
+//     color: #fff;
+//     font-weight: 700;
+//     font-size: 28px;
+//     font-style: normal;
+//     font-family: IBM Plex Mono;
+//     line-height: normal;
+// `
 
 const StyledStatus = styled.p`
     margin: 0;

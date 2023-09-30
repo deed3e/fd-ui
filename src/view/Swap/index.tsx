@@ -49,7 +49,6 @@ import { getTimeDistance } from '../../utils/times';
 import { TokenSymbol } from '../../component/TokenSymbol';
 import { Diversity1Outlined } from '@mui/icons-material';
 import ContentLoader from '../../component/ContentLoader';
-import { differenceInSeconds, differenceInMinutes, differenceInHours, parseISO } from 'date-fns';
 
 enum ButtonStatus {
     notConnect,
