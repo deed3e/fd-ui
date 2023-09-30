@@ -1228,7 +1228,7 @@ export default function Liquidity() {
                                     <div className="popup-liquidity-container">
                                         <div className="header-popup">
                                             <p className="content-header-popup">
-                                                Add {tokenConfig?.symbol}
+                                                Add liquidity {tokenConfig?.symbol}
                                             </p>
                                         </div>
                                         <div className="body-content-popup">
