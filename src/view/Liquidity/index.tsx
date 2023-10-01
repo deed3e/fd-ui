@@ -1281,9 +1281,6 @@ export default function Liquidity() {
                                     </div>
                                 </div>
                                 <div className="button-popup">
-                                    <Button className="disagree-btn" onClick={handleClose}>
-                                        Disagree
-                                    </Button>
                                     <Button className="agree-btn" onClick={handleAddLiquid}>
                                         Agree
                                     </Button>
@@ -1388,9 +1385,6 @@ export default function Liquidity() {
                         >
                             <div>
                                 <div id="alert-dialog-slide-description">
-                                    {/* Are you sure to add{' '}
-                                    {formatUnits(inputFromAmount, tokenConfig?.decimals)}
-                                    {tokenConfig?.symbol} */}
                                     <div className="popup-liquidity-container">
                                         <div className="header-popup">
                                             <p className="content-header-popup">
@@ -1438,14 +1432,12 @@ export default function Liquidity() {
                                                                 marginBottom: '0px',
                                                             }}
                                                         >
-                                                            <SelectToken
-                                                                tokens={tokensRemove}
-                                                                tokenChange={
-                                                                    handleTokenRemoveFromChange
-                                                                }
-                                                                title="Amount"
-                                                                refresh={refresh}
-                                                            />
+                                                           <div className="token-icon-popup">
+                                                            <img className='icon-popup' src={tokenRemoveConfig?.symbol === 'BTC' ? icon3 :  
+                                                            tokenRemoveConfig?.symbol === 'ETH' ? icon2 :
+                                                            tokenRemoveConfig?.symbol === 'USDC' ? TIcon : WETH
+                                                        } alt="" />
+                                                           </div>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -1474,12 +1466,6 @@ export default function Liquidity() {
                                     </div>
                                 </div>
                                 <div className="button-popup">
-                                    <Button
-                                        className="disagree-btn"
-                                        onClick={handleCloseRemove}
-                                    >
-                                        Disagree
-                                    </Button>
                                     <Button className="agree-btn" onClick={handleRemoveLiquid}>
                                         Agree
                                     </Button>

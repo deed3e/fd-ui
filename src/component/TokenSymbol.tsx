@@ -6,7 +6,7 @@ import WBTC from '../assets/tokens/WBTC.png';
 import USDT from '../assets/tokens/USDT.png';
 import USDC from '../assets/tokens/USDC.png';
 import DOGE from '../assets/tokens/DOGE.png';
-import ETH from '../assets/tokens/ETH.png';
+import ETH from '../assets/image/icon2.svg';
 import BTC from '../assets/tokens/BTC.png';
 import BNB from '../assets/tokens/BNB.png';
 
