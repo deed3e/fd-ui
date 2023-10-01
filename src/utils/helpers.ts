@@ -1,3 +1,4 @@
+import { shortenAddress } from './addresses';
 import { formatNumber } from './number';
 import { unixToDate } from './times';
 
@@ -38,4 +39,8 @@ export const yAxisPercentFormatter = (value: any) => {
 export const xAxisFormatter = (value: any) => {
     if (!value || isNaN(value)) return '';
     return unixToDate(value, 'dd/MM');
+};
+export const xAxisFormatterWallet = (value: any) => {
+    if (!value || isNaN(value)) return '';
+    return shortenAddress(value);
 };
