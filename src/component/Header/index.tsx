@@ -30,9 +30,9 @@ const Header: React.FC = () => {
                     <StyledNavItem>
                         <StyledNavItemLink to="/analytic">ANALYTIC</StyledNavItemLink>
                     </StyledNavItem>
-                    <StyledNavItem>
+                    {/* <StyledNavItem>
                         <StyledNavItemLink to="/faucet">FAUCET</StyledNavItemLink>
-                    </StyledNavItem>
+                    </StyledNavItem> */}
                 </StyledNav>
                 <StyledConnectWallet>
                     <StyledChain>
