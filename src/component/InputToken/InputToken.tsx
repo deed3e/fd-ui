@@ -7,6 +7,8 @@ import { BigintDisplay } from '../../component/BigIntDisplay';
 
 import MockER from '../../abis/MockERC20.json';
 
+import FLC from '../../assets/tokens/flpIcon.svg'
+
 interface InputTokenProps {
     refresh?: boolean;
     title: string;
@@ -99,7 +101,7 @@ const InputToken: React.FC<InputTokenProps> = ({
                         threshold={threshold}
                         fractionDigits={fractionDigits}
                     />{' '}
-                    LP
+                    FLP
                 </StyledBalance>
             </StyledHeaderBtn>
             <StyledBodyBtn>
@@ -114,6 +116,10 @@ const InputToken: React.FC<InputTokenProps> = ({
                         ></StyledInput>
                     </StyledWrapInputAndSubValue>
                     {isShowMax && <StyledMaxValue>Max</StyledMaxValue>}
+                    <StyledToken>
+                        <img src={FLC} alt="flc" />
+                        <span>{getLpSymbol()}</span>
+                    </StyledToken>
                 </StyledContainerInput>
             </StyledBodyBtn>
         </div>

@@ -1222,9 +1222,6 @@ export default function Liquidity() {
                         >
                             <div>
                                 <div id="alert-dialog-slide-description">
-                                    {/* Are you sure to add{' '}
-                                    {formatUnits(inputFromAmount, tokenConfig?.decimals)}
-                                    {tokenConfig?.symbol} */}
                                     <div className="popup-liquidity-container">
                                         <div className="header-popup">
                                             <p className="content-header-popup">
