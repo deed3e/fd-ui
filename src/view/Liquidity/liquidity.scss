@@ -20,11 +20,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
     img {
         margin-right: 10px;
     }
-
     p {
         font-size: 14px;
         font-style: normal;
@@ -88,23 +86,18 @@ button#simple-tab-1 {
 
 .is-Active {
     background: var(--nav-dark-blue, #0F091E) !important;
+    color: var(--d-9-d-9-d-9, #d9d9d9) !important;
 }
 
 button#simple-tab-0 {
-    color: var(--d-9-d-9-d-9, #d9d9d9);
-    font-size: 18px;
-    font-style: normal;
+    color:#6763E3;
     font-weight: 700;
-    line-height: normal;
     font-family: 'IBM Plex Mono', monospace !important;
 }
 
 button#simple-tab-1 {
-    color: var(--d-9-d-9-d-9, #d9d9d9);
-    font-size: 18px;
-    font-style: normal;
+    color:#6763E3;
     font-weight: 700;
-    line-height: normal;
     font-family: 'IBM Plex Mono', monospace !important;
 }
 
@@ -214,6 +207,8 @@ button.MuiButtonBase-root.MuiButton-root.MuiButton-contained {
 
     .table-head {
         flex: 1;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 14px;
     }
 }
 

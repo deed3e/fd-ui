@@ -37,8 +37,7 @@ export const COLORS = [
     '#ffb313',
 ];
 
-const FeeChart: React.FC<{ data: Fee[], loading: boolean }> = ({ data, loading }) => {
-   
+const FeeChart: React.FC<{ data: Fee[]; loading: boolean }> = ({ data, loading }) => {
     return (
         <StyledContainer>
             <ContainerHeader>Fees</ContainerHeader>
@@ -56,6 +55,14 @@ const FeeChart: React.FC<{ data: Fee[], loading: boolean }> = ({ data, loading }
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <YAxis tickFormatter={yAxisFormatter} width={30} />
+                    <YAxis
+                        dataKey="cumulative"
+                        tickCount={8}
+                        tickFormatter={yAxisFormatter}
+                        width={30}
+                        orientation="right"
+                        yAxisId="right"
+                    />
                     <XAxis dataKey="timestamp" tickFormatter={xAxisFormatter} minTickGap={30} />
                     <Tooltip
                         formatter={tooltipFormatter}
@@ -75,18 +82,24 @@ const FeeChart: React.FC<{ data: Fee[], loading: boolean }> = ({ data, loading }
                             paddingBottom: 2,
                         }}
                     />
-                    <Legend  />
+                    <Legend />
                     <Bar dataKey="swap" stackId="a" name="Swap" fill={COLORS[0]} />
-                    <Bar dataKey="trade" stackId="a" name="Trade" fill={COLORS[1]} />
+                    <Bar dataKey="trade" stackId="a" name="Trade" fill={COLORS[7]} />
                     <Bar dataKey="liquidity" stackId="a" name="Liquidity" fill={COLORS[5]} />
-                    <Bar dataKey="liquidation" stackId="a" name="Liquidation" fill={COLORS[3]} />
+                    <Bar
+                        dataKey="liquidation"
+                        stackId="a"
+                        name="Liquidation"
+                        fill={COLORS[3]}
+                    />
                     <Line
                         type="monotone"
                         dot={false}
                         strokeWidth={3}
-                        stroke={COLORS[13]}
+                        stroke={COLORS[10]}
                         dataKey="cumulative"
                         name="Cumulative"
+                        yAxisId="right"
                     />
                 </ComposedChart>
             </ResponsiveContainer>

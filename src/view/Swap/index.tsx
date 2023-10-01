@@ -84,7 +84,6 @@ export default function Swap() {
     const [pickTokenTo, setPickTokenTo] = useState<string>('USDC');
     const [valueInput, setValueInput] = useState<number>(0);
     const [refresh, setRefesh] = useState<boolean>();
-    const [loading, setLoading] = useState<boolean>(true);
     const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
     const showToast = useShowToast();
     const tokenFromConfig = getTokenConfig(tokenFrom);
@@ -96,14 +95,12 @@ export default function Swap() {
         queryFn: () => getSwapsByCondition(address, '1'),
     });
 
-    useEffect(()=>{
-        if(swapQuery?.data?.length || swapQuery?.error){
-            setLoading(false);
-        }else if(swapQuery?.data?.length === 0){
-            //case no data
-            setLoading(false);
+    const loading = useMemo(() => {
+        if (swapQuery?.isFetching || swapQuery?.isLoading) {
+            return true;
         }
-    },[swapQuery])
+        return false;
+    }, [swapQuery]);
 
     const tokens = useMemo(() => {
         return getPoolAssetSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
@@ -229,6 +226,7 @@ export default function Swap() {
                 showToast(`Success Swap`, '', 'success');
                 handleStore();
                 setRefesh(!refresh);
+                swapQuery.refetch();
             } else if (waitingTransaction?.isError) {
                 showToast(`Can not Swap`, '', 'error');
                 handleStore();
@@ -445,35 +443,55 @@ export default function Swap() {
                     </StyledHeader>
                     <StyledTableBody>
                         {swapQuery.data?.map((item: SwapType) => (
-                        <StyledTableRow>
-                            <div className="token">
+                            <StyledTableRow>
+                                <div className="token">
+                                    <div>
+                                        <TokenSymbol
+                                            symbol={
+                                                getSymbolByAddress(getAddress(item.tokenIn)) ??
+                                                'BTC'
+                                            }
+                                        />
+                                    </div>
+                                    <div className="token-to">
+                                        <TokenSymbol
+                                            symbol={
+                                                getSymbolByAddress(getAddress(item.tokenOut)) ??
+                                                'BTC'
+                                            }
+                                        />
+                                    </div>
+                                </div>
                                 <div>
-                                    <TokenSymbol symbol={getSymbolByAddress(getAddress(item.tokenIn)) ?? 'BTC'} />
+                                    <BigintDisplay
+                                        value={item.amountIn}
+                                        decimals={
+                                            getTokenConfig(
+                                                getSymbolByAddress(getAddress(item.tokenIn)) ??
+                                                    'BTC',
+                                            )?.decimals ?? 0
+                                        }
+                                        fractionDigits={5}
+                                        threshold={0.00001}
+                                    />
                                 </div>
-                                <div className="token-to">
-                                    <TokenSymbol symbol={getSymbolByAddress(getAddress(item.tokenOut)) ?? 'BTC'} />
+                                <div>
+                                    <BigintDisplay
+                                        value={item.amountOut}
+                                        decimals={
+                                            getTokenConfig(
+                                                getSymbolByAddress(getAddress(item.tokenOut)) ??
+                                                    'BTC',
+                                            )?.decimals ?? 0
+                                        }
+                                        fractionDigits={5}
+                                        threshold={0.00001}
+                                    />
                                 </div>
-                            </div>
-                            <div>
-                            <BigintDisplay
-                                value={item.amountIn}
-                                decimals={getTokenConfig(getSymbolByAddress(getAddress(item.tokenIn))?? 'BTC')?.decimals ?? 0}
-                                fractionDigits={5}
-                                threshold={0.00001}
-                            />
-                            </div>
-                            <div>
-                            <BigintDisplay
-                                value={item.amountOut}
-                                decimals={getTokenConfig(getSymbolByAddress(getAddress(item.tokenOut))?? 'BTC')?.decimals ?? 0}
-                                fractionDigits={5}
-                                threshold={0.00001}
-                            />
-                            </div>
-                            <div>{getTimeDistance(item.time)}</div>
-                        </StyledTableRow>
+                                <div>{getTimeDistance(item.time)}</div>
+                            </StyledTableRow>
                         ))}
-                       {loading && <ContentLoader.HistorySwap/> } 
+                        {loading && <ContentLoader.HistorySwap />}
                     </StyledTableBody>
                 </div>
             </div>
@@ -628,13 +646,13 @@ const StyledHeader = styled.div`
 `;
 
 const StyledTableRow = styled(StyledHeader)`
-  font-size: 15px;
+    font-size: 15px;
     margin-top: 5px;
     margin-bottom: 4px;
     background: none;
     :hover {
         background: #231844;
-        color:#fff;
+        color: #fff;
     }
     .token {
         display: flex;

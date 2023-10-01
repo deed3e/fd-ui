@@ -95,6 +95,7 @@ const StyledStatus = styled.div`
     gap: 5px;
     justify-content:center;
     align-items: start;
+    margin-left: 5px;
     svg{
         height: 16px;
     }
