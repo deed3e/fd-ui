@@ -718,7 +718,7 @@ export default function Liquidity() {
         setTargetBTC(
             (formatUnits(readTartgetWeightOfBtc.data as bigint, tokenBTCConfig?.decimals ?? 0) /
                 formatUnits(readTotalWeight.data as bigint, tokenBTCConfig?.decimals ?? 0)) *
-                100,
+            100,
         );
     }, [readTartgetWeightOfBtc.data, readTotalWeight.data]);
 
@@ -729,7 +729,7 @@ export default function Liquidity() {
                 tokenETHConfig?.decimals ?? 0,
             ) /
                 formatUnits(readTotalWeight.data as bigint, tokenETHConfig?.decimals ?? 0)) *
-                100,
+            100,
         );
     }, [readTartgetWeightOfETH.data, readTotalWeight.data]);
 
@@ -740,7 +740,7 @@ export default function Liquidity() {
                 tokenUSDCConfig?.decimals ?? 0,
             ) /
                 formatUnits(readTotalWeight.data as bigint, tokenUSDCConfig?.decimals ?? 0)) *
-                100,
+            100,
         );
     }, [readTartgetWeightOfUSDC.data, readTotalWeight.data]);
 
@@ -751,7 +751,7 @@ export default function Liquidity() {
                 tokenWethConfig?.decimals ?? 0,
             ) /
                 formatUnits(readTotalWeight.data as bigint, tokenWethConfig?.decimals ?? 0)) *
-                100,
+            100,
         );
     }, [readTartgetWeightOfWETH.data, readTotalWeight.data]);
 
@@ -759,22 +759,22 @@ export default function Liquidity() {
         setWeightBTC(
             (formatUnits(valueBTC as bigint, 8 + tokenBTCConfig?.decimals ?? 0) /
                 formatUnits(dataReadTotalPool.data as bigint, 30)) *
-                100,
+            100,
         );
         setWeightETH(
             (formatUnits(valueETH as bigint, 8 + tokenETHConfig?.decimals ?? 0) /
                 formatUnits(dataReadTotalPool.data as bigint, 30)) *
-                100,
+            100,
         );
         setWeightUSDC(
             (formatUnits(valueUSDT as bigint, 8 + tokenUSDCConfig?.decimals ?? 0) /
                 formatUnits(dataReadTotalPool.data as bigint, 30)) *
-                100,
+            100,
         );
         setWeightWETH(
             (formatUnits(valueWeth as bigint, 8 + tokenWethConfig?.decimals ?? 0) /
                 formatUnits(dataReadTotalPool.data as bigint, 30)) *
-                100,
+            100,
         );
     }, [valueBTC, valueETH, valueUSDT, valueWeth, dataReadTotalPool.data]);
 
@@ -1142,8 +1142,8 @@ export default function Liquidity() {
                                         {calcAddLiquidity.data != undefined && (
                                             <BigintDisplay
                                                 value={calcAddLiquidity.data[0] as BigInt}
-                                                decimals={tokenConfig?.decimals}
-                                                fractionDigits={5}
+                                                decimals={18}
+                                                fractionDigits={tokenConfig?.fractionDigits}
                                             />
                                         )}
                                     </div>
@@ -1160,8 +1160,8 @@ export default function Liquidity() {
                                 <p className="info-detail">
                                     <BigintDisplay
                                         value={minimumReceiveAdd as BigInt}
-                                        decimals={tokenConfig.decimals}
-                                        fractionDigits={5}
+                                        decimals={18}
+                                        fractionDigits={tokenConfig?.fractionDigits}
                                     />
                                 </p>
                             </div>
@@ -1174,7 +1174,7 @@ export default function Liquidity() {
                                             <BigintDisplay
                                                 value={calcAddLiquidity.data[1] as BigInt}
                                                 decimals={tokenConfig?.decimals}
-                                                fractionDigits={5}
+                                                fractionDigits={tokenConfig?.fractionDigits}
                                             />
                                         )}
                                     </div>
@@ -1245,15 +1245,15 @@ export default function Liquidity() {
                                                 <div className="content-detail content-detail-first">
                                                     <p className="title-detail">Receive</p>
                                                     <p className="info-detail">
-                                                        {/* <div>
-                                                            <BigintDisplay
-                                                                value={
-                                                                    calcAddLiquidity
-                                                                        ?.data[0] as BigInt
-                                                                }
-                                                                decimals={tokenConfig?.decimals}
-                                                            />
-                                                        </div> */}
+                                                        <div>
+                                                            {calcAddLiquidity.data != undefined && (
+                                                                <BigintDisplay
+                                                                    value={calcAddLiquidity.data[0] as BigInt}
+                                                                    decimals={18}
+                                                                    fractionDigits={tokenConfig?.fractionDigits}
+                                                                />
+                                                            )}
+                                                        </div>
                                                     </p>
                                                 </div>
 
@@ -1263,15 +1263,29 @@ export default function Liquidity() {
                                                 </div>
 
                                                 <div className="content-detail">
-                                                    <p className="title-detail">
-                                                        Minimun Received
+                                                    <p className="title-detail">Minimun Received</p>
+                                                    <p className="info-detail">
+                                                        <BigintDisplay
+                                                            value={minimumReceiveAdd as BigInt}
+                                                            decimals={18}
+                                                            fractionDigits={tokenConfig?.fractionDigits}
+                                                        />
                                                     </p>
-                                                    <p className="info-detail">0 FLP</p>
                                                 </div>
 
                                                 <div className="content-detail">
                                                     <p className="title-detail">Fees</p>
-                                                    <p className="info-detail">-</p>
+                                                    <p className="info-detail">
+                                                        <div>
+                                                            {calcAddLiquidity.data != undefined && (
+                                                                <BigintDisplay
+                                                                    value={calcAddLiquidity.data[1] as BigInt}
+                                                                    decimals={tokenConfig?.decimals}
+                                                                    fractionDigits={tokenConfig?.fractionDigits}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -1429,12 +1443,12 @@ export default function Liquidity() {
                                                                 marginBottom: '0px',
                                                             }}
                                                         >
-                                                           <div className="token-icon-popup">
-                                                            <img className='icon-popup' src={tokenRemoveConfig?.symbol === 'BTC' ? icon3 :  
-                                                            tokenRemoveConfig?.symbol === 'ETH' ? icon2 :
-                                                            tokenRemoveConfig?.symbol === 'USDC' ? TIcon : WETH
-                                                        } alt="" />
-                                                           </div>
+                                                            <div className="token-icon-popup">
+                                                                <img className='icon-popup' src={tokenRemoveConfig?.symbol === 'BTC' ? icon3 :
+                                                                    tokenRemoveConfig?.symbol === 'ETH' ? icon2 :
+                                                                        tokenRemoveConfig?.symbol === 'USDC' ? TIcon : WETH
+                                                                } alt="" />
+                                                            </div>
                                                         </p>
                                                     </div>
                                                 </div>
