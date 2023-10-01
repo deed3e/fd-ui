@@ -1258,11 +1258,6 @@ export default function Liquidity() {
                                                 </div>
 
                                                 <div className="content-detail">
-                                                    <p className="title-detail">Slipage</p>
-                                                    <p className="info-detail">0.1 %</p>
-                                                </div>
-
-                                                <div className="content-detail">
                                                     <p className="title-detail">Minimun Received</p>
                                                     <p className="info-detail">
                                                         <BigintDisplay
@@ -1338,10 +1333,6 @@ export default function Liquidity() {
                                     </p>
                                 </div>
                             </div>
-                            <div className="content-detail">
-                                <p className="title-detail">Slipage</p>
-                                <p className="info-detail">0.1 %</p>
-                            </div>
 
                             <div className="content-detail">
                                 <p className="title-detail">Minimun Received</p>
@@ -1351,7 +1342,7 @@ export default function Liquidity() {
                                         decimals={tokenRemoveConfig.decimals}
                                         fractionDigits={5}
                                     />
-                                    <span> {tokenFromRemove}</span>
+                                    <span> {tokenFromRemove === 'WETH' ? 'BNB' : tokenFromRemove}</span>
                                 </p>
                             </div>
                         </div>
@@ -1469,7 +1460,7 @@ export default function Liquidity() {
                                                             }
                                                             fractionDigits={5}
                                                         />
-                                                        <span> {tokenFromRemove}</span>
+                                                        <span> {tokenFromRemove === 'WETH' ? 'BNB' : tokenFromRemove}</span>
                                                     </p>
                                                 </div>
                                             </div>
