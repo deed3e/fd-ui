@@ -12,6 +12,8 @@ import { BigintDisplay } from '../../component/BigIntDisplay';
 import { getDashboardItemData } from '../../apis/dashboard';
 import { DashboardItemDataType, SwapType } from '../../types';
 import { useQuery } from '@tanstack/react-query';
+import CountUp from 'react-countup';
+import { formatUnits, parseUnits } from 'viem';
 
 const Dashboard: React.FC = () => {
 
@@ -38,10 +40,58 @@ const Dashboard: React.FC = () => {
                 </StyledDivTop>
                 <StyledDivBottom>
                         <>
-                            <DashboardItem img={<TradingVolume />} title='Total Trading Volume' value={<BigintDisplay value={dashboardItemDataQuery.data?.totalTradingVolumn as BigInt} decimals={30} currency="USD" />} status={<BigintDisplay value={dashboardItemDataQuery.data?.totalTradingVolumnChange as BigInt} decimals={30} fractionDigits={2} threshold={0.01} currency="USD" />}></DashboardItem>
-                            <DashboardItem img={<UnderManager />} title='Assets Under Manager' value={<BigintDisplay value={dataReadTotalPool.data as BigInt} decimals={30} currency="USD" />} status={<BigintDisplay value={dashboardItemDataQuery.data?.assetsUnderManagementChange as BigInt} decimals={30} fractionDigits={2} threshold={0.01} currency="USD" />}></DashboardItem>
-                            <DashboardItem img={<AccuredFees />} title='Accured Fees' value={<BigintDisplay value={dashboardItemDataQuery.data?.accuredFees as BigInt} decimals={30} fractionDigits={2} threshold={0.01} currency="USD" />} status={<BigintDisplay value={dashboardItemDataQuery.data?.accuredFeesChange as BigInt} decimals={30} fractionDigits={2} threshold={0.01} currency="USD" />}></DashboardItem>
-                            <DashboardItem img={<TotalUsers />} title='Total User' value={dashboardItemDataQuery.data?.totalUserCount} status={dashboardItemDataQuery.data?.totalUserCountChange}></DashboardItem>
+                            <DashboardItem img={<TradingVolume />} title='Total Trading Volume' value={
+                           // <BigintDisplay value={dashboardItemDataQuery.data?.totalTradingVolumn as BigInt} decimals={30} currency="USD" />
+                            <CountUp
+                            start={0}
+                            end={formatUnits(dashboardItemDataQuery.data?.totalTradingVolumn as bigint ?? '0',30)}
+                            duration={1}
+                            separator=","
+                            decimals={0}
+                            decimal="."
+                            prefix="$"
+                          />
+
+                            } status={<BigintDisplay value={dashboardItemDataQuery.data?.totalTradingVolumnChange as BigInt} decimals={30} fractionDigits={2} threshold={0.01} currency="USD" />}></DashboardItem>
+                            <DashboardItem img={<UnderManager />} title='Assets Under Manager' value={
+                            <CountUp
+                            start={0}
+                            end={formatUnits(dataReadTotalPool?.data as bigint ?? '0',30)}
+                            duration={1}
+                            separator=","
+                            decimals={0}
+                            decimal="."
+                            prefix="$"
+                          />
+
+                            } status={<BigintDisplay value={dashboardItemDataQuery.data?.assetsUnderManagementChange as BigInt} decimals={30} fractionDigits={2} threshold={0.01} currency="USD" />
+                            }></DashboardItem>
+                            <DashboardItem img={<AccuredFees />} title='Accured Fees' value={
+                            // <BigintDisplay value={dashboardItemDataQuery.data?.accuredFees as BigInt
+                            // } decimals={30} fractionDigits={2} threshold={0.01} currency="USD" />
+
+                            <CountUp
+                            start={0}
+                            end={formatUnits(dashboardItemDataQuery.data?.accuredFees as bigint??'0',30)}
+                            duration={1}
+                            separator=","
+                            decimals={0}
+                            decimal="."
+                            prefix="$"
+                          />
+                            
+                            } status={<BigintDisplay value={dashboardItemDataQuery.data?.accuredFeesChange as BigInt} decimals={30} fractionDigits={2} threshold={0.01} currency="USD" />}></DashboardItem>
+                            <DashboardItem img={<TotalUsers />} title='Total User' value={
+                                
+                                <CountUp
+                                start={0}
+                                end={dashboardItemDataQuery.data?.totalUserCount?? '0'}
+                                duration={1}
+                                separator=","
+                                decimals={0}
+                              />
+                                
+                                } status={dashboardItemDataQuery.data?.totalUserCountChange}></DashboardItem>
                         </>
                 </StyledDivBottom>
             </StyledDashboard>
@@ -68,10 +118,7 @@ const StyledDashboard = styled.div`
 const StyledMainText = styled.p`
     color: white;
     font-family: Jockey One;
-    font-size: 36px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
+    font-size: 38px;
     text-align: center;
     margin-bottom: 7px;
 `;
@@ -79,10 +126,7 @@ const StyledMainText = styled.p`
 const StyledAltText = styled.p`
     color: rgba(255, 255, 255, 0.5);
     font-family: IBM Plex Mono;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
+    font-size: 13px;
     text-align: center;
     margin-top: 7px;
 `;

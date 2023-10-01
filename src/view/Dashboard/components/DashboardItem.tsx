@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-
+import { ReactComponent as IconUp } from '../../../assets/icons/ic-price-up.svg';
 
 
 export type DashboardItemProps = {
@@ -26,6 +26,7 @@ const DashboardItem: React.FC<DashboardItemProps> = ({
                     {value}
                 </StyledValue>
                 <StyledStatus>
+                    <IconUp/>
                     {status}
                 </StyledStatus>
             </StyledItemFrame>
@@ -44,16 +45,21 @@ const StyledItemFrame = styled.div`
     flex-direction: column;
     gap: 5px;
     justify-content:center;
-    align-items: center;
+    align-items: start;
     padding-top: 28px;
     padding-bottom: 19px;
+    padding-left: 55px;
 `;
 
 const StyledTitleContainer = styled.div`
     display: flex;
     align-items: center;
     gap: 7.8px;
-    margin-left: -10px;
+    margin-left: -30px;
+    svg{
+        width: 24px;
+    }
+   
 `;
 
 const StyledTitle = styled.p`
@@ -61,7 +67,7 @@ const StyledTitle = styled.p`
     text-transform: capitalize;
     color: rgba(255, 255, 255, 0.50);
     font-family: IBM Plex Mono;
-    font-size: 12px;
+    font-size: 13px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
@@ -72,7 +78,6 @@ const StyledValue = styled.div`
     color: #fff;
     font-weight: 700;
     font-size: 28px;
-    font-style: normal;
     font-family: IBM Plex Mono;
     line-height: normal;
 `
@@ -86,4 +91,11 @@ const StyledStatus = styled.div`
     font-weight: 500;
     line-height: normal;
     letter-spacing: -1.2px;
+    display: flex;
+    gap: 5px;
+    justify-content:center;
+    align-items: start;
+    svg{
+        height: 16px;
+    }
 `
