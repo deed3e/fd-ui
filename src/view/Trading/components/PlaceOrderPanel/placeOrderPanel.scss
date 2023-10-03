@@ -16,10 +16,10 @@ button#full-width-tab-0,button#full-width-tab-1 {
     background-color: unset !important;
 }
 
-button:not([disabled]) {
-    background-color: #0f091e !important;
-    opacity: 1;
-}
+// button:not([disabled]) {
+//     background-color: #0f091e !important;
+//     opacity: 1;
+// }
 
 .MuiBox-root.css-19kzrtu {
     // background-color: #29292c;
@@ -31,4 +31,27 @@ button:not([disabled]) {
 
 .fJUfJj {
     border-top: unset;
+}
+
+.order-price-title {
+    display: flex;
+    align-items: center;
+}
+
+.diRodp  {
+    display: block !important;
+    flex: 1;
+}
+
+.dropdown-price {
+    display: flex;
+    align-items: center;
+}
+
+div#full-width-tabpanel-0 {
+    min-height: 1000px;
+}
+
+div#full-width-tabpanel-1 {
+    min-height: 1000px;
 }
