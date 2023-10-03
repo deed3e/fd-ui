@@ -7,7 +7,7 @@ import { BigintDisplay } from '../../component/BigIntDisplay';
 
 import MockER from '../../abis/MockERC20.json';
 
-import FLC from '../../assets/tokens/flpIcon.svg'
+import FLC from '../../assets/tokens/FLC_Token.png'
 
 interface InputTokenProps {
     refresh?: boolean;
