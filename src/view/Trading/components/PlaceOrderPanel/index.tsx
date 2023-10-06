@@ -12,6 +12,7 @@ import styled from 'styled-components';
 import { DropdownSelectOrder } from '../PlaceOrderPanel/components/DropdownSelectOrder';
 import { ReactComponent as IconArrowDown } from '../../../../assets/svg/ic-arrow-down.svg';
 
+import Input from './components/Input';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -78,8 +79,8 @@ const PlaceOrderPanel: React.FC = () => {
                         textColor="inherit"
                         aria-label="tabs example"
                     >
-                        <Tab label="LONG" {...a11yProps(0)} />
-                        <Tab label="SHORT" {...a11yProps(1)} />
+                        <Tab className='tab-trading' label="LONG" {...a11yProps(0)} />
+                        <Tab className='tab-trading' label="SHORT" {...a11yProps(1)} />
                     </Tabs>
                 </AppBar>
                 <SwipeableViews
@@ -107,7 +108,7 @@ const PlaceOrderPanel: React.FC = () => {
                                     </StyledTokenSelect>
                                 </DropdownSelectOrder>
                             </StyledSelectToken>
-                            <input type="text" />
+                           
                         </div>
                     </TabPanel>
                     <TabPanel value={value} index={1} dir={theme.direction}>
@@ -139,6 +140,7 @@ export const StyledToken = styled.div`
     font-size: 14px;
     font-weight: 500;
     color: #fff;
+    padding: 6px 0px;
     span {
         padding-right: 6px;
         padding-left: 6px;

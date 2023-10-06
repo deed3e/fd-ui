@@ -88,6 +88,7 @@ const StyleDropdownItem = styled.div<{ active?: boolean }>`
     font-size: 14px;
     color: ${(p) => (p.active ? '#6763e3' : '#fff')};
     cursor: pointer;
+
     .info {
         margin-left: 8px;
         text-align: left;

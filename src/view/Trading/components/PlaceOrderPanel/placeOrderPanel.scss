@@ -55,3 +55,8 @@ div#full-width-tabpanel-0 {
 div#full-width-tabpanel-1 {
     min-height: 1000px;
 }
+
+.tab-trading:not([disabled]) {
+    background: var(--nav-dark-blue, #0F091E);
+    opacity: 1;
+}
