@@ -8,7 +8,7 @@ export const Config: ChainConfig = {
     explorerUrl: 'https://testnet.bscscan.com/',
     oracle: '0x1E16D408a6ae4E2a867cd33F15cb7E17441139c1',
     router:'0xC7537D4c30eC2A7A1598C840317c58f7f306BB8f',
-    orderManager: '0xf5Df50709412Ec9Ec25B075dE4f7B0cbE0dc27b5';
+    orderManager: '0xf5Df50709412Ec9Ec25B075dE4f7B0cbE0dc27b5',
     chartUrlHttp:'',
     chartUrlWs:'wss://ws-feed.pro.coinbase.com',
     graphql:'https://api.thegraph.com/subgraphs/name/deed3e/fdex',
