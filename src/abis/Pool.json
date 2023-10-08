@@ -5,6 +5,16 @@
         "internalType": "address",
         "name": "_oracle",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_interestRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_accrualInterval",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -88,6 +98,32 @@
   {
     "inputs": [],
     "name": "OrderManagerOnly",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "indexToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "collateralToken",
+        "type": "address"
+      },
+      {
+        "internalType": "enum Side",
+        "name": "side",
+        "type": "uint8"
+      }
+    ],
+    "name": "PositionNotExists",
     "type": "error"
   },
   {
@@ -237,6 +273,257 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "indexToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "collateralToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "collateral",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "sizeChanged",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "side",
+        "type": "bool"
+      }
+    ],
+    "name": "DecreasePosition",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "wallet",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "collateralToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "indexToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "collateralChanged",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "sizeChanged",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum Side",
+        "name": "side",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "indexPrice",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "sig",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "abs",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct SignedInt",
+        "name": "pnl",
+        "type": "tuple"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "feeValue",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum DecreaseType",
+        "name": "decreaseType",
+        "type": "uint8"
+      }
+    ],
+    "name": "DecreasePosition",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "indexToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "collateralToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "collateral",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "sizeChanged",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "side",
+        "type": "bool"
+      }
+    ],
+    "name": "IncreasePosition",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "wallet",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "collateralToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "indexToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "collateralValue",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "sizeChanged",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum Side",
+        "name": "side",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "indexPrice",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "feeValue",
+        "type": "uint256"
+      }
+    ],
+    "name": "IncreasePosition",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "borrowIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "InterestAccrued",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "levarage",
@@ -295,8 +582,20 @@
       },
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "tokenOut",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "markPrice",
         "type": "uint256"
       }
     ],
@@ -389,6 +688,19 @@
     ],
     "name": "TokenWeightSet",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "accrualInterval",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [
@@ -556,6 +868,49 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_indexToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_collateralToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_collateralChanged",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_sizeChanged",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum Side",
+        "name": "_side",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "_receiver",
+        "type": "address"
+      }
+    ],
+    "name": "decreasePosition",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "fee",
     "outputs": [
@@ -588,6 +943,16 @@
         "internalType": "uint256",
         "name": "daoFee",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidationFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "positionFee",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -596,6 +961,57 @@
   {
     "inputs": [],
     "name": "getPoolValue",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_indexToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_collateralToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_collateralAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_sizeChanged",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum Side",
+        "name": "_side",
+        "type": "uint8"
+      }
+    ],
+    "name": "increasePosition",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "interestRate",
     "outputs": [
       {
         "internalType": "uint256",
@@ -633,7 +1049,7 @@
         "type": "address"
       }
     ],
-    "name": "isListed",
+    "name": "isStableCoin",
     "outputs": [
       {
         "internalType": "bool",
@@ -648,19 +1064,28 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "_account",
         "type": "address"
-      }
-    ],
-    "name": "isStableCoin",
-    "outputs": [
+      },
       {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
+        "internalType": "address",
+        "name": "_indexToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_collateralToken",
+        "type": "address"
+      },
+      {
+        "internalType": "enum Side",
+        "name": "_side",
+        "type": "uint8"
       }
     ],
-    "stateMutability": "view",
+    "name": "liquidatePosition",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -678,10 +1103,36 @@
   },
   {
     "inputs": [],
+    "name": "maxLeverage",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "oracle",
     "outputs": [
       {
         "internalType": "contract IOracle",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "orderManager",
+    "outputs": [
+      {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -721,6 +1172,70 @@
         "internalType": "uint256",
         "name": "borrowIndex",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastAccrualTimestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "poolAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reservedAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "guaranteedValue",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalShortSize",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "positions",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "size",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "collateralValue",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reserveAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "entryPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "borrowIndex",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -745,7 +1260,7 @@
       },
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "_wallet",
         "type": "address"
       }
     ],
@@ -794,6 +1309,16 @@
             "internalType": "uint256",
             "name": "daoFee",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidationFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "positionFee",
+            "type": "uint256"
           }
         ],
         "internalType": "struct Fee",
@@ -815,6 +1340,32 @@
       }
     ],
     "name": "setLpToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_maxLeverage",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxLeverage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_orderManager",
+        "type": "address"
+      }
+    ],
+    "name": "setOrderManager",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
