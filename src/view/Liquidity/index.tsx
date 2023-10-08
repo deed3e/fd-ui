@@ -155,6 +155,8 @@ export default function Liquidity() {
     const showToastRemove = useShowToast();
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setInputFromAmount(BigInt(0));
+        setInputRemoveFromAmount(BigInt(0));
         setValue(newValue);
     };
 
@@ -553,12 +555,13 @@ export default function Liquidity() {
     );
 
     const statusForAdd = useMemo(() => {
+        debugger;
         if (!isConnected) {
             return ButtonStatus.notConnect;
-        } else if (insufficientBalance) {
-            return ButtonStatus.insufficientBalance;
         } else if (!inputFromAmount) {
             return ButtonStatus.notInput;
+        } else if (insufficientBalance) {
+            return ButtonStatus.insufficientBalance;
         } else if (valueInput < MIN_VALUE_INPUT || valueInput === 0) {
             return ButtonStatus.minInput;
         } else if (isLoading || useForApprove.isLoading) {
@@ -573,6 +576,7 @@ export default function Liquidity() {
         }
         return ButtonStatus.ready;
     }, [
+        value,
         dataAlowance.data,
         inputFromAmount,
         isConnected,
@@ -601,6 +605,7 @@ export default function Liquidity() {
         }
         return ButtonStatusRemove.ready;
     }, [
+        value,
         dataAlowanceRemove.data,
         inputRemoveFromAmount,
         insufficientBalanceRemove,
@@ -1306,7 +1311,7 @@ export default function Liquidity() {
                                 </div>
                                 <div className="button-popup">
                                     <Button className="agree-btn" onClick={handleAddLiquid}>
-                                        Agree
+                                        CONFIRM
                                     </Button>
                                 </div>
                             </div>
@@ -1507,7 +1512,7 @@ export default function Liquidity() {
                                 </div>
                                 <div className="button-popup">
                                     <Button className="agree-btn" onClick={handleRemoveLiquid}>
-                                        Agree
+                                        CONFIRM
                                     </Button>
                                 </div>
                             </div>
