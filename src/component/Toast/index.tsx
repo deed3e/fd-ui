@@ -1,8 +1,8 @@
 import { toast, TypeOptions } from 'react-toastify';
-import successIcon from '../../assets/svg/ic-toast-success.svg';
-import errorIcon from '../../assets/svg/ic-toast-error.svg';
-import pendingIcon from '../../assets/svg/ic-toast-pending.svg';
-import loadingIcon from '../../assets/image/ic-loading.png';
+import successIcon from '../../assets/icons/ic-toast-check.svg';
+import errorIcon from '../../assets/icons/ic-toast-error.svg';
+import pendingIcon from '../../assets/icons/ic-toast-pending.svg';
+import loadingIcon from '../../assets/icons/ic-toast-loading.svg';
 import styled from 'styled-components';
 import './index.css';
 import { useEffect, useMemo } from 'react';

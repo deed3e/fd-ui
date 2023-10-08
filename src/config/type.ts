@@ -18,6 +18,7 @@ export type ChainConfig = {
         assets: string[];
     };
     router: Address;
+    orderManager: Address;
     tokens: {
         [symbol: string]: TokenInfo;
     };

@@ -69,6 +69,7 @@ const PlaceOrderPanel: React.FC = () => {
 
 
     return (
+<<<<<<< HEAD
         <>
             <Box sx={{ bgcolor: 'background.paper', width: 500 }}>
                 <AppBar position="static">
@@ -117,6 +118,11 @@ const PlaceOrderPanel: React.FC = () => {
                 </SwipeableViews>
             </Box>
         </>
+=======
+      <>
+        TODO task
+      </>
+>>>>>>> feature/hoangtth/fixBugLiquidity
     );
 };
 

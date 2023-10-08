@@ -257,6 +257,7 @@ export default function Liquidity() {
     const [refreshRemove, setRefeshRemove] = useState<boolean>();
     const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
     const [insufficientBalanceRemove, setInsufficientBalanceRemove] = useState<boolean>(true);
+    const [insufficientPoolRemove, setInsufficientPoolRemove] = useState<boolean>(true);
     const [targetBTC, setTargetBTC] = useState(0);
     const [targetETH, setTargetETH] = useState(0);
     const [targetUSDC, setTargetUSDC] = useState(0);
@@ -424,7 +425,7 @@ export default function Liquidity() {
                 `Success approve ${formatUnits(
                     inputRemoveFromAmount as bigint,
                     getTokenConfig(getLpSymbol())?.decimals ?? 0,
-                )} ${tokenRemoveConfig?.symbol}`,
+                )} ${tokenRemoveConfig?.symbol === 'WETH' ? 'BNB' : tokenRemoveConfig?.symbol}`,
                 '',
                 'success',
             );
@@ -554,6 +555,40 @@ export default function Liquidity() {
         [tokenConfig?.decimals],
     );
 
+
+    useEffect(() => {
+        switch (tokenRemoveConfig?.symbol) {
+            case 'BTC':
+                if (calcRemoveLiquidity.data > balanceBTC.data?.value) {
+                    setInsufficientPoolRemove(true);
+                } else {
+                    setInsufficientPoolRemove(false);
+                }
+                return;
+            case 'ETH':
+                if (calcRemoveLiquidity.data > balanceETH.data?.value) {
+                    setInsufficientPoolRemove(true);
+                } else {
+                    setInsufficientPoolRemove(false);
+                }
+                return;
+            case 'USDC':
+                if (calcRemoveLiquidity.data > balanceUSDC.data?.value) {
+                    setInsufficientPoolRemove(true);
+                } else {
+                    setInsufficientPoolRemove(false);
+                }
+                return;
+            case 'WETH':
+                if (calcRemoveLiquidity.data > balanceWeth.data?.value) {
+                    setInsufficientPoolRemove(true);
+                } else {
+                    setInsufficientPoolRemove(false);
+                }
+                return;
+        }
+    }, [inputRemoveFromAmount,tokenConfig?.symbol, calcRemoveLiquidity.data, balanceBTC.data?.value, balanceETH.data?.value, balanceUSDC.data?.value, balanceWeth.data?.value]);
+
     const statusForAdd = useMemo(() => {
         debugger;
         if (!isConnected) {
@@ -589,10 +624,14 @@ export default function Liquidity() {
         useForApproveRemove.isLoading,
     ]);
 
+
     const statusForRemove = useMemo(() => {
         if (!isConnected) {
             return ButtonStatusRemove.notConnect;
-        } else if (insufficientBalanceRemove) {
+        } else if (insufficientPoolRemove) {
+            return ButtonStatusRemove.insufficientPool;
+        }
+        else if (insufficientBalanceRemove) {
             return ButtonStatusRemove.insufficientBalance;
         } else if (!inputRemoveFromAmount) {
             return ButtonStatusRemove.notInput;
@@ -643,14 +682,12 @@ export default function Liquidity() {
                 return 'Connect Wallet';
             case ButtonStatusRemove.notInput:
                 return 'Enter An Amount';
-            // case ButtonStatusRemove.timeOutOracle:
-            //     return 'Oracle TimeOut';
+            case ButtonStatusRemove.insufficientPool:
+                return 'Insufficient Pool';
             case ButtonStatusRemove.insufficientBalance:
                 return 'Insufficient Your Balance';
             case ButtonStatusRemove.minInput:
                 return 'Min Amount 10 USD';
-            // case ButtonStatusRemove.insufficientPool:
-            //     return 'Insufficient Pool';
             case ButtonStatusRemove.loading:
                 return ``;
             case ButtonStatusRemove.notApprove:
@@ -663,6 +700,8 @@ export default function Liquidity() {
     const handleInsufficientBalance = useCallback((check: boolean) => {
         setInsufficientBalance(check);
     }, []);
+
+
 
     const handleInsufficientBalanceRemove = useCallback((check: boolean) => {
         setInsufficientBalanceRemove(check);
