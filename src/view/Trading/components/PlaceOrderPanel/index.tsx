@@ -1,5 +1,5 @@
 import './placeOrderPanel.scss';
-import { memo, useState,useCallback } from 'react';
+import { memo, useState, useCallback, useMemo } from 'react';
 import SwipeableViews from 'react-swipeable-views';
 import { useTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
@@ -8,11 +8,24 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import styled from 'styled-components';
+import { formatUnits, getAddress, parseEther, parseUnits } from 'viem';
 
 import { DropdownSelectOrder } from '../PlaceOrderPanel/components/DropdownSelectOrder';
 import { ReactComponent as IconArrowDown } from '../../../../assets/svg/ic-arrow-down.svg';
 
 import Input from './components/Input';
+import InputTokenWithSelect from '../../../../component/InputToken/InputTokenWithSelect';
+import Button from '@mui/material/Button';
+import twoIconDown from '../../../../assets/svg/two-icon-down.svg';
+
+import {
+    getAllTokenSymbol,
+    getWrapNativeTokenSymbol,
+    getTokenConfig,
+    getAddressPool,
+    getAddressRouter,
+    getLpSymbol,
+} from '../../../../config';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -51,7 +64,28 @@ function a11yProps(index: number) {
 const PlaceOrderPanel: React.FC = () => {
     const theme = useTheme();
     const [value, setValue] = useState(0);
-    const [selectOrder, setSelectOrder] = useState("Market Order");
+    const [selectOrder, setSelectOrder] = useState('Market Order');
+    const [price, setPrice] = useState<BigInt>(BigInt(0));
+    const [inputPay, setInputPay] = useState<BigInt>(BigInt(0));
+    const [inputTokenTwo, setInputTokenTwo] = useState<BigInt>(BigInt(0));
+    const [tokenPay, setTokenPay] = useState<string>('BTC');
+    const [tokenTwo, setTokenTwo] = useState<string>('BTC');
+    const [valueInput, setValueInput] = useState<number>(0);
+    const [valueInputTokenTwo, setValueInputTokenTwo] = useState<number>(0);
+    const [leverage, setLeverage] = useState<string>('2x');
+
+    const leverages = ['2x', '5x', '10x', '20x', '30x'];
+
+    const tokens = useMemo(() => {
+        return getAllTokenSymbol()?.filter((i) => i != 'FLP');
+    }, []);
+
+    const tokensTwo = useMemo(() => {
+        return getAllTokenSymbol()?.filter((i) => i != 'FLP');
+    }, []);
+
+    const tokenConfig = getTokenConfig(tokenPay);
+    const tokenConfigTwo = getTokenConfig(tokenPay);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -61,12 +95,45 @@ const PlaceOrderPanel: React.FC = () => {
         setValue(index);
     };
 
-    const orders = ["Market Order","hello"]
+    const orders = ['Market Order', 'hello'];
 
     const onDropDownItemClick = useCallback((symbol: string) => {
-      setSelectOrder(symbol);
-  }, []);
+        setSelectOrder(symbol);
+    }, []);
 
+    const amountChangeHandler = useCallback((amount: BigInt) => {
+        setPrice(value);
+    }, []);
+
+    const amountPayChange = useCallback((value: BigInt) => {
+        setInputPay(value);
+    }, []);
+
+    const amountTokenTwoChange = useCallback((value: BigInt) => {
+        setInputTokenTwo(value);
+    }, []);
+
+    const handleTokenPayChange = useCallback((symbol: string) => {
+        setTokenPay(symbol);
+    }, []);
+
+    const handleTokenTwoChange = useCallback((symbol: string) => {
+        setTokenTwo(symbol);
+    }, []);
+
+    const handleValueInput = useCallback(
+        (value: number) => {
+            setValueInput(Math.round(formatUnits(value, tokenConfig?.decimals + 8)));
+        },
+        [tokenConfig?.decimals],
+    );
+
+    const handleValueInputTokenTwo = useCallback(
+        (value: number) => {
+            setValueInputTokenTwo(Math.round(formatUnits(value, tokenConfigTwo?.decimals + 8)));
+        },
+        [tokenConfigTwo?.decimals],
+    );
 
     return (
         <>
@@ -79,42 +146,127 @@ const PlaceOrderPanel: React.FC = () => {
                         textColor="inherit"
                         aria-label="tabs example"
                     >
-                        <Tab className='tab-trading' label="LONG" {...a11yProps(0)} />
-                        <Tab className='tab-trading' label="SHORT" {...a11yProps(1)} />
+                        <Tab className="tab-trading" label="LONG" {...a11yProps(0)} />
+                        <Tab className="tab-trading" label="SHORT" {...a11yProps(1)} />
                     </Tabs>
                 </AppBar>
-                <SwipeableViews
-                    axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                    index={value}
-                    onChangeIndex={handleChangeIndex}
-                    style={{ background: '#29292c' }}
-                >
-                    <TabPanel value={value} index={0} dir={theme.direction}>
-                        <div className="order-price-title">
-                            <p>Order Type</p>
-                            <p>Price</p>
-                        </div>
-                        <div className="dropdown-price">
-                            <StyledSelectToken>
-                                <DropdownSelectOrder
-                                    selectedOrder={selectOrder}
-                                    orders={orders}
-                                    position={'right'}
-                                    onSelect={onDropDownItemClick}
-                                >
-                                    <StyledTokenSelect pointer={orders?.length >= 0}>
-                                       <span>{selectOrder}</span>
-                                        <IconArrowDown />
-                                    </StyledTokenSelect>
-                                </DropdownSelectOrder>
-                            </StyledSelectToken>
-                           
-                        </div>
-                    </TabPanel>
-                    <TabPanel value={value} index={1} dir={theme.direction}>
-                        Item Two
-                    </TabPanel>
-                </SwipeableViews>
+                <div className="trading-panel">
+                    <SwipeableViews
+                        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+                        index={value}
+                        onChangeIndex={handleChangeIndex}
+                        style={{ background: '#29292c' }}
+                    >
+                        <TabPanel value={value} index={0} dir={theme.direction}>
+                            <div className="order-price-title">
+                                <p className="order-type">Order Type</p>
+                                <p className="price-trading">Price</p>
+                            </div>
+                            <div className="dropdown-price">
+                                <StyledSelectToken>
+                                    <DropdownSelectOrder
+                                        selectedOrder={selectOrder}
+                                        orders={orders}
+                                        position={'right'}
+                                        onSelect={onDropDownItemClick}
+                                    >
+                                        <StyledTokenSelect pointer={orders?.length >= 0}>
+                                            <span>{selectOrder}</span>
+                                            <IconArrowDown />
+                                        </StyledTokenSelect>
+                                    </DropdownSelectOrder>
+                                </StyledSelectToken>
+                                <div className="input-cpn">
+                                    <Input
+                                        disable={false}
+                                        amountChangeHandler={amountChangeHandler}
+                                    />
+                                </div>
+                            </div>
+                            <div className="pay-input-select">
+                                <InputTokenWithSelect
+                                    tokens={tokens}
+                                    amountChange={amountPayChange}
+                                    tokenChange={handleTokenPayChange}
+                                    title="Pay"
+                                    disable={false}
+                                    disableSelect={false}
+                                    valueChange={handleValueInput}
+                                />
+                            </div>
+                            <div className="two-icon-down">
+                                <img src={twoIconDown} alt="twoicon" />
+                            </div>
+                            <InputTokenWithSelect
+                                tokens={tokensTwo}
+                                amountChange={amountTokenTwoChange}
+                                tokenChange={handleTokenTwoChange}
+                                title="Pay"
+                                disable={true}
+                                disableSelect={false}
+                                valueChange={handleValueInputTokenTwo}
+                            />
+                            <div>
+                                <p className="leverage-title">Leverage</p>
+                            </div>
+                            <div className="item-leverage-container">
+                                {leverages?.map((i) => (
+                                    <div
+                                        className={`item-leverage ${
+                                            i === leverage ? 'active-leverage' : ''
+                                        }`}
+                                        onClick={() => setLeverage(i)}
+                                    >
+                                        {i}
+                                    </div>
+                                ))}
+                            </div>
+                            <StyleButton className="btn-place-order">
+                                <div>PLACE ORDER</div>
+                            </StyleButton>
+
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Collateral Asset</p>
+                                <p className="content-place-order">BTC</p>
+                            </div>
+
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Collateral Value</p>
+                                <p className="content-place-order">-</p>
+                            </div>
+
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Laverage</p>
+                                <p className="content-place-order">-</p>
+                            </div>
+
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Entry Price</p>
+                                <p className="content-place-order">-</p>
+                            </div>
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Liquidation Price</p>
+                                <p className="content-place-order">-</p>
+                            </div>
+                            <div>
+                                <p className="leverage-title market-info-title">Market Info</p>
+                            </div>
+
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Borrow Fee</p>
+                                <p className="content-place-order">0</p>
+                            </div>
+
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Available Liquidity</p>
+                                <p className="content-place-order">-</p>
+                            </div>
+                        </TabPanel>
+                        <TabPanel value={value} index={1} dir={theme.direction}>
+                            Item Two
+                        </TabPanel>
+                    </SwipeableViews>
+                </div>
             </Box>
         </>
     );
@@ -154,9 +306,34 @@ export const StyledToken = styled.div`
     }
 `;
 
-const StyledTokenSelect = styled(StyledToken) <{ pointer?: boolean }>`
+const StyledTokenSelect = styled(StyledToken)<{ pointer?: boolean }>`
     cursor: ${({ pointer }) => (pointer ? 'pointer' : 'auto')};
     :hover {
         border: 1px solid #515050;
+    }
+`;
+
+const StyleButton = styled.button`
+    width: 100%;
+    color: #fff;
+    height: 37px;
+    border-radius: 10px;
+    background: #6763e3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    :hover {
+        background: #5552a9;
+    }
+    :disabled {
+        background: #2a2a38;
+    }
+    div {
+        font-weight: 700;
+        font-size: 15px;
+    }
+    img {
+        height: 15px;
+        animation: loading 1.5s linear infinite;
     }
 `;

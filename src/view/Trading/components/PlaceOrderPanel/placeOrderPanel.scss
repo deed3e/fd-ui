@@ -2,9 +2,10 @@
     width: auto;
 }
 
-button#full-width-tab-0,button#full-width-tab-1 {
+button#full-width-tab-0,
+button#full-width-tab-1 {
     flex: 1;
-    color: var(--primary-color, #6763E3);
+    color: var(--primary-color, #6763e3);
     font-family: IBM Plex Mono;
     font-size: 16px;
     font-style: normal;
@@ -21,8 +22,11 @@ button#full-width-tab-0,button#full-width-tab-1 {
 //     opacity: 1;
 // }
 
-.MuiBox-root.css-19kzrtu {
-    // background-color: #29292c;
+.trading-panel {
+    .css-19kzrtu {
+        // background-color: #29292c;
+        padding: 10px !important;
+    }
 }
 
 .css-cjctlb-MuiButtonBase-root-MuiTab-root.Mui-selected {
@@ -36,9 +40,20 @@ button#full-width-tab-0,button#full-width-tab-1 {
 .order-price-title {
     display: flex;
     align-items: center;
+
+    .order-type {
+        flex: 1;
+        margin-right: 30px;
+        margin-bottom: 0;
+    }
+
+    .price-trading {
+        flex: 1;
+        margin-bottom: 0;
+    }
 }
 
-.diRodp  {
+.diRodp {
     display: block !important;
     flex: 1;
 }
@@ -57,6 +72,95 @@ div#full-width-tabpanel-1 {
 }
 
 .tab-trading:not([disabled]) {
-    background: var(--nav-dark-blue, #0F091E);
+    background: var(--nav-dark-blue, #0f091e);
     opacity: 1;
+}
+
+.dropdown-price {
+    .sc-dWINGa {
+        flex: 1;
+        margin-right: 10px;
+
+        .sc-bczRLJ {
+            width: 100%;
+
+            .sc-jGprRt {
+                padding: 13px 0px !important;
+                border-radius: 10px;
+            }
+        }
+    }
+
+    .input-cpn {
+        flex: 1;
+    }
+}
+
+.pay-input-select {
+    margin-top: 16px;
+}
+
+.two-icon-down {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.active-leverage {
+    background-color: red;
+}
+
+.leverage-title {
+    color: rgba(255, 255, 255, 0.8);
+    font-family: IBM Plex Mono;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.market-info-title {
+    margin-top: 35px;
+}
+
+.item-leverage-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    .item-leverage {
+        padding: 4px 19px;
+        border-radius: 15px;
+        cursor: pointer;
+        border: 1px solid var(--primary-color, #6763e3);
+    }
+}
+
+.active-leverage {
+    background: var(--primary-color, #6763e3);
+}
+
+.btn-place-order {
+    margin-top: 15px;
+}
+
+.info-trading-place-order {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .title-place-order {
+        color: rgba(255, 255, 255, 0.8);
+        font-family: IBM Plex Mono;
+        font-size: 14px;
+        font-weight: 300;
+        margin-bottom: 0;
+    }
+
+    .content-place-order {
+        color: var(--white, #fff);
+        font-family: IBM Plex Mono;
+        font-size: 15px;
+        font-weight: 400;
+        margin-bottom: 0;
+    }
 }

@@ -590,7 +590,6 @@ export default function Liquidity() {
     }, [inputRemoveFromAmount,tokenConfig?.symbol, calcRemoveLiquidity.data, balanceBTC.data?.value, balanceETH.data?.value, balanceUSDC.data?.value, balanceWeth.data?.value]);
 
     const statusForAdd = useMemo(() => {
-        debugger;
         if (!isConnected) {
             return ButtonStatus.notConnect;
         } else if (!inputFromAmount) {

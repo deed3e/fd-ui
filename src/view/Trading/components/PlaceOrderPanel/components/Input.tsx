@@ -1,29 +1,44 @@
 import styled from 'styled-components';
-import { ChangeEvent, useState, useCallback } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { useAccount, useContractRead,useBalance } from 'wagmi';
+import { parseUnits } from 'viem';
+import { BigintDisplay } from '../../../../../component/BigIntDisplay';
 
 interface InputTokenProps {
     disable?: boolean;
     value?: string;
-    addressChange?: (address: string) => unknown;
+    amountChangeHandler?: (amount: BigInt) => unknown;
 }
 
 const InputToken: React.FC<InputTokenProps> = ({
     disable = false,
     value,
-    addressChange
+    amountChangeHandler,
 }) => {
+    const { address } = useAccount();
 
-    const [address, setAddress] = useState('');
+    const [amount, setAmount] = useState('');
 
-
+    
     const handleInputHandle = useCallback(
         (ev: ChangeEvent<HTMLInputElement>) => {
-            setAddress(ev.target.value);
-            if (addressChange) addressChange(ev.target.value);
+            const tmp = ev.target.value;
+            var regExp = /^0[0-9].*$/;
+            const splipDot = tmp.split('.');
+            const check =
+                (parseUnits(tmp.replace('.', ''), 18 ?? 0) || +tmp === 0) &&
+                splipDot.length <= 2 &&
+                !tmp.includes(' ') &&
+                !regExp.test(tmp);
+            if (check) {
+                setAmount(tmp);
+                if (amountChangeHandler) {
+                    amountChangeHandler(tmp as BigInt);
+                }
+            }
         },
-        [addressChange],
+        [amountChangeHandler],
     );
-
 
     return (
         <div>
@@ -31,8 +46,8 @@ const InputToken: React.FC<InputTokenProps> = ({
                 <StyledContainerInput disable={disable}>
                     <StyledWrapInputAndSubValue>
                         <StyledInput
-                            placeholder='0x...'
-                            value={value ?? address}
+                            placeholder={amount ? '0' : '0.0'}
+                            value={value ?? amount}
                             onChange={handleInputHandle}
                             disabled={disable}
                         ></StyledInput>
@@ -83,4 +98,3 @@ const StyledBodyBtn = styled.div`
     margin-top: 4.4px;
     margin-bottom: 5px;
 `;
-
