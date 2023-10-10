@@ -34,15 +34,6 @@ import {
 import { ReactComponent as IcSwap } from '../../assets/icons/ic-swap.svg';
 import { getSwapsByCondition } from '../../apis/swap';
 import { SwapType } from '../../types';
-import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '../../component/Table/table';
 import { useQuery } from '@tanstack/react-query';
 import { number } from 'zod';
 import { getTimeDistance } from '../../utils/times';
@@ -73,7 +64,7 @@ const contractRouter = {
     abi: RouterAbi,
 };
 
-const MIN_VALUE_INPUT = 10; // 10u
+const MIN_VALUE_INPUT = 10*1e8; // 10u
 
 export default function Swap() {
     const { address, isConnected } = useAccount();
@@ -338,7 +329,7 @@ export default function Swap() {
         valueInput,
         waitingTransaction?.isLoading,
         waitingTransactionApprove?.isLoading,
-        insufficientBalance,
+        insufficientBalance
     ]);
 
     const buttonText = useMemo(() => {
