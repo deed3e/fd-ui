@@ -337,6 +337,7 @@ export default function Liquidity() {
     }, [tokenFrom, inputFromAmount, dataAlowance.data]);
 
     const handleRemoveLiquid = useCallback(() => {
+        debugger;
         if (dataAlowanceRemove?.data < inputRemoveFromAmount) {
             contractWriteApproveRemove.write();
             setRefeshRemove(!refreshRemove);
@@ -555,7 +556,6 @@ export default function Liquidity() {
         [tokenConfig?.decimals],
     );
 
-
     useEffect(() => {
         switch (tokenRemoveConfig?.symbol) {
             case 'BTC':
@@ -587,7 +587,15 @@ export default function Liquidity() {
                 }
                 return;
         }
-    }, [inputRemoveFromAmount,tokenConfig?.symbol, calcRemoveLiquidity.data, balanceBTC.data?.value, balanceETH.data?.value, balanceUSDC.data?.value, balanceWeth.data?.value]);
+    }, [
+        inputRemoveFromAmount,
+        tokenConfig?.symbol,
+        calcRemoveLiquidity.data,
+        balanceBTC.data?.value,
+        balanceETH.data?.value,
+        balanceUSDC.data?.value,
+        balanceWeth.data?.value,
+    ]);
 
     const statusForAdd = useMemo(() => {
         if (!isConnected) {
@@ -623,14 +631,12 @@ export default function Liquidity() {
         useForApproveRemove.isLoading,
     ]);
 
-
     const statusForRemove = useMemo(() => {
         if (!isConnected) {
             return ButtonStatusRemove.notConnect;
         } else if (insufficientPoolRemove) {
             return ButtonStatusRemove.insufficientPool;
-        }
-        else if (insufficientBalanceRemove) {
+        } else if (insufficientBalanceRemove) {
             return ButtonStatusRemove.insufficientBalance;
         } else if (!inputRemoveFromAmount) {
             return ButtonStatusRemove.notInput;
@@ -699,8 +705,6 @@ export default function Liquidity() {
     const handleInsufficientBalance = useCallback((check: boolean) => {
         setInsufficientBalance(check);
     }, []);
-
-
 
     const handleInsufficientBalanceRemove = useCallback((check: boolean) => {
         setInsufficientBalanceRemove(check);
@@ -1015,7 +1019,15 @@ export default function Liquidity() {
                                             %
                                         </span>
                                     </div>
-                                    <div className=""> /{targetBTC}% </div>
+                                    <div className="">
+                                        /
+                                        <BigintDisplay
+                                            value={targetBTC as BigInt}
+                                            decimals={0}
+                                            fractionDigits={1}
+                                        />
+                                        %
+                                    </div>
                                 </div>
                             </div>
 
@@ -1055,7 +1067,16 @@ export default function Liquidity() {
                                             %
                                         </span>
                                     </div>
-                                    <div className="">/{targetETH}% </div>
+                                    <div className="">
+                                        {' '}
+                                        /
+                                        <BigintDisplay
+                                            value={targetETH as BigInt}
+                                            decimals={0}
+                                            fractionDigits={1}
+                                        />
+                                        %
+                                    </div>
                                 </div>
                             </div>
 
@@ -1095,7 +1116,16 @@ export default function Liquidity() {
                                             %
                                         </span>
                                     </div>
-                                    <div className="">/{targetUSDC}%</div>
+                                    <div className="">
+                                        {' '}
+                                        /
+                                        <BigintDisplay
+                                            value={targetUSDC as BigInt}
+                                            decimals={0}
+                                            fractionDigits={1}
+                                        />
+                                        %
+                                    </div>
                                 </div>
                             </div>
 
@@ -1135,7 +1165,16 @@ export default function Liquidity() {
                                             %
                                         </span>
                                     </div>
-                                    <div className="">/{targetWETH}%</div>
+                                    <div className="">
+                                        {' '}
+                                        /
+                                        <BigintDisplay
+                                            value={targetWETH as BigInt}
+                                            decimals={0}
+                                            fractionDigits={1}
+                                        />
+                                        %
+                                    </div>
                                 </div>
                             </div>
                         </div>
