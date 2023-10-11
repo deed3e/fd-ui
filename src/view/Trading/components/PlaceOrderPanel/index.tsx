@@ -1,5 +1,6 @@
 import './placeOrderPanel.scss';
-import { memo, useState, useCallback, useMemo } from 'react';
+import { memo, useState, useCallback, useMemo, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
 import { useTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
@@ -9,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import styled from 'styled-components';
 import { formatUnits, getAddress, parseEther, parseUnits } from 'viem';
+import { useOracle } from '../../../../hooks/useOracle';
 
 import { DropdownSelectOrder } from '../PlaceOrderPanel/components/DropdownSelectOrder';
 import { ReactComponent as IconArrowDown } from '../../../../assets/svg/ic-arrow-down.svg';
@@ -18,6 +20,18 @@ import InputTokenWithSelect from '../../../../component/InputToken/InputTokenWit
 import Button from '@mui/material/Button';
 import twoIconDown from '../../../../assets/svg/two-icon-down.svg';
 
+import OrderManager from '../../../../abis/OrderManager.json';
+
+import {
+    useBalance,
+    useContractRead,
+    useAccount,
+    usePrepareContractWrite,
+    useContractWrite,
+    useWaitForTransaction,
+    useContractReads,
+} from 'wagmi';
+
 import {
     getAllTokenSymbol,
     getWrapNativeTokenSymbol,
@@ -25,6 +39,7 @@ import {
     getAddressPool,
     getAddressRouter,
     getLpSymbol,
+    getAddressOrderManager,
 } from '../../../../config';
 
 interface TabPanelProps {
@@ -63,6 +78,10 @@ function a11yProps(index: number) {
 
 const PlaceOrderPanel: React.FC = () => {
     const theme = useTheme();
+    const { market } = useParams();
+
+    const token = market?.toUpperCase();
+
     const [value, setValue] = useState(0);
     const [selectOrder, setSelectOrder] = useState('Market Order');
     const [price, setPrice] = useState<BigInt>(BigInt(0));
@@ -73,6 +92,14 @@ const PlaceOrderPanel: React.FC = () => {
     const [valueInput, setValueInput] = useState<number>(0);
     const [valueInputTokenTwo, setValueInputTokenTwo] = useState<number>(0);
     const [leverage, setLeverage] = useState<string>('2x');
+    const [side, setSide] = useState(0);
+    const [positionType, setPositionType] = useState(0);
+    const [sizeChange, setSizeChange] = useState<BigInt>(BigInt(0));
+    const [indexToken, setIndexToken] = useState(getTokenConfig('BTC')?.address);
+    const [priceOfOrderType, setPriceOfOrderType] = useState<BigInt>(BigInt(0));
+    const [orderType, setOrderType] = useState(0);
+
+    const getPrice = useOracle(['BTC', 'ETH', 'USDC', 'WETH']); //['BTC','ETH']
 
     const leverages = ['2x', '5x', '10x', '20x', '30x'];
 
@@ -85,9 +112,11 @@ const PlaceOrderPanel: React.FC = () => {
     }, []);
 
     const tokenConfig = getTokenConfig(tokenPay);
+
     const tokenConfigTwo = getTokenConfig(tokenPay);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setSide(newValue);
         setValue(newValue);
     };
 
@@ -95,7 +124,22 @@ const PlaceOrderPanel: React.FC = () => {
         setValue(index);
     };
 
-    const orders = ['Market Order', 'hello'];
+    const orders = ['Market Order', 'Limit Order'];
+
+    useEffect(() => {
+        if (selectOrder === 'Market Order') {
+            setPriceOfOrderType(BigInt(0));
+            setOrderType(0);
+        } else {
+            setPriceOfOrderType(price);
+            setOrderType(1);
+        }
+    }, [selectOrder]);
+
+    useEffect(() => {
+        var tokenObjectGetFromIndexToken = getTokenConfig(token || 'BTC');
+        setIndexToken(tokenObjectGetFromIndexToken?.address);
+    }, [token]);
 
     const onDropDownItemClick = useCallback((symbol: string) => {
         setSelectOrder(symbol);
@@ -123,17 +167,74 @@ const PlaceOrderPanel: React.FC = () => {
 
     const handleValueInput = useCallback(
         (value: number) => {
-            setValueInput(Math.round(formatUnits(value, tokenConfig?.decimals + 8)));
+            setValueInput(Math.round(formatUnits(value, tokenConfig?.decimals)));
         },
         [tokenConfig?.decimals],
     );
 
     const handleValueInputTokenTwo = useCallback(
         (value: number) => {
-            setValueInputTokenTwo(Math.round(formatUnits(value, tokenConfigTwo?.decimals + 8)));
+            setValueInputTokenTwo(Math.round(formatUnits(value, tokenConfigTwo?.decimals)));
         },
         [tokenConfigTwo?.decimals],
     );
+
+    useEffect(() => {
+        var amountRealUserInput: bigint = inputPay;
+        var priceOfTokenConfig =
+            tokenConfig?.symbol === 'WETH'
+                ? getPrice?.WETH
+                : tokenConfig?.symbol === 'BTC'
+                ? getPrice?.BTC
+                : tokenConfig?.symbol === 'USDC'
+                ? getPrice?.USDC
+                : tokenConfig?.symbol === 'ETH'
+                ? getPrice?.ETH
+                : 0;
+        switch (leverage) {
+            case '2x':
+                var sizeChange: bigint = amountRealUserInput * 2n * priceOfTokenConfig;
+                setSizeChange(sizeChange);
+                break;
+            case '5x':
+                var sizeChange: bigint = amountRealUserInput * 5n * priceOfTokenConfig;
+                setSizeChange(sizeChange);
+                break;
+            case '10x':
+                var sizeChange: bigint = amountRealUserInput * 10n * priceOfTokenConfig;
+                setSizeChange(sizeChange);
+                break;
+            case '20x':
+                var sizeChange: bigint = amountRealUserInput * 20n * priceOfTokenConfig;
+                setSizeChange(sizeChange);
+                break;
+            case '30x':
+                var sizeChange: bigint = amountRealUserInput * 30n * priceOfTokenConfig;
+                setSizeChange(sizeChange);
+                break;
+        }
+    }, [inputPay, leverage, getPrice]);
+
+    const contractWritePlaceOrder = useContractWrite({
+        address: getAddressOrderManager(),
+        abi: OrderManager,
+        value: BigInt(1e16),
+        functionName: 'placeOrder',
+        args: [
+            0,
+            side,
+            indexToken,
+            tokenConfig?.address,
+            inputPay,
+            sizeChange,
+            price,
+            orderType,
+        ],
+    });
+
+    const handlerPlaceOrder = useCallback(() => {
+        contractWritePlaceOrder?.write();
+    }, [contractWritePlaceOrder]);
 
     return (
         <>
@@ -201,7 +302,7 @@ const PlaceOrderPanel: React.FC = () => {
                                 tokens={tokensTwo}
                                 amountChange={amountTokenTwoChange}
                                 tokenChange={handleTokenTwoChange}
-                                title="Pay"
+                                title="Position Size"
                                 disable={true}
                                 disableSelect={false}
                                 valueChange={handleValueInputTokenTwo}
@@ -222,7 +323,7 @@ const PlaceOrderPanel: React.FC = () => {
                                 ))}
                             </div>
                             <StyleButton className="btn-place-order">
-                                <div>PLACE ORDER</div>
+                                <div onClick={handlerPlaceOrder}>PLACE ORDER</div>
                             </StyleButton>
 
                             <div className="info-trading-place-order">

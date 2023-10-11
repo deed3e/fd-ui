@@ -35,6 +35,10 @@ export const getAddressRouter = () => {
     return get(config, ['router']);
 };
 
+export const getAddressOrderManager = () => {
+    return get(config, ['orderManager']);
+};
+
 export const getLpSymbol = () => {
     return get(config, ['pool', 'lp']);
 };
