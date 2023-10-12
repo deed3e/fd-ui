@@ -19,23 +19,7 @@ import {
     xAxisFormatter,
     yAxisFormatter,
 } from '../../../utils/helpers';
-
-export const COLORS = [
-    '#f69b24',
-    '#2cb060',
-    '#ff45ca',
-    '#33f7ff',
-    '#8e4efe',
-    '#ab6100',
-    '#c90000',
-    '#7b7b7b',
-    '#6464ff',
-    'purple',
-    '#0ecb81',
-    '#E43E53',
-    '#3ac954',
-    '#ffb313',
-];
+import {COLORS} from './FeeChart';
 
 const NewUserChart: React.FC<{ data: NewUser[]; loading: boolean }> = ({ data, loading }) => {
     return (

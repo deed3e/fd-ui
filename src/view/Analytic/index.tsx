@@ -5,6 +5,7 @@ import { gql } from 'graphql-request';
 import { useEffect, useState } from 'react';
 import VolumeUserRankChart from './components/VolumeUserRankChart';
 import NewUserChart from './components/NewUserChart';
+import OpenInterestChart from './components/OpenInterestChart';
 
 const query = gql`
     query fee($start: Int!, $end: Int!) {
@@ -38,6 +39,17 @@ const query = gql`
             total
             trading
         }
+        openInterestDailies(
+            where: { timestamp_gte: $start, timestamp_lte: $end }
+            orderBy: timestamp
+            orderDirection: asc
+        ) {
+            long
+            short
+            timestamp
+            total
+            cumulative
+        }
     }
 `;
 
@@ -56,6 +68,15 @@ export type VolumeByUser = {
     swap: number;
     total: number;
 };
+
+export type OpenInterest = {
+    long: number;
+    short: number;
+    timestamp: number;
+    total: number;
+    cumulative: number;
+};
+
 export type NewUser = {
     timestamp: number;
     total: number;
@@ -67,6 +88,7 @@ const Analytics: React.FC = () => {
     const [data, setData] = useState<Fee[]>([]);
     const [volumeByUserData, setVolumeByUserData] = useState<VolumeByUser[]>([]);
     const [newUserData, setNewUserData] = useState<NewUser[]>([]);
+    const [openInterestData, setOpenInterestData] = useState<OpenInterest[]>([]);
 
     useEffect(() => {
         let mounted = true;
@@ -91,10 +113,19 @@ const Analytics: React.FC = () => {
                         cumulative: +parseFloat((p.cumulative / 1e30).toString()),
                     } as Fee;
                 });
+                const openInterest = res?.openInterestDailies?.map((p: OpenInterest) => {
+                    return {
+                        timestamp: +p.timestamp,
+                        long: +parseFloat((p.long / 1e30).toString()),
+                        short: +parseFloat((p.short / 1e30).toString()),
+                        total: +parseFloat((p.total / 1e30).toString()),
+                        cumulative: +parseFloat((p.cumulative / 1e30).toString()),
+                    } as OpenInterest;
+                });
                 const volumeData = res?.volumeByUsers?.map((p: any) => {
                     return {
                         wallet: p?.id,
-                        trading:+parseFloat((p?.trading / 1e30).toString()),
+                        trading: +parseFloat((p?.trading / 1e30).toString()),
                         swap: +parseFloat((p?.swap / 1e30).toString()),
                         total: +parseFloat((p?.total / 1e30).toString()),
                     } as VolumeByUser;
@@ -107,8 +138,9 @@ const Analytics: React.FC = () => {
                     } as NewUser;
                 });
                 setNewUserData(userData);
-                setVolumeByUserData(volumeData)
+                setVolumeByUserData(volumeData);
                 setData(data);
+                setOpenInterestData(openInterest);
                 setLoading(false);
             })
             .catch((err) => {
@@ -127,6 +159,9 @@ const Analytics: React.FC = () => {
             </StyledItem>
             <StyledItem>
                 <VolumeUserRankChart data={volumeByUserData} loading={loading} />
+            </StyledItem>
+            <StyledItem>
+                <OpenInterestChart data={openInterestData} loading={loading} />
             </StyledItem>
             <StyledItem>
                 <NewUserChart data={newUserData} loading={loading} />

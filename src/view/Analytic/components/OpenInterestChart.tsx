@@ -12,19 +12,19 @@ import {
     ComposedChart,
 } from 'recharts';
 import styled from 'styled-components';
-import { Fee, NewUser, VolumeByUser } from '..';
+import { Fee, OpenInterest } from '..';
 import {
     tooltipFormatter,
     tooltipLabelFormatter,
-    xAxisFormatterWallet,
+    xAxisFormatter,
     yAxisFormatter,
 } from '../../../utils/helpers';
 import {COLORS} from './FeeChart';
 
-const VolumeUserRankChart: React.FC<{ data: VolumeByUser[]; loading: boolean }> = ({ data, loading }) => {
+const OpenInterestChart: React.FC<{ data: OpenInterest[]; loading: boolean }> = ({ data, loading }) => {
     return (
         <StyledContainer>
-            <ContainerHeader>Top User Swap Volume</ContainerHeader>
+            <ContainerHeader>Open Interest</ContainerHeader>
             <ResponsiveContainer height="88%" width="95%">
                 <ComposedChart
                     width={500}
@@ -39,10 +39,18 @@ const VolumeUserRankChart: React.FC<{ data: VolumeByUser[]; loading: boolean }> 
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <YAxis tickFormatter={yAxisFormatter} width={30} />
-                    <XAxis dataKey="wallet" tickFormatter={xAxisFormatterWallet} minTickGap={30} />
+                    <YAxis
+                        dataKey="cumulative"
+                        tickCount={8}
+                        tickFormatter={yAxisFormatter}
+                        width={30}
+                        orientation="right"
+                        yAxisId="right"
+                    />
+                    <XAxis dataKey="timestamp" tickFormatter={xAxisFormatter} minTickGap={30} />
                     <Tooltip
-                             formatter={tooltipFormatter}
-                            // labelFormatter={tooltipLabelFormatter}
+                        formatter={tooltipFormatter}
+                        labelFormatter={tooltipLabelFormatter}
                         contentStyle={{
                             backgroundColor: '#29292c',
                             textAlign: 'left',
@@ -58,15 +66,25 @@ const VolumeUserRankChart: React.FC<{ data: VolumeByUser[]; loading: boolean }> 
                             paddingBottom: 2,
                         }}
                     />
-                    <Legend/>
-                    <Bar dataKey="swap" stackId="a" name="Swap" fill={COLORS[4]} />
+                    <Legend />
+                    <Bar dataKey="short" stackId="a" name="Short" fill={COLORS[6]} />
+                    <Bar dataKey="long" stackId="a" name="Long" fill={COLORS[1]} />
+                    <Line
+                        type="monotone"
+                        dot={false}
+                        strokeWidth={3}
+                        stroke={COLORS[10]}
+                        dataKey="cumulative"
+                        name="Cumulative"
+                        yAxisId="right"
+                    />
                 </ComposedChart>
             </ResponsiveContainer>
         </StyledContainer>
     );
 };
 
-export default VolumeUserRankChart;
+export default OpenInterestChart;
 
 const StyledContainer = styled.div`
     width: 100%;
