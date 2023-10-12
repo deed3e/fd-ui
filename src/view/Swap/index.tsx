@@ -35,10 +35,8 @@ import { ReactComponent as IcSwap } from '../../assets/icons/ic-swap.svg';
 import { getSwapsByCondition } from '../../apis/swap';
 import { SwapType } from '../../types';
 import { useQuery } from '@tanstack/react-query';
-import { number } from 'zod';
 import { getTimeDistance } from '../../utils/times';
 import { TokenSymbol } from '../../component/TokenSymbol';
-import { Diversity1Outlined } from '@mui/icons-material';
 import ContentLoader from '../../component/ContentLoader';
 
 enum ButtonStatus {
@@ -64,7 +62,7 @@ const contractRouter = {
     abi: RouterAbi,
 };
 
-const MIN_VALUE_INPUT = 10*1e8; // 10u
+const MIN_VALUE_INPUT = 9.9*1e8; // 10u
 
 export default function Swap() {
     const { address, isConnected } = useAccount();
@@ -598,34 +596,13 @@ export default function Swap() {
     );
 }
 
-// .header-table {
-//     background: #0F091E;
-//     display: grid;
-//     grid-template-columns: 2fr 3fr 3fr 3fr;
-//     justify-items: start;
-//     padding: 6px 0px;
-//     :first-child{
-//         justify-items: center;
-//      }
-//     .table-head {
-//         flex: 1;
-//         color: rgba(255, 255, 255,0.7);
-//         font-family: IBM Plex Mono;
-//         font-size: 14px;
-//         font-style: normal;
-//         font-weight: 400;
-//         line-height: normal;
-//         text-align: center;
-//     }
-// }
-
 const StyledTableBody = styled.div`
     width: 100%;
 `;
 
 const StyledHeader = styled.div`
     display: grid;
-    grid-template-columns: 2.5fr 5fr 5fr 3fr;
+    grid-template-columns: 3.5fr 4fr 4fr 2.5fr;
     align-items: center;
     padding: 8px 0;
     background: #0f091e;
