@@ -21,6 +21,9 @@ import Button from '@mui/material/Button';
 import twoIconDown from '../../../../assets/svg/two-icon-down.svg';
 
 import OrderManager from '../../../../abis/OrderManager.json';
+import Oracle from '../../../../abis/Oracle.json';
+import Mock from '../../../../abis/MockERC20.json';
+import { BigintDisplay } from '../../../../component/BigIntDisplay';
 
 import {
     useBalance,
@@ -40,6 +43,7 @@ import {
     getAddressRouter,
     getLpSymbol,
     getAddressOrderManager,
+    getAddressOracle,
 } from '../../../../config';
 
 interface TabPanelProps {
@@ -80,15 +84,26 @@ const PlaceOrderPanel: React.FC = () => {
     const theme = useTheme();
     const { market } = useParams();
 
-    const token = market?.toUpperCase();
+    const tokentmp = market?.toUpperCase();
+    const [token, setToken] = useState(tokentmp || 'BTC');
+
+    const tokenConfigSizeChange = getTokenConfig(token || 'BTC');
+
+    const getPriceTokenConfigSizeChange = useContractRead({
+        address: getAddressOracle(),
+        abi: Oracle,
+        functionName: 'getPrice',
+        args: [getAddress(tokenConfigSizeChange?.address ?? '')],
+    });
 
     const [value, setValue] = useState(0);
     const [selectOrder, setSelectOrder] = useState('Market Order');
-    const [price, setPrice] = useState<BigInt>(BigInt(0));
+
+
     const [inputPay, setInputPay] = useState<BigInt>(BigInt(0));
     const [inputTokenTwo, setInputTokenTwo] = useState<BigInt>(BigInt(0));
     const [tokenPay, setTokenPay] = useState<string>('BTC');
-    const [tokenTwo, setTokenTwo] = useState<string>('BTC');
+    const [tokenTwo, setTokenTwo] = useState<string>(token);
     const [valueInput, setValueInput] = useState<number>(0);
     const [valueInputTokenTwo, setValueInputTokenTwo] = useState<number>(0);
     const [leverage, setLeverage] = useState<string>('2x');
@@ -99,7 +114,46 @@ const PlaceOrderPanel: React.FC = () => {
     const [priceOfOrderType, setPriceOfOrderType] = useState<BigInt>(BigInt(0));
     const [orderType, setOrderType] = useState(0);
 
+    const tokenBTCConfig = getTokenConfig('BTC');
+    const tokenETHConfig = getTokenConfig('ETH');
+    const tokenUSDCConfig = getTokenConfig('USDC');
+    const tokenWETHConfig = getTokenConfig('WETH');
+
+    const { address, isConnected } = useAccount();
+
     const getPrice = useOracle(['BTC', 'ETH', 'USDC', 'WETH']); //['BTC','ETH']
+
+    const getPriceETH = useContractRead({
+        address: getAddressOracle(),
+        abi: Oracle,
+        functionName: 'getPrice',
+        args: [getAddress(tokenETHConfig?.address ?? '')],
+    });
+
+    const getPriceBTC = useContractRead({
+        address: getAddressOracle(),
+        abi: Oracle,
+        functionName: 'getPrice',
+        args: [getAddress(tokenBTCConfig?.address ?? '')],
+    });
+
+    const getPriceUSDC = useContractRead({
+        address: getAddressOracle(),
+        abi: Oracle,
+        functionName: 'getPrice',
+        args: [getAddress(tokenUSDCConfig?.address ?? '')],
+    });
+
+    const getPriceWETH = useContractRead({
+        address: getAddressOracle(),
+        abi: Oracle,
+        functionName: 'getPrice',
+        args: [getAddress(tokenWETHConfig?.address ?? '')],
+    });
+
+    const [price, setPrice] = useState<BigInt>(BigInt(0));
+
+    const addressOrderManager = getAddressOrderManager();
 
     const leverages = ['2x', '5x', '10x', '20x', '30x'];
 
@@ -146,8 +200,22 @@ const PlaceOrderPanel: React.FC = () => {
     }, []);
 
     const amountChangeHandler = useCallback((amount: BigInt) => {
-        setPrice(value);
+        // if (orderType == 0) {
+        setPrice(amount);
+        // } else {
+        //     setPrice(amount);
+        // }
     }, []);
+
+    useEffect(() => {
+        var tokenGet = market?.toUpperCase();
+        setToken(tokenGet || 'BTC');
+    },[market]);
+
+    useMemo(() => {
+        var tokenGet = market?.toUpperCase();
+        setToken(tokenGet || 'BTC');
+    }, [token]);
 
     const amountPayChange = useCallback((value: BigInt) => {
         setInputPay(value);
@@ -162,8 +230,8 @@ const PlaceOrderPanel: React.FC = () => {
     }, []);
 
     const handleTokenTwoChange = useCallback((symbol: string) => {
-        setTokenTwo(symbol);
-    }, []);
+        setTokenTwo(token);
+    }, [token]);
 
     const handleValueInput = useCallback(
         (value: number) => {
@@ -182,15 +250,15 @@ const PlaceOrderPanel: React.FC = () => {
     useEffect(() => {
         var amountRealUserInput: bigint = inputPay;
         var priceOfTokenConfig =
-            tokenConfig?.symbol === 'WETH'
-                ? getPrice?.WETH
-                : tokenConfig?.symbol === 'BTC'
-                ? getPrice?.BTC
-                : tokenConfig?.symbol === 'USDC'
-                ? getPrice?.USDC
-                : tokenConfig?.symbol === 'ETH'
-                ? getPrice?.ETH
-                : 0;
+            tokenConfig?.symbol == 'BTC'
+                ? getPriceBTC.data
+                : tokenConfig?.symbol == 'ETH'
+                ? getPriceETH.data
+                : tokenConfig?.symbol == 'USDC'
+                ? getPriceUSDC.data
+                : tokenConfig?.symbol == 'WETH'
+                ? getPriceWETH.data
+                : BigInt(0);
         switch (leverage) {
             case '2x':
                 var sizeChange: bigint = amountRealUserInput * 2n * priceOfTokenConfig;
@@ -232,8 +300,28 @@ const PlaceOrderPanel: React.FC = () => {
         ],
     });
 
+    const dataAlowance = useContractRead({
+        address: getAddress(tokenConfig?.address ?? ''),
+        abi: Mock,
+        functionName: 'allowance',
+        args: [address, addressOrderManager],
+    });
+
+    const contractWriteApprove = useContractWrite({
+        address: getAddress(tokenConfig?.address ?? ''),
+        abi: Mock,
+        functionName: 'approve',
+        args: [addressOrderManager, inputPay],
+    });
+
     const handlerPlaceOrder = useCallback(() => {
-        contractWritePlaceOrder?.write();
+        debugger;
+        if (inputPay < dataAlowance?.data) {
+            contractWritePlaceOrder?.write();
+        } else {
+            contractWriteApprove?.write();
+            dataAlowance.refetch();
+        }
     }, [contractWritePlaceOrder]);
 
     return (
@@ -279,8 +367,9 @@ const PlaceOrderPanel: React.FC = () => {
                                 </StyledSelectToken>
                                 <div className="input-cpn">
                                     <Input
-                                        disable={false}
+                                        disable={orderType == 0 ? true : false}
                                         amountChangeHandler={amountChangeHandler}
+                                        value={orderType == 0 ? 'Market price' : price}
                                     />
                                 </div>
                             </div>
@@ -300,12 +389,13 @@ const PlaceOrderPanel: React.FC = () => {
                             </div>
                             <InputTokenWithSelect
                                 tokens={tokensTwo}
-                                amountChange={amountTokenTwoChange}
-                                tokenChange={handleTokenTwoChange}
+                                // amountChange={amountTokenTwoChange}
+                                // tokenChange={handleTokenTwoChange}
                                 title="Position Size"
                                 disable={true}
-                                disableSelect={false}
-                                valueChange={handleValueInputTokenTwo}
+                                disableSelect
+                                // valueChange={handleValueInputTokenTwo}
+                                pickToken={token}
                             />
                             <div>
                                 <p className="leverage-title">Leverage</p>
@@ -343,7 +433,13 @@ const PlaceOrderPanel: React.FC = () => {
 
                             <div className="info-trading-place-order">
                                 <p className="title-place-order">Entry Price</p>
-                                <p className="content-place-order">-</p>
+                                <p className="content-place-order">
+                                    <BigintDisplay
+                                        value={getPriceTokenConfigSizeChange.data as BigInt}
+                                        currency="USD"
+                                        decimals={30 - tokenConfigSizeChange?.decimals ?? 0}
+                                    />
+                                </p>
                             </div>
                             <div className="info-trading-place-order">
                                 <p className="title-place-order">Liquidation Price</p>
