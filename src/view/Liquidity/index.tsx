@@ -337,7 +337,6 @@ export default function Liquidity() {
     }, [tokenFrom, inputFromAmount, dataAlowance.data]);
 
     const handleRemoveLiquid = useCallback(() => {
-        debugger;
         if (dataAlowanceRemove?.data < inputRemoveFromAmount) {
             contractWriteApproveRemove.write();
             setRefeshRemove(!refreshRemove);
@@ -589,7 +588,7 @@ export default function Liquidity() {
         }
     }, [
         inputRemoveFromAmount,
-        tokenConfig?.symbol,
+        tokenRemoveConfig?.symbol,
         calcRemoveLiquidity.data,
         balanceBTC.data?.value,
         balanceETH.data?.value,
@@ -656,6 +655,7 @@ export default function Liquidity() {
         isConnected,
         waitForRemoveLiquid?.isLoading,
         useForApproveRemove.isLoading,
+        insufficientPoolRemove
     ]);
 
     const buttonText = useMemo(() => {
@@ -700,7 +700,7 @@ export default function Liquidity() {
             default:
                 return 'Remove';
         }
-    }, [statusForRemove]);
+    }, [statusForRemove, insufficientPoolRemove]);
 
     const handleInsufficientBalance = useCallback((check: boolean) => {
         setInsufficientBalance(check);

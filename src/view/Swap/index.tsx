@@ -32,12 +32,21 @@ import {
     StatusHistoryTransaction,
 } from '../../component/TransactionHistory';
 import { ReactComponent as IcSwap } from '../../assets/icons/ic-swap.svg';
+
+import dowIcon from '../../assets/image/Expand_down_double.png';
+
 import { getSwapsByCondition } from '../../apis/swap';
 import { SwapType } from '../../types';
 import { useQuery } from '@tanstack/react-query';
 import { getTimeDistance } from '../../utils/times';
 import { TokenSymbol } from '../../component/TokenSymbol';
 import ContentLoader from '../../component/ContentLoader';
+
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import Slide from '@mui/material/Slide';
+import { TransitionProps } from '@mui/material/transitions';
+import * as React from 'react';
 
 enum ButtonStatus {
     notConnect,
@@ -52,6 +61,15 @@ enum ButtonStatus {
     timeOutOracle,
 }
 
+const Transition = React.forwardRef(function Transition(
+    props: TransitionProps & {
+        children: React.ReactElement<any, any>;
+    },
+    ref: React.Ref<unknown>,
+) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const contractPool = {
     address: getAddressPool(),
     abi: PoolAbi,
@@ -62,7 +80,7 @@ const contractRouter = {
     abi: RouterAbi,
 };
 
-const MIN_VALUE_INPUT = 9.9*1e8; // 10u
+const MIN_VALUE_INPUT = 9.9 * 1e8; // 10u
 
 export default function Swap() {
     const { address, isConnected } = useAccount();
@@ -78,6 +96,7 @@ export default function Swap() {
     const tokenFromConfig = getTokenConfig(tokenFrom);
     const tokenToConfig = getTokenConfig(tokenTo);
     const getPrice = useOracle([tokenFromConfig?.symbol ?? '', tokenToConfig?.symbol ?? '']);
+    const [open, setOpen] = useState(false);
 
     const swapQuery = useQuery({
         queryKey: ['getSwapsByCondition', address, '1'],
@@ -327,7 +346,7 @@ export default function Swap() {
         valueInput,
         waitingTransaction?.isLoading,
         waitingTransactionApprove?.isLoading,
-        insufficientBalance
+        insufficientBalance,
     ]);
 
     const buttonText = useMemo(() => {
@@ -370,6 +389,7 @@ export default function Swap() {
                 break;
             default:
                 contractRouterWrite?.write?.();
+                setOpen(false);
         }
     }, [contractApproveWrite, contractRouterWrite, status]);
 
@@ -419,6 +439,14 @@ export default function Swap() {
         setPickTokenFrom(tokenToConfig?.symbol ?? '');
         setPickTokenTo(tokenTmp);
     }, [tokenFromConfig, tokenToConfig]);
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
 
     return (
         <div className="container">
@@ -582,15 +610,140 @@ export default function Swap() {
                 </div>
 
                 <StyledWrapButton>
-                    <StyleButton onClick={handleOnClick} disabled={disableButton}>
-                        <div>{buttonText}</div>
-                        <img
-                            hidden={status !== ButtonStatus.loading}
-                            src={IcLoading}
-                            alt=""
-                        ></img>
-                    </StyleButton>
+                    {buttonText != 'Approve' && (
+                        <StyleButton onClick={handleClickOpen} disabled={disableButton}>
+                            <div>{buttonText}</div>
+                            <img
+                                hidden={status !== ButtonStatus.loading}
+                                src={IcLoading}
+                                alt=""
+                            ></img>
+                        </StyleButton>
+                    )}
+
+                    {buttonText === 'Approve' && (
+                        <StyleButton onClick={handleOnClick} disabled={disableButton}>
+                            <div>{buttonText}</div>
+                            <img
+                                hidden={status !== ButtonStatus.loading}
+                                src={IcLoading}
+                                alt=""
+                            ></img>
+                        </StyleButton>
+                    )}
                 </StyledWrapButton>
+
+                <Dialog
+                    open={open}
+                    TransitionComponent={Transition}
+                    keepMounted
+                    onClose={handleClose}
+                    aria-describedby="alert-dialog-slide-description"
+                >
+                    <div>
+                        <div id="alert-dialog-slide-description">
+                            <div className="popup-liquidity-container">
+                                <div className="header-popup">
+                                    <p className="content-header-popup">
+                                        Swap {tokenFromConfig?.symbol} to{' '}
+                                        {tokenToConfig?.symbol}
+                                    </p>
+                                </div>
+                                <div className="body-content-popup">
+                                    <StyledContainerDiv>
+                                        <InputTokenWithSelect
+                                            title="From"
+                                            tokens={tokens}
+                                            amountChange={amountFromChange}
+                                            tokenChange={handleTokenFromChange}
+                                            refresh={refresh}
+                                            valueChange={handleValueInput}
+                                            disable={true}
+                                            disableSelect={true}
+                                            insufficientBalanceChange={
+                                                handleInsufficientBalance
+                                            }
+                                            pickToken={pickTokenFrom}
+                                        />
+                                    </StyledContainerDiv>
+                                    <div style={{ textAlign: 'center' }}>
+                                        <img src={dowIcon} alt="dow icon" />
+                                    </div>
+                                    <div>
+                                        <InputTokenWithSelect
+                                            title="To"
+                                            disable
+                                            disableSelect={status === ButtonStatus.loading}
+                                            disableOverBalance
+                                            value={outValue}
+                                            tokens={tokens}
+                                            amountChange={amountToChange}
+                                            tokenChange={handleTokenToChange}
+                                            refresh={refresh}
+                                            pickToken={pickTokenTo}
+                                        />
+                                    </div>
+                                    <div className="content-detail content-detail-first">
+                                        <p className="title-detail">Price</p>
+                                        <p className="info-detail">
+                                            1{' '}
+                                            <span className="title-detail">
+                                                {tokenFromConfig?.symbol}
+                                            </span>{' '}
+                                            ={' '}
+                                            <BigintDisplay
+                                                value={priceRatio}
+                                                decimals={18}
+                                                fractionDigits={
+                                                    tokenToConfig?.fractionDigits + 2
+                                                }
+                                                threshold={tokenToConfig?.threshold}
+                                            ></BigintDisplay>{' '}
+                                            <span className="title-detail">
+                                                {tokenToConfig?.symbol}
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    <div className="content-detail">
+                                        <p className="title-detail">Minimum Receive</p>
+                                        <p className="info-detail">
+                                            <BigintDisplay
+                                                value={minAmountOut}
+                                                decimals={30}
+                                                fractionDigits={
+                                                    tokenToConfig.fractionDigits ?? 0 + 2
+                                                }
+                                                threshold={tokenToConfig?.threshold}
+                                            ></BigintDisplay>{' '}
+                                            {tokenToConfig?.symbol}
+                                        </p>
+                                    </div>
+                                    <div className="content-detail">
+                                        <p className="title-detail">Fees</p>
+                                        <p className="info-detail">
+                                            {fee === BigInt(0) ? (
+                                                0
+                                            ) : (
+                                                <BigintDisplay
+                                                    value={fee}
+                                                    decimals={tokenFromConfig?.decimals + 8}
+                                                    fractionDigits={2}
+                                                ></BigintDisplay>
+                                            )}{' '}
+                                            $
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="button-popup">
+                            <Button className="agree-btn" onClick={handleOnClick}>
+                                CONFIRM
+                            </Button>
+                        </div>
+                    </div>
+                </Dialog>
             </div>
         </div>
     );
