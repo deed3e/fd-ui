@@ -114,6 +114,8 @@ const PlaceOrderPanel: React.FC = () => {
     const [indexToken, setIndexToken] = useState(getTokenConfig('BTC')?.address);
     const [priceOfOrderType, setPriceOfOrderType] = useState<BigInt>(BigInt(0));
     const [orderType, setOrderType] = useState(0);
+    const [collateralValue, setCollateralValue] = useState<BigInt>(BigInt(0));
+    const [entryPriceLimitOrder, setEntryPriceLimitOrder] = useState<BigInt>(BigInt(0));
 
     const tokenBTCConfig = getTokenConfig('BTC');
     const tokenETHConfig = getTokenConfig('ETH');
@@ -261,6 +263,8 @@ const PlaceOrderPanel: React.FC = () => {
                         : tokenConfig?.symbol == 'WETH'
                             ? getPriceWETH.data
                             : BigInt(0);
+
+        setCollateralValue(amountRealUserInput * priceOfTokenConfig);
         switch (leverage) {
             case '2x':
                 var sizeChange: bigint = amountRealUserInput * 2n * priceOfTokenConfig;
@@ -283,7 +287,7 @@ const PlaceOrderPanel: React.FC = () => {
                 setSizeChange(sizeChange);
                 break;
         }
-    }, [inputPay, leverage, getPrice, side]);
+    }, [inputPay, leverage, getPrice, side, collateralValue]);
 
     const contractWritePlaceOrder = useContractWrite({
         address: getAddressOrderManager(),
@@ -324,6 +328,24 @@ const PlaceOrderPanel: React.FC = () => {
             dataAlowance.refetch();
         }
     }, [contractWritePlaceOrder]);
+
+    const balancePool = useBalance({
+        address: getAddressPool(),
+        token: tokenConfig?.address,
+    });
+
+    useEffect(() => {
+        var value = parseUnits(price.toString(), tokenConfigSizeChange?.decimals ?? 0) as BigInt;
+        var priceToken = tokenConfigSizeChange?.symbol === 'BTC' ? getPriceBTC.data :
+            tokenConfigSizeChange?.symbol === 'ETH' ? getPriceETH.data :
+                tokenConfigSizeChange?.symbol === 'USDC' ? getPriceUSDC.data :
+                    tokenConfigSizeChange?.symbol === 'WETH' ? getPriceWETH.data : BigInt(0);
+        setEntryPriceLimitOrder(value * priceToken);
+    }, [price]);
+
+
+    console.log("getPriceTokenConfigSizeChange.data", getPriceTokenConfigSizeChange.data)
+    console.log("entry", entryPriceLimitOrder);
 
     return (
         <>
@@ -419,27 +441,42 @@ const PlaceOrderPanel: React.FC = () => {
 
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Collateral Asset</p>
-                                    <p className="content-place-order">BTC</p>
+                                    <p className="content-place-order">{tokenConfig?.symbol}</p>
                                 </div>
 
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Collateral Value</p>
-                                    <p className="content-place-order">-</p>
+                                    <p className="content-place-order">
+                                        <BigintDisplay
+                                            value={collateralValue as BigInt}
+                                            currency="USD"
+                                            decimals={30}
+                                        />
+                                    </p>
                                 </div>
 
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Laverage</p>
-                                    <p className="content-place-order">-</p>
+                                    <p className="content-place-order">{leverage}</p>
                                 </div>
 
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Entry Price</p>
                                     <p className="content-place-order">
-                                        <BigintDisplay
-                                            value={getPriceTokenConfigSizeChange.data as BigInt}
-                                            currency="USD"
-                                            decimals={30 - tokenConfigSizeChange?.decimals ?? 0}
-                                        />
+                                        {selectOrder === 'Market Order' &&
+                                            <BigintDisplay
+                                                value={getPriceTokenConfigSizeChange.data as BigInt}
+                                                currency="USD"
+                                                decimals={30 - tokenConfigSizeChange?.decimals ?? 0}
+                                            />
+                                        }
+                                        {selectOrder != 'Market Order' &&
+                                            <BigintDisplay
+                                                value={entryPriceLimitOrder}
+                                                currency="USD"
+                                                decimals={30}
+                                            />
+                                        }
                                     </p>
                                 </div>
                                 <div className="info-trading-place-order">
@@ -458,7 +495,15 @@ const PlaceOrderPanel: React.FC = () => {
 
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Available Liquidity</p>
-                                    <p className="content-place-order">-</p>
+                                    <p className="content-place-order">
+                                        <BigintDisplay
+                                            value={balancePool?.data?.value}
+                                            decimals={tokenConfig?.decimals ?? 0}
+                                            fractionDigits={tokenConfig?.fractionDigits}
+                                            threshold={tokenConfig?.threshold}
+                                        ></BigintDisplay>{' '}
+                                        <span className="title-detail">{tokenConfig?.symbol}</span>
+                                    </p>
                                 </div>
                             </div>
                         </TabPanel>
@@ -534,27 +579,42 @@ const PlaceOrderPanel: React.FC = () => {
 
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Collateral Asset</p>
-                                    <p className="content-place-order">BTC</p>
+                                    <p className="content-place-order">{tokenConfig?.symbol}</p>
                                 </div>
 
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Collateral Value</p>
-                                    <p className="content-place-order">-</p>
+                                    <p className="content-place-order">
+                                        <BigintDisplay
+                                            value={collateralValue as BigInt}
+                                            currency="USD"
+                                            decimals={30}
+                                        />
+                                    </p>
                                 </div>
 
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Laverage</p>
-                                    <p className="content-place-order">-</p>
+                                    <p className="content-place-order">{leverage}</p>
                                 </div>
 
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Entry Price</p>
                                     <p className="content-place-order">
-                                        <BigintDisplay
-                                            value={getPriceTokenConfigSizeChange.data as BigInt}
-                                            currency="USD"
-                                            decimals={30 - tokenConfigSizeChange?.decimals ?? 0}
-                                        />
+                                        {selectOrder === 'Market Order' &&
+                                            <BigintDisplay
+                                                value={getPriceTokenConfigSizeChange.data as BigInt}
+                                                currency="USD"
+                                                decimals={30 - tokenConfigSizeChange?.decimals ?? 0}
+                                            />
+                                        }
+                                        {selectOrder != 'Market Order' &&
+                                            <BigintDisplay
+                                                value={entryPriceLimitOrder}
+                                                currency="USD"
+                                                decimals={30}
+                                            />
+                                        }
                                     </p>
                                 </div>
                                 <div className="info-trading-place-order">
@@ -573,7 +633,15 @@ const PlaceOrderPanel: React.FC = () => {
 
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Available Liquidity</p>
-                                    <p className="content-place-order">-</p>
+                                    <p className="content-place-order">
+                                        <BigintDisplay
+                                            value={balancePool?.data?.value}
+                                            decimals={tokenConfig?.decimals ?? 0}
+                                            fractionDigits={tokenConfig?.fractionDigits}
+                                            threshold={tokenConfig?.threshold}
+                                        ></BigintDisplay>{' '}
+                                        <span className="title-detail">{tokenConfig?.symbol}</span>
+                                    </p>
                                 </div>
                             </div>
                         </TabPanel>
