@@ -611,7 +611,7 @@ export default function Swap() {
 
                 <StyledWrapButton>
                     {/* {buttonText != 'Approve' && ( */}
-                        <StyleButton onClick={handleClickOpen} disabled={disableButton}>
+                        <StyleButton onClick={handleOnClick} disabled={disableButton}>
                             <div>{buttonText}</div>
                             <img
                                 hidden={status !== ButtonStatus.loading}

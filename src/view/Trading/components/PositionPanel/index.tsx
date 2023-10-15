@@ -1,11 +1,77 @@
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import './positionPanel.scss';
-
 import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { graphClient } from '../../../../utils/constant';
+import { gql } from 'graphql-request';
+import { useAccount } from 'wagmi';
+
+const query = gql`
+    query _query($wallet: String!) {
+        orders(orderBy: id, where: { wallet: $wallet, status: "OPEN" }, orderDirection: asc) {
+            status
+            sizeChange
+            side
+            price
+            positionType
+            orderType
+            indexToken
+            expiresAt
+            collateralToken
+            collateralAmount
+            id
+        }
+
+        positions(where: { wallet: $wallet }) {
+            id
+            entryPrice
+            entryInterestRate
+            createdAtTimestamp
+            collateralValue
+            collateralToken
+            leverage
+            market
+            realizedPnl
+            reserveAmount
+            side
+            size
+            status
+        }
+    }
+`;
+
+export type Order = {
+    status: string;
+    sizeChange: string;
+    side: string;
+    price: string;
+    positionType: string;
+    orderType: string;
+    indexToken: string;
+    expiresAt: string;
+    collateralToken: string;
+    collateralAmount: string;
+    id: string;
+};
+
+export type Position = {
+    id: string;
+    entryPrice:  string;
+    entryInterestRate:  string;
+    createdAtTimestamp:  string;
+    collateralValue:  string;
+    collateralToken: string;
+    leverage:  string;
+    market: string;
+    realizedPnl:  string;
+    reserveAmount:  string;
+    side:  string;
+    size:  string;
+    status: string;
+};
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -15,6 +81,71 @@ interface TabPanelProps {
 
 function CustomTabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
+    const [loading, setLoading] = useState(true);
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [positions, setPositions] = useState<Position[]>([]);
+    const { address } = useAccount();
+
+    useEffect(() => {
+        let mounted = true;
+        graphClient
+            .request(query, {
+                wallet: address,
+            })
+            .then((res: any) => {
+                if (!mounted) {
+                    return;
+                }
+                console.log('res', res);
+                const dataPosition = res?.positions?.map((p: Position) => {
+                    return {
+                        id: p.id,
+                        entryPrice: p.entryPrice,
+                        entryInterestRate: p.entryInterestRate,
+                        createdAtTimestamp: p.createdAtTimestamp,
+                        collateralValue: p.collateralValue,
+                        collateralToken: p.collateralToken,
+                        leverage: p.leverage,
+                        market: p.market,
+                        realizedPnl: p.realizedPnl,
+                        reserveAmount: p.reserveAmount,
+                        side: p.side,
+                        size: p.size,
+                        status: p.status,
+                    } as Position;
+                 });
+
+                const dataOrder = res?.orders?.map((p: Order) => {
+                    return {
+                        id: p.id,
+                        sizeChange: p.sizeChange,
+                        price: p.price,
+                        positionType: p.positionType,
+                        orderType: p.orderType,
+                        indexToken: p.indexToken,
+                        expiresAt: p.expiresAt,
+                        side: p.side,
+                        collateralToken: p.collateralToken,
+                        collateralAmount: p.collateralAmount,
+                        status: p.status,
+                    } as Order;
+                 });
+
+                // });
+
+                setPositions(dataPosition);
+                setOrders(dataOrder);
+                setLoading(false);
+            });
+        // .catch((err) => {
+        //     console.log('err', err);
+        //     setLoading(false);
+        // });
+
+        return () => {
+            mounted = false;
+        };
+    }, [address]);
 
     return (
         <div
