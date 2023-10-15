@@ -393,7 +393,6 @@ const PlaceOrderPanel: React.FC = () => {
                                 // tokenChange={handleTokenTwoChange}
                                 title="Position Size"
                                 disable={true}
-                                disableSelect
                                 // valueChange={handleValueInputTokenTwo}
                                 pickToken={token}
                             />

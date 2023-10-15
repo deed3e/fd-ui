@@ -610,7 +610,7 @@ export default function Swap() {
                 </div>
 
                 <StyledWrapButton>
-                    {buttonText != 'Approve' && (
+                    {/* {buttonText != 'Approve' && ( */}
                         <StyleButton onClick={handleClickOpen} disabled={disableButton}>
                             <div>{buttonText}</div>
                             <img
@@ -619,8 +619,8 @@ export default function Swap() {
                                 alt=""
                             ></img>
                         </StyleButton>
-                    )}
-
+                    {/* )} */}
+{/* 
                     {buttonText === 'Approve' && (
                         <StyleButton onClick={handleOnClick} disabled={disableButton}>
                             <div>{buttonText}</div>
@@ -630,10 +630,10 @@ export default function Swap() {
                                 alt=""
                             ></img>
                         </StyleButton>
-                    )}
+                    )} */}
                 </StyledWrapButton>
 
-                <Dialog
+                {/* <Dialog
                     open={open}
                     TransitionComponent={Transition}
                     keepMounted
@@ -743,7 +743,7 @@ export default function Swap() {
                             </Button>
                         </div>
                     </div>
-                </Dialog>
+                </Dialog> */}
             </div>
         </div>
     );
