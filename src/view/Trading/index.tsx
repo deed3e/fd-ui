@@ -30,7 +30,7 @@ const Trading: React.FC = () => {
                 <TradingViewPanel setPrice={handleSetPrice} />
             </StyledTradingViewContainer>
             <StyledPositionContainer>
-                <PositionPanel />
+                <PositionPanel current={price?.current} />
             </StyledPositionContainer>
             <StyledPlaceOrderContainer>
                 <PlaceOrderPanel />

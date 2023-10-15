@@ -21,7 +21,7 @@ export const getAddressOracle = () => {
 export const getSymbolByAddress = (address: Address) => {
     const symbol = findKey(
       get(config, ['tokens']),
-        (item) => item.address === address
+        (item) => item.address.toLowerCase() === address.toLowerCase()
     ) ;
 
     return symbol;
