@@ -17,6 +17,7 @@ import { ReactComponent as IconArrowDown } from '../../../../assets/svg/ic-arrow
 
 import Input from './components/Input';
 import InputTokenWithSelect from '../../../../component/InputToken/InputTokenWithSelect';
+import InputTokenWithoutSelect from './components/InputTokenWithoutSelect';
 import Button from '@mui/material/Button';
 import twoIconDown from '../../../../assets/svg/two-icon-down.svg';
 
@@ -170,6 +171,7 @@ const PlaceOrderPanel: React.FC = () => {
     const tokenConfigTwo = getTokenConfig(tokenPay);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setInputPay(BigInt(0));
         setSide(newValue);
         setValue(newValue);
     };
@@ -222,8 +224,8 @@ const PlaceOrderPanel: React.FC = () => {
     }, []);
 
     const amountTokenTwoChange = useCallback((value: BigInt) => {
-        setInputTokenTwo(value);
-    }, []);
+        setInputTokenTwo(sizeChange);
+    }, [sizeChange]);
 
     const handleTokenPayChange = useCallback((symbol: string) => {
         setTokenPay(symbol);
@@ -242,7 +244,7 @@ const PlaceOrderPanel: React.FC = () => {
 
     const handleValueInputTokenTwo = useCallback(
         (value: number) => {
-            setValueInputTokenTwo(Math.round(formatUnits(value, tokenConfigTwo?.decimals)));
+            setValueInputTokenTwo(sizeChange);
         },
         [tokenConfigTwo?.decimals],
     );
@@ -281,7 +283,7 @@ const PlaceOrderPanel: React.FC = () => {
                 setSizeChange(sizeChange);
                 break;
         }
-    }, [inputPay, leverage, getPrice]);
+    }, [inputPay, leverage, getPrice,side]);
 
     const contractWritePlaceOrder = useContractWrite({
         address: getAddressOrderManager(),
@@ -315,7 +317,6 @@ const PlaceOrderPanel: React.FC = () => {
     });
 
     const handlerPlaceOrder = useCallback(() => {
-        debugger;
         if (inputPay < dataAlowance?.data) {
             contractWritePlaceOrder?.write();
         } else {
@@ -387,14 +388,15 @@ const PlaceOrderPanel: React.FC = () => {
                             <div className="two-icon-down">
                                 <img src={twoIconDown} alt="twoicon" />
                             </div>
-                            <InputTokenWithSelect
+                            <InputTokenWithoutSelect
                                 tokens={tokensTwo}
-                                // amountChange={amountTokenTwoChange}
-                                // tokenChange={handleTokenTwoChange}
+                                amountChange={amountTokenTwoChange}
+                                tokenChange={handleTokenTwoChange}
                                 title="Position Size"
                                 disable={true}
-                                // valueChange={handleValueInputTokenTwo}
+                                valueChange={handleValueInputTokenTwo}
                                 pickToken={token}
+                                value={formatUnits(sizeChange as bigint, 30)} 
                             />
                             <div>
                                 <p className="leverage-title">Leverage</p>
@@ -459,7 +461,117 @@ const PlaceOrderPanel: React.FC = () => {
                             </div>
                         </TabPanel>
                         <TabPanel value={value} index={1} dir={theme.direction}>
-                            Item Two
+                            <div className="order-price-title">
+                                <p className="order-type">Order Type</p>
+                                <p className="price-trading">Price</p>
+                            </div>
+                            <div className="dropdown-price">
+                                <StyledSelectToken>
+                                    <DropdownSelectOrder
+                                        selectedOrder={selectOrder}
+                                        orders={orders}
+                                        position={'right'}
+                                        onSelect={onDropDownItemClick}
+                                    >
+                                        <StyledTokenSelect pointer={orders?.length >= 0}>
+                                            <span>{selectOrder}</span>
+                                            <IconArrowDown />
+                                        </StyledTokenSelect>
+                                    </DropdownSelectOrder>
+                                </StyledSelectToken>
+                                <div className="input-cpn">
+                                    <Input
+                                        disable={orderType == 0 ? true : false}
+                                        amountChangeHandler={amountChangeHandler}
+                                        value={orderType == 0 ? 'Market price' : price}
+                                    />
+                                </div>
+                            </div>
+                            <div className="pay-input-select">
+                                <InputTokenWithSelect
+                                    tokens={tokens}
+                                    amountChange={amountPayChange}
+                                    tokenChange={handleTokenPayChange}
+                                    title="Pay"
+                                    disable={false}
+                                    disableSelect={false}
+                                    valueChange={handleValueInput}
+                                />
+                            </div>
+                            <div className="two-icon-down">
+                                <img src={twoIconDown} alt="twoicon" />
+                            </div>
+                            <InputTokenWithoutSelect
+                                tokens={tokensTwo}
+                                amountChange={amountTokenTwoChange}
+                                tokenChange={handleTokenTwoChange}
+                                title="Position Size"
+                                disable={true}
+                                valueChange={handleValueInputTokenTwo}
+                                pickToken={token}
+                                value={formatUnits(sizeChange as bigint, 30)} 
+                            />
+                            <div>
+                                <p className="leverage-title">Leverage</p>
+                            </div>
+                            <div className="item-leverage-container">
+                                {leverages?.map((i) => (
+                                    <div
+                                        className={`item-leverage ${
+                                            i === leverage ? 'active-leverage' : ''
+                                        }`}
+                                        onClick={() => setLeverage(i)}
+                                    >
+                                        {i}
+                                    </div>
+                                ))}
+                            </div>
+                            <StyleButton className="btn-place-order">
+                                <div onClick={handlerPlaceOrder}>PLACE ORDER</div>
+                            </StyleButton>
+
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Collateral Asset</p>
+                                <p className="content-place-order">BTC</p>
+                            </div>
+
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Collateral Value</p>
+                                <p className="content-place-order">-</p>
+                            </div>
+
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Laverage</p>
+                                <p className="content-place-order">-</p>
+                            </div>
+
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Entry Price</p>
+                                <p className="content-place-order">
+                                    <BigintDisplay
+                                        value={getPriceTokenConfigSizeChange.data as BigInt}
+                                        currency="USD"
+                                        decimals={30 - tokenConfigSizeChange?.decimals ?? 0}
+                                    />
+                                </p>
+                            </div>
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Liquidation Price</p>
+                                <p className="content-place-order">-</p>
+                            </div>
+                            <div>
+                                <p className="leverage-title market-info-title">Market Info</p>
+                            </div>
+
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Borrow Fee</p>
+                                <p className="content-place-order">0</p>
+                            </div>
+
+                            <div className="info-trading-place-order">
+                                <p className="title-place-order">Available Liquidity</p>
+                                <p className="content-place-order">-</p>
+                            </div>
                         </TabPanel>
                     </SwipeableViews>
                 </div>
