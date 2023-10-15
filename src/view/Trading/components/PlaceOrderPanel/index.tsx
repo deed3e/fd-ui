@@ -321,7 +321,7 @@ const PlaceOrderPanel: React.FC = () => {
     });
 
     const handlerPlaceOrder = useCallback(() => {
-        if (inputPay < dataAlowance?.data) {
+        if (inputPay <= dataAlowance?.data) {
             contractWritePlaceOrder?.write();
         } else {
             contractWriteApprove?.write();
