@@ -8,6 +8,8 @@ import Box from '@mui/material/Box';
 import { graphClient } from '../../../../utils/constant';
 import { gql } from 'graphql-request';
 import { useAccount } from 'wagmi';
+import { BigintDisplay } from '../../../../component/BigIntDisplay';
+import { getSymbolByAddress, getTokenConfig } from '../../../../config';
 
 const query = gql`
     query _query($wallet: String!) {
@@ -59,17 +61,17 @@ export type Order = {
 
 export type Position = {
     id: string;
-    entryPrice:  string;
-    entryInterestRate:  string;
-    createdAtTimestamp:  string;
-    collateralValue:  string;
+    entryPrice: string;
+    entryInterestRate: string;
+    createdAtTimestamp: string;
+    collateralValue: string;
     collateralToken: string;
-    leverage:  string;
+    leverage: string;
     market: string;
-    realizedPnl:  string;
-    reserveAmount:  string;
-    side:  string;
-    size:  string;
+    realizedPnl: string;
+    reserveAmount: string;
+    side: string;
+    size: string;
     status: string;
 };
 
@@ -81,71 +83,6 @@ interface TabPanelProps {
 
 function CustomTabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
-    const [loading, setLoading] = useState(true);
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [positions, setPositions] = useState<Position[]>([]);
-    const { address } = useAccount();
-
-    useEffect(() => {
-        let mounted = true;
-        graphClient
-            .request(query, {
-                wallet: address,
-            })
-            .then((res: any) => {
-                if (!mounted) {
-                    return;
-                }
-                console.log('res', res);
-                const dataPosition = res?.positions?.map((p: Position) => {
-                    return {
-                        id: p.id,
-                        entryPrice: p.entryPrice,
-                        entryInterestRate: p.entryInterestRate,
-                        createdAtTimestamp: p.createdAtTimestamp,
-                        collateralValue: p.collateralValue,
-                        collateralToken: p.collateralToken,
-                        leverage: p.leverage,
-                        market: p.market,
-                        realizedPnl: p.realizedPnl,
-                        reserveAmount: p.reserveAmount,
-                        side: p.side,
-                        size: p.size,
-                        status: p.status,
-                    } as Position;
-                 });
-
-                const dataOrder = res?.orders?.map((p: Order) => {
-                    return {
-                        id: p.id,
-                        sizeChange: p.sizeChange,
-                        price: p.price,
-                        positionType: p.positionType,
-                        orderType: p.orderType,
-                        indexToken: p.indexToken,
-                        expiresAt: p.expiresAt,
-                        side: p.side,
-                        collateralToken: p.collateralToken,
-                        collateralAmount: p.collateralAmount,
-                        status: p.status,
-                    } as Order;
-                 });
-
-                // });
-
-                setPositions(dataPosition);
-                setOrders(dataOrder);
-                setLoading(false);
-            });
-        // .catch((err) => {
-        //     console.log('err', err);
-        //     setLoading(false);
-        // });
-
-        return () => {
-            mounted = false;
-        };
-    }, [address]);
 
     return (
         <div
@@ -173,10 +110,72 @@ function a11yProps(index: number) {
 
 const PositionPanel: React.FC = () => {
     const [value, setValue] = React.useState(0);
-
+    const [loading, setLoading] = useState(true);
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [positions, setPositions] = useState<Position[]>([]);
+    const { address } = useAccount();
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
+
+    useEffect(() => {
+        let mounted = true;
+        graphClient
+            .request(query, {
+                wallet: '0xc0f6b23cf3719493a07727efe9aa86bbc123e184',
+            })
+            .then((res: any) => {
+                if (!mounted) {
+                    return;
+                }
+                console.log('res', res);
+                const dataPosition = res?.positions?.map((p: Position) => {
+                    return {
+                        id: p.id,
+                        entryPrice: p.entryPrice,
+                        entryInterestRate: p.entryInterestRate,
+                        createdAtTimestamp: p.createdAtTimestamp,
+                        collateralValue: p.collateralValue,
+                        collateralToken: p.collateralToken,
+                        leverage: p.leverage,
+                        market: p.market,
+                        realizedPnl: p.realizedPnl,
+                        reserveAmount: p.reserveAmount,
+                        side: p.side,
+                        size: p.size,
+                        status: p.status,
+                    } as Position;
+                });
+
+                const dataOrder = res?.orders?.map((p: Order) => {
+                    return {
+                        id: p.id,
+                        sizeChange: p.sizeChange,
+                        price: p.price,
+                        positionType: p.positionType,
+                        orderType: p.orderType,
+                        indexToken: p.indexToken,
+                        expiresAt: p.expiresAt,
+                        side: p.side,
+                        collateralToken: p.collateralToken,
+                        collateralAmount: p.collateralAmount,
+                        status: p.status,
+                    } as Order;
+                });
+
+                setPositions(dataPosition);
+                setOrders(dataOrder);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.log('err', err);
+                setLoading(false);
+            });
+
+        return () => {
+            mounted = false;
+        };
+    }, [address]);
 
     return (
         <>
@@ -212,54 +211,54 @@ const PositionPanel: React.FC = () => {
                                 <div className="header-title-position">Action</div>
                             </div>
                         </div>
-                        <div className="padding-for-body-table active">
-                            <div className="content-body-table">
-                                <div className="header-table-position header-table-position-2">
-                                    <div className="header-title-position">
-                                        <p className="token-positon">BTC/USD</p>
-                                        <p className="long-shot-position">Long</p>
+                        {positions.map((item, index) => (
+                            <div className="padding-for-body-table" key={index}>
+                                <div className="content-body-table">
+                                    <div className="header-table-position header-table-position-2">
+                                        <div className="header-title-position">
+                                            <p className="token-positon">BTC/USD</p>
+                                            <p className="long-shot-position">Long</p>
+                                        </div>
+                                        <div className="header-title-position">
+                                            <p className="size-position">
+                                                $<BigintDisplay
+                                                    value={item.size}
+                                                    decimals={30}
+                                                />
+                                            </p>
+                                        </div>
+                                        <div className="header-title-position">
+                                            <p className="net-value-top">
+                                            $<BigintDisplay
+                                                    value={item.collateralValue}
+                                                    decimals={30}
+    
+                                                />
+                                            </p>
+                                            <p className="net-value-bottom">
+                                            $<BigintDisplay
+                                                    value={item.realizedPnl}
+                                                    decimals={30}
+    
+                                                />
+                                            </p>
+                                        </div>
+                                        <div className="header-title-position">
+                                            <p className="entry-price-position"> $<BigintDisplay
+                                                    value={item.entryPrice}
+                                                    decimals={30 - getTokenConfig(getSymbolByAddress(item.market))?.decimals}
+                                                /></p>
+                                        </div>
+                                        <div className="header-title-position">
+                                            <p className="liquidation-price-position">
+                                                -
+                                            </p>
+                                        </div>
+                                        <div className="header-title-position">Close</div>
                                     </div>
-                                    <div className="header-title-position">
-                                        <p className="size-position">19.92$</p>
-                                    </div>
-                                    <div className="header-title-position">
-                                        <p className="net-value-top">$9.92</p>
-                                        <p className="net-value-bottom">-$1.2</p>
-                                    </div>
-                                    <div className="header-title-position">
-                                        <p className="entry-price-position">$23,654.92</p>
-                                    </div>
-                                    <div className="header-title-position">
-                                        <p className="liquidation-price-position">$23,654.92</p>
-                                    </div>
-                                    <div className="header-title-position">Close</div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="padding-for-body-table">
-                            <div className="content-body-table">
-                                <div className="header-table-position header-table-position-2">
-                                    <div className="header-title-position">
-                                        <p className="token-positon">BTC/USD</p>
-                                        <p className="long-shot-position">Long</p>
-                                    </div>
-                                    <div className="header-title-position">
-                                        <p className="size-position">19.92$</p>
-                                    </div>
-                                    <div className="header-title-position">
-                                        <p className="net-value-top">$9.92</p>
-                                        <p className="net-value-bottom">-$1.2</p>
-                                    </div>
-                                    <div className="header-title-position">
-                                        <p className="entry-price-position">$23,654.92</p>
-                                    </div>
-                                    <div className="header-title-position">
-                                        <p className="liquidation-price-position">$23,654.92</p>
-                                    </div>
-                                    <div className="header-title-position">Close</div>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={1}>
                         Item Two
