@@ -121,7 +121,8 @@ div#full-width-tabpanel-1 {
 }
 
 .market-info-title {
-    margin-top: 35px;
+    margin-top: 46px;
+    margin-bottom: 0;
 }
 
 .item-leverage-container {
@@ -169,4 +170,13 @@ div#full-width-tabpanel-1 {
         font-weight: 400;
         margin-bottom: 0;
     }
+}
+
+.padding-more {
+    padding: 11px;
+    padding-bottom: 0;
+}
+
+.padding-top-zero {
+    padding-top: 0;
 }

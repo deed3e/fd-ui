@@ -212,7 +212,7 @@ const PlaceOrderPanel: React.FC = () => {
     useEffect(() => {
         var tokenGet = market?.toUpperCase();
         setToken(tokenGet || 'BTC');
-    },[market]);
+    }, [market]);
 
     useMemo(() => {
         var tokenGet = market?.toUpperCase();
@@ -255,12 +255,12 @@ const PlaceOrderPanel: React.FC = () => {
             tokenConfig?.symbol == 'BTC'
                 ? getPriceBTC.data
                 : tokenConfig?.symbol == 'ETH'
-                ? getPriceETH.data
-                : tokenConfig?.symbol == 'USDC'
-                ? getPriceUSDC.data
-                : tokenConfig?.symbol == 'WETH'
-                ? getPriceWETH.data
-                : BigInt(0);
+                    ? getPriceETH.data
+                    : tokenConfig?.symbol == 'USDC'
+                        ? getPriceUSDC.data
+                        : tokenConfig?.symbol == 'WETH'
+                            ? getPriceWETH.data
+                            : BigInt(0);
         switch (leverage) {
             case '2x':
                 var sizeChange: bigint = amountRealUserInput * 2n * priceOfTokenConfig;
@@ -283,7 +283,7 @@ const PlaceOrderPanel: React.FC = () => {
                 setSizeChange(sizeChange);
                 break;
         }
-    }, [inputPay, leverage, getPrice,side]);
+    }, [inputPay, leverage, getPrice, side]);
 
     const contractWritePlaceOrder = useContractWrite({
         address: getAddressOrderManager(),
@@ -348,229 +348,233 @@ const PlaceOrderPanel: React.FC = () => {
                         style={{ background: '#29292c' }}
                     >
                         <TabPanel value={value} index={0} dir={theme.direction}>
-                            <div className="order-price-title">
-                                <p className="order-type">Order Type</p>
-                                <p className="price-trading">Price</p>
-                            </div>
-                            <div className="dropdown-price">
-                                <StyledSelectToken>
-                                    <DropdownSelectOrder
-                                        selectedOrder={selectOrder}
-                                        orders={orders}
-                                        position={'right'}
-                                        onSelect={onDropDownItemClick}
-                                    >
-                                        <StyledTokenSelect pointer={orders?.length >= 0}>
-                                            <span>{selectOrder}</span>
-                                            <IconArrowDown />
-                                        </StyledTokenSelect>
-                                    </DropdownSelectOrder>
-                                </StyledSelectToken>
-                                <div className="input-cpn">
-                                    <Input
-                                        disable={orderType == 0 ? true : false}
-                                        amountChangeHandler={amountChangeHandler}
-                                        value={orderType == 0 ? 'Market price' : price}
+                            <div className="padding-more">
+                                <div className="order-price-title">
+                                    <p className="order-type">Order Type</p>
+                                    <p className="price-trading">Price</p>
+                                </div>
+                                <div className="dropdown-price">
+                                    <StyledSelectToken>
+                                        <DropdownSelectOrder
+                                            selectedOrder={selectOrder}
+                                            orders={orders}
+                                            position={'right'}
+                                            onSelect={onDropDownItemClick}
+                                        >
+                                            <StyledTokenSelect pointer={orders?.length >= 0}>
+                                                <span>{selectOrder}</span>
+                                                <IconArrowDown />
+                                            </StyledTokenSelect>
+                                        </DropdownSelectOrder>
+                                    </StyledSelectToken>
+                                    <div className="input-cpn">
+                                        <Input
+                                            disable={orderType == 0 ? true : false}
+                                            amountChangeHandler={amountChangeHandler}
+                                            value={orderType == 0 ? 'Market price' : price}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="pay-input-select">
+                                    <InputTokenWithSelect
+                                        tokens={tokens}
+                                        amountChange={amountPayChange}
+                                        tokenChange={handleTokenPayChange}
+                                        title="Pay"
+                                        disable={false}
+                                        disableSelect={false}
+                                        valueChange={handleValueInput}
                                     />
                                 </div>
-                            </div>
-                            <div className="pay-input-select">
-                                <InputTokenWithSelect
-                                    tokens={tokens}
-                                    amountChange={amountPayChange}
-                                    tokenChange={handleTokenPayChange}
-                                    title="Pay"
-                                    disable={false}
-                                    disableSelect={false}
-                                    valueChange={handleValueInput}
+                                <div className="two-icon-down">
+                                    <img src={twoIconDown} alt="twoicon" />
+                                </div>
+                                <InputTokenWithoutSelect
+                                    tokens={tokensTwo}
+                                    amountChange={amountTokenTwoChange}
+                                    tokenChange={handleTokenTwoChange}
+                                    title="Position Size"
+                                    disable={true}
+                                    valueChange={handleValueInputTokenTwo}
+                                    pickToken={token}
+                                    value={formatUnits(sizeChange as bigint, 30)}
                                 />
-                            </div>
-                            <div className="two-icon-down">
-                                <img src={twoIconDown} alt="twoicon" />
-                            </div>
-                            <InputTokenWithoutSelect
-                                tokens={tokensTwo}
-                                amountChange={amountTokenTwoChange}
-                                tokenChange={handleTokenTwoChange}
-                                title="Position Size"
-                                disable={true}
-                                valueChange={handleValueInputTokenTwo}
-                                pickToken={token}
-                                value={formatUnits(sizeChange as bigint, 30)} 
-                            />
-                            <div>
-                                <p className="leverage-title">Leverage</p>
-                            </div>
-                            <div className="item-leverage-container">
-                                {leverages?.map((i) => (
-                                    <div
-                                        className={`item-leverage ${
-                                            i === leverage ? 'active-leverage' : ''
-                                        }`}
-                                        onClick={() => setLeverage(i)}
-                                    >
-                                        {i}
-                                    </div>
-                                ))}
-                            </div>
-                            <StyleButton className="btn-place-order">
-                                <div onClick={handlerPlaceOrder}>PLACE ORDER</div>
-                            </StyleButton>
+                                <div>
+                                    <p className="leverage-title">Leverage</p>
+                                </div>
+                                <div className="item-leverage-container">
+                                    {leverages?.map((i) => (
+                                        <div
+                                            className={`item-leverage ${i === leverage ? 'active-leverage' : ''
+                                                }`}
+                                            onClick={() => setLeverage(i)}
+                                        >
+                                            {i}
+                                        </div>
+                                    ))}
+                                </div>
+                                <StyleButton className="btn-place-order">
+                                    <div onClick={handlerPlaceOrder}>PLACE ORDER</div>
+                                </StyleButton>
 
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Collateral Asset</p>
-                                <p className="content-place-order">BTC</p>
-                            </div>
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Collateral Asset</p>
+                                    <p className="content-place-order">BTC</p>
+                                </div>
 
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Collateral Value</p>
-                                <p className="content-place-order">-</p>
-                            </div>
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Collateral Value</p>
+                                    <p className="content-place-order">-</p>
+                                </div>
 
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Laverage</p>
-                                <p className="content-place-order">-</p>
-                            </div>
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Laverage</p>
+                                    <p className="content-place-order">-</p>
+                                </div>
 
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Entry Price</p>
-                                <p className="content-place-order">
-                                    <BigintDisplay
-                                        value={getPriceTokenConfigSizeChange.data as BigInt}
-                                        currency="USD"
-                                        decimals={30 - tokenConfigSizeChange?.decimals ?? 0}
-                                    />
-                                </p>
-                            </div>
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Liquidation Price</p>
-                                <p className="content-place-order">-</p>
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Entry Price</p>
+                                    <p className="content-place-order">
+                                        <BigintDisplay
+                                            value={getPriceTokenConfigSizeChange.data as BigInt}
+                                            currency="USD"
+                                            decimals={30 - tokenConfigSizeChange?.decimals ?? 0}
+                                        />
+                                    </p>
+                                </div>
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Liquidation Price</p>
+                                    <p className="content-place-order">-</p>
+                                </div>
                             </div>
                             <div>
                                 <p className="leverage-title market-info-title">Market Info</p>
                             </div>
+                            <div className="padding-more  padding-top-zero">
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Borrow Fee</p>
+                                    <p className="content-place-order">0</p>
+                                </div>
 
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Borrow Fee</p>
-                                <p className="content-place-order">0</p>
-                            </div>
-
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Available Liquidity</p>
-                                <p className="content-place-order">-</p>
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Available Liquidity</p>
+                                    <p className="content-place-order">-</p>
+                                </div>
                             </div>
                         </TabPanel>
                         <TabPanel value={value} index={1} dir={theme.direction}>
-                            <div className="order-price-title">
-                                <p className="order-type">Order Type</p>
-                                <p className="price-trading">Price</p>
-                            </div>
-                            <div className="dropdown-price">
-                                <StyledSelectToken>
-                                    <DropdownSelectOrder
-                                        selectedOrder={selectOrder}
-                                        orders={orders}
-                                        position={'right'}
-                                        onSelect={onDropDownItemClick}
-                                    >
-                                        <StyledTokenSelect pointer={orders?.length >= 0}>
-                                            <span>{selectOrder}</span>
-                                            <IconArrowDown />
-                                        </StyledTokenSelect>
-                                    </DropdownSelectOrder>
-                                </StyledSelectToken>
-                                <div className="input-cpn">
-                                    <Input
-                                        disable={orderType == 0 ? true : false}
-                                        amountChangeHandler={amountChangeHandler}
-                                        value={orderType == 0 ? 'Market price' : price}
+                            <div className="padding-more">
+                                <div className="order-price-title">
+                                    <p className="order-type">Order Type</p>
+                                    <p className="price-trading">Price</p>
+                                </div>
+                                <div className="dropdown-price">
+                                    <StyledSelectToken>
+                                        <DropdownSelectOrder
+                                            selectedOrder={selectOrder}
+                                            orders={orders}
+                                            position={'right'}
+                                            onSelect={onDropDownItemClick}
+                                        >
+                                            <StyledTokenSelect pointer={orders?.length >= 0}>
+                                                <span>{selectOrder}</span>
+                                                <IconArrowDown />
+                                            </StyledTokenSelect>
+                                        </DropdownSelectOrder>
+                                    </StyledSelectToken>
+                                    <div className="input-cpn">
+                                        <Input
+                                            disable={orderType == 0 ? true : false}
+                                            amountChangeHandler={amountChangeHandler}
+                                            value={orderType == 0 ? 'Market price' : price}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="pay-input-select">
+                                    <InputTokenWithSelect
+                                        tokens={tokens}
+                                        amountChange={amountPayChange}
+                                        tokenChange={handleTokenPayChange}
+                                        title="Pay"
+                                        disable={false}
+                                        disableSelect={false}
+                                        valueChange={handleValueInput}
                                     />
                                 </div>
-                            </div>
-                            <div className="pay-input-select">
-                                <InputTokenWithSelect
-                                    tokens={tokens}
-                                    amountChange={amountPayChange}
-                                    tokenChange={handleTokenPayChange}
-                                    title="Pay"
-                                    disable={false}
-                                    disableSelect={false}
-                                    valueChange={handleValueInput}
+                                <div className="two-icon-down">
+                                    <img src={twoIconDown} alt="twoicon" />
+                                </div>
+                                <InputTokenWithoutSelect
+                                    tokens={tokensTwo}
+                                    amountChange={amountTokenTwoChange}
+                                    tokenChange={handleTokenTwoChange}
+                                    title="Position Size"
+                                    disable={true}
+                                    valueChange={handleValueInputTokenTwo}
+                                    pickToken={token}
+                                    value={formatUnits(sizeChange as bigint, 30)}
                                 />
-                            </div>
-                            <div className="two-icon-down">
-                                <img src={twoIconDown} alt="twoicon" />
-                            </div>
-                            <InputTokenWithoutSelect
-                                tokens={tokensTwo}
-                                amountChange={amountTokenTwoChange}
-                                tokenChange={handleTokenTwoChange}
-                                title="Position Size"
-                                disable={true}
-                                valueChange={handleValueInputTokenTwo}
-                                pickToken={token}
-                                value={formatUnits(sizeChange as bigint, 30)} 
-                            />
-                            <div>
-                                <p className="leverage-title">Leverage</p>
-                            </div>
-                            <div className="item-leverage-container">
-                                {leverages?.map((i) => (
-                                    <div
-                                        className={`item-leverage ${
-                                            i === leverage ? 'active-leverage' : ''
-                                        }`}
-                                        onClick={() => setLeverage(i)}
-                                    >
-                                        {i}
-                                    </div>
-                                ))}
-                            </div>
-                            <StyleButton className="btn-place-order">
-                                <div onClick={handlerPlaceOrder}>PLACE ORDER</div>
-                            </StyleButton>
+                                <div>
+                                    <p className="leverage-title">Leverage</p>
+                                </div>
+                                <div className="item-leverage-container">
+                                    {leverages?.map((i) => (
+                                        <div
+                                            className={`item-leverage ${i === leverage ? 'active-leverage' : ''
+                                                }`}
+                                            onClick={() => setLeverage(i)}
+                                        >
+                                            {i}
+                                        </div>
+                                    ))}
+                                </div>
+                                <StyleButton className="btn-place-order">
+                                    <div onClick={handlerPlaceOrder}>PLACE ORDER</div>
+                                </StyleButton>
 
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Collateral Asset</p>
-                                <p className="content-place-order">BTC</p>
-                            </div>
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Collateral Asset</p>
+                                    <p className="content-place-order">BTC</p>
+                                </div>
 
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Collateral Value</p>
-                                <p className="content-place-order">-</p>
-                            </div>
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Collateral Value</p>
+                                    <p className="content-place-order">-</p>
+                                </div>
 
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Laverage</p>
-                                <p className="content-place-order">-</p>
-                            </div>
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Laverage</p>
+                                    <p className="content-place-order">-</p>
+                                </div>
 
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Entry Price</p>
-                                <p className="content-place-order">
-                                    <BigintDisplay
-                                        value={getPriceTokenConfigSizeChange.data as BigInt}
-                                        currency="USD"
-                                        decimals={30 - tokenConfigSizeChange?.decimals ?? 0}
-                                    />
-                                </p>
-                            </div>
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Liquidation Price</p>
-                                <p className="content-place-order">-</p>
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Entry Price</p>
+                                    <p className="content-place-order">
+                                        <BigintDisplay
+                                            value={getPriceTokenConfigSizeChange.data as BigInt}
+                                            currency="USD"
+                                            decimals={30 - tokenConfigSizeChange?.decimals ?? 0}
+                                        />
+                                    </p>
+                                </div>
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Liquidation Price</p>
+                                    <p className="content-place-order">-</p>
+                                </div>
                             </div>
                             <div>
                                 <p className="leverage-title market-info-title">Market Info</p>
                             </div>
+                            <div className="padding-more padding-top-zero">
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Borrow Fee</p>
+                                    <p className="content-place-order">0</p>
+                                </div>
 
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Borrow Fee</p>
-                                <p className="content-place-order">0</p>
-                            </div>
-
-                            <div className="info-trading-place-order">
-                                <p className="title-place-order">Available Liquidity</p>
-                                <p className="content-place-order">-</p>
+                                <div className="info-trading-place-order">
+                                    <p className="title-place-order">Available Liquidity</p>
+                                    <p className="content-place-order">-</p>
+                                </div>
                             </div>
                         </TabPanel>
                     </SwipeableViews>
@@ -614,7 +618,7 @@ export const StyledToken = styled.div`
     }
 `;
 
-const StyledTokenSelect = styled(StyledToken)<{ pointer?: boolean }>`
+const StyledTokenSelect = styled(StyledToken) <{ pointer?: boolean }>`
     cursor: ${({ pointer }) => (pointer ? 'pointer' : 'auto')};
     :hover {
         border: 1px solid #515050;
