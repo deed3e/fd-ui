@@ -40,7 +40,7 @@ const MarketInfoPanel: React.FC<MarketInfo> = ({ current, low, high }) => {
                     <StyledSelectToken>
                         <DropdownSelectToken
                             selectedToken={token}
-                            tokens={['BTC', 'ETH', 'BNB']}
+                            tokens={['BTC', 'ETH']}
                             position={'right'}
                             onSelect={handleSelectToken}
                         >
