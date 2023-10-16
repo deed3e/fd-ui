@@ -23,6 +23,7 @@ import twoIconDown from '../../../../assets/svg/two-icon-down.svg';
 
 import OrderManager from '../../../../abis/OrderManager.json';
 import Oracle from '../../../../abis/Oracle.json';
+import Pool from '../../../../abis/Pool.json';
 import Mock from '../../../../abis/MockERC20.json';
 import { BigintDisplay } from '../../../../component/BigIntDisplay';
 
@@ -116,6 +117,90 @@ const PlaceOrderPanel: React.FC = () => {
     const [collateralValue, setCollateralValue] = useState<BigInt>(BigInt(0));
     const [entryPriceLimitOrder, setEntryPriceLimitOrder] = useState<BigInt>(BigInt(0));
     const [priceToPlaceOrder, setPriceToPlaceOrder] = useState<BigInt>(BigInt(0));
+    const [liquidationPrice, setLiquidationPrice] = useState<BigInt>(BigInt(0));
+    const [fee, setFee] = useState<BigInt>(BigInt(0));
+    const [pnl, setPnl] = useState<BigInt>(BigInt(0));
+    const [indexPrice, setIndexPrice] = useState<BigInt>(BigInt(0));
+
+    const getLiquidationFee = useContractRead({
+        address: getAddressPool(),
+        abi: Pool,
+        functionName: 'fee',
+    });
+    const [liquidationFee, setLiquidationFee] = useState<BigInt>(
+        getLiquidationFee.data[6] as BigInt,
+    );
+
+    const [positionFee, setPositionFee] = useState<BigInt>(getLiquidationFee.data[7] as BigInt);
+
+    useEffect(() => {
+        const positionFeeTmp: bigint = positionFee;
+        const divisor: bigint = 10000000000n;
+
+        var valueOfFee = positionFee * sizeChange;
+        valueOfFee = valueOfFee / divisor;
+
+        setFee(valueOfFee);
+    }, [sizeChange, positionFee]);
+
+    useEffect(() => {
+        var valueOfPnl = collateralValue - (fee + liquidationFee);
+        setPnl(valueOfPnl);
+    }, [liquidationFee, fee, collateralValue]);
+
+    useEffect(() => {
+        if (side === 0) {
+            if (selectOrder === 'Market Order') {
+                if (
+                    getPriceTokenConfigSizeChange.data > BigInt(0) &&
+                    sizeChange / getPriceTokenConfigSizeChange.data > BigInt(0)
+                ) {
+                    var indexPrice =
+                        pnl / (sizeChange / getPriceTokenConfigSizeChange.data) +
+                        getPriceTokenConfigSizeChange.data;
+                    setIndexPrice(indexPrice);
+                } else {
+                    setIndexPrice(BigInt(0));
+                }
+            } else {
+                if (
+                    entryPriceLimitOrder > BigInt(0) &&
+                    sizeChange / entryPriceLimitOrder > BigInt(0)
+                ) {
+                    var indexPrice =
+                        pnl / (sizeChange / entryPriceLimitOrder) + entryPriceLimitOrder;
+                    setIndexPrice(indexPrice);
+                } else {
+                    setIndexPrice(BigInt(0));
+                }
+            }
+        } else {
+            if (selectOrder === 'Market Order') {
+                if (
+                    getPriceTokenConfigSizeChange.data > BigInt(0) &&
+                    sizeChange / getPriceTokenConfigSizeChange.data > BigInt(0)
+                ) {
+                    var indexPrice =
+                        getPriceTokenConfigSizeChange.data -
+                        pnl / (sizeChange / getPriceTokenConfigSizeChange.data);
+                    setIndexPrice(indexPrice);
+                } else {
+                    setIndexPrice(BigInt(0));
+                }
+            } else {
+                if (
+                    entryPriceLimitOrder > BigInt(0) &&
+                    sizeChange / entryPriceLimitOrder > BigInt(0)
+                ) {
+                    var indexPrice =
+                        gentryPriceLimitOrder - pnl / (sizeChange / entryPriceLimitOrder);
+                    setIndexPrice(indexPrice);
+                } else {
+                    setIndexPrice(BigInt(0));
+                }
+            }
+        }
+    }, [pnl, sizeChange, inputTokenTwo, side, entryPriceLimitOrder, selectOrder]);
 
     const tokenBTCConfig = getTokenConfig('BTC');
     const tokenETHConfig = getTokenConfig('ETH');
@@ -327,7 +412,10 @@ const PlaceOrderPanel: React.FC = () => {
         if (selectOrder === 'Market Order') {
             setPriceToPlaceOrder(BigInt(0));
         } else {
-            var value = parseUnits(price.toString(), 30 - (tokenConfigSizeChange?.decimals ?? 0)) as BigInt;
+            var value = parseUnits(
+                price.toString(),
+                30 - (tokenConfigSizeChange?.decimals ?? 0),
+            ) as BigInt;
             setPriceToPlaceOrder(value);
         }
 
@@ -362,6 +450,21 @@ const PlaceOrderPanel: React.FC = () => {
         setEntryPriceLimitOrder(value * priceToken);
     }, [price]);
 
+    // useEffect(() => {
+    //     console.log("TokenTwo",valueInputTokenTwo);
+    //     console.log("entry price limit",entryPriceLimitOrder);
+
+    //     if(selectOrder === 'Market Order'){
+    //         if(side === 0){
+
+    //         }else {
+
+    //         }
+    //     }else{
+
+    //     }
+
+    // }, [valueInputTokenTwo,entryPriceLimitOrder,getPriceTokenConfigSizeChange.data,inputPay]);
     return (
         <>
             <Box sx={{ bgcolor: 'background.paper', width: 500 }}>
@@ -501,7 +604,15 @@ const PlaceOrderPanel: React.FC = () => {
                                 </div>
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Liquidation Price</p>
-                                    <p className="content-place-order">-</p>
+                                    <p className="content-place-order">
+                                        {' '}
+                                        <BigintDisplay
+                                            value={indexPrice}
+                                            decimals={30}
+                                            threshold={3}
+                                            fractionDigits={7}
+                                        />
+                                    </p>
                                 </div>
                             </div>
                             <div>
@@ -646,7 +757,14 @@ const PlaceOrderPanel: React.FC = () => {
                                 </div>
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Liquidation Price</p>
-                                    <p className="content-place-order">-</p>
+                                    <p className="content-place-order">
+                                        <BigintDisplay
+                                            value={indexPrice}
+                                            decimals={30}
+                                            threshold={3}
+                                            fractionDigits={7}
+                                        />
+                                    </p>
                                 </div>
                             </div>
                             <div>
