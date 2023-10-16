@@ -6,7 +6,7 @@ import { TokenSymbol } from '../../../../component/TokenSymbol';
 import { DropdownSelectToken } from '../../../Faucet/components/DropdownSelectToken';
 import { ReactComponent as IconArrowDown } from '../../../../assets/svg/ic-arrow-down.svg';
 import { BigintDisplay } from '../../../../component/BigIntDisplay';
-import ContentLoader from '../../../component/ContentLoader';
+import ContentLoader from '../../../../component/ContentLoader';
 const MarketInfoPanel: React.FC<MarketInfo> = ({ current, low, high }) => {
     const { market, side } = useParams();
     const token = market?.toUpperCase() || 'BTC';
