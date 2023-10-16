@@ -1,20 +1,34 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { config } from '../config';
+import { watchBlockNumber } from '@wagmi/core';
 
 type ApplicationState = {
     ws?: WebSocket;
+    lastBlockUpdate?: bigint;
 };
 
 export const ApplicationContext = createContext<ApplicationState>({});
 
 export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [ws, setWs] = useState<WebSocket>();
+    const [lastBlockUpdate, setLastBlockUpdate] = useState<bigint>();
 
     const value = useMemo(() => {
         return {
-            ws,
-        };
-    }, [ws]);
+            ws,lastBlockUpdate
+        }
+    }, [ws,lastBlockUpdate]);
+
+   watchBlockNumber(
+        {
+            listen: true,
+        },
+        (blockNumber) => {
+            if (lastBlockUpdate ? blockNumber - lastBlockUpdate > 10 : blockNumber) {
+                setLastBlockUpdate(blockNumber);
+            }
+        },
+    );
 
     useEffect(() => {
         const connect = () => {
@@ -49,4 +63,11 @@ export const useWebSocket = () => {
     return useMemo(() => {
         return context?.ws;
     }, [context?.ws]);
+};
+export const useLastBlockUpdate= () => {
+    const context = useApplicationContext();
+
+    return useMemo(() => {
+        return context?.lastBlockUpdate;
+    }, [context?.lastBlockUpdate]);
 };

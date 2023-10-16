@@ -41,12 +41,10 @@ import { useQuery } from '@tanstack/react-query';
 import { getTimeDistance } from '../../utils/times';
 import { TokenSymbol } from '../../component/TokenSymbol';
 import ContentLoader from '../../component/ContentLoader';
-
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import * as React from 'react';
+import { useLastBlockUpdate } from '../../contexts/ApplicationProvider';
 
 enum ButtonStatus {
     notConnect,
@@ -97,6 +95,7 @@ export default function Swap() {
     const tokenToConfig = getTokenConfig(tokenTo);
     const getPrice = useOracle([tokenFromConfig?.symbol ?? '', tokenToConfig?.symbol ?? '']);
     const [open, setOpen] = useState(false);
+    const lastBlockUpdate = useLastBlockUpdate();
 
     const swapQuery = useQuery({
         queryKey: ['getSwapsByCondition', address, '1'],
@@ -234,7 +233,6 @@ export default function Swap() {
                 showToast(`Success Swap`, '', 'success');
                 handleStore();
                 setRefesh(!refresh);
-                swapQuery.refetch();
             } else if (waitingTransaction?.isError) {
                 showToast(`Can not Swap`, '', 'error');
                 handleStore();
@@ -252,6 +250,10 @@ export default function Swap() {
         waitingTransaction?.isLoading,
         waitingTransaction?.isSuccess,
     ]);
+
+    useEffect(() => {
+        swapQuery.refetch();
+    }, [lastBlockUpdate]);
 
     useEffect(() => {
         const handleStore = () => {
@@ -440,14 +442,6 @@ export default function Swap() {
         setPickTokenTo(tokenTmp);
     }, [tokenFromConfig, tokenToConfig]);
 
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
     return (
         <div className="container">
             <div className="left-content-container">
@@ -611,16 +605,16 @@ export default function Swap() {
 
                 <StyledWrapButton>
                     {/* {buttonText != 'Approve' && ( */}
-                        <StyleButton onClick={handleOnClick} disabled={disableButton}>
-                            <div>{buttonText}</div>
-                            <img
-                                hidden={status !== ButtonStatus.loading}
-                                src={IcLoading}
-                                alt=""
-                            ></img>
-                        </StyleButton>
+                    <StyleButton onClick={handleOnClick} disabled={disableButton}>
+                        <div>{buttonText}</div>
+                        <img
+                            hidden={status !== ButtonStatus.loading}
+                            src={IcLoading}
+                            alt=""
+                        ></img>
+                    </StyleButton>
                     {/* )} */}
-{/* 
+                    {/* 
                     {buttonText === 'Approve' && (
                         <StyleButton onClick={handleOnClick} disabled={disableButton}>
                             <div>{buttonText}</div>

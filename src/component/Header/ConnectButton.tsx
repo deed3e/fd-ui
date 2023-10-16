@@ -1,15 +1,15 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import styled from 'styled-components';
 import { useAccount, useConnect, useSwitchNetwork } from 'wagmi';
-import { ReactComponent as IconConnectWallet } from '../../assets/svg/ic-connect-wallet.svg';
 import userIcon from '../../assets/image/user-icon.png';
 import { DropdownUser } from './DropdownUser';
 import { useCallback, useEffect } from 'react';
 import { shortenAddress } from '../../utils/addresses';
+import { watchAccount } from '@wagmi/core';
 
 export default function ConnectButton() {
     const { open } = useWeb3Modal();
-    const { connect, connectors, isSuccess } = useConnect();
+    const { isSuccess } = useConnect();
     const { address, isConnected } = useAccount();
     const { switchNetwork } = useSwitchNetwork();
     const handleUserModal = useCallback(() => {}, []);
@@ -19,6 +19,8 @@ export default function ConnectButton() {
             switchNetwork?.(97);
         }
     }, [isSuccess, switchNetwork, address]);
+
+    watchAccount(() => () => open())
 
     return (
         <>

@@ -116,19 +116,7 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [positions, setPositions] = useState<Position[]>([]);
     const { address } = useAccount();
-    const [block, setBlock] = useState(BigInt(0));
     const [pnl, setPnl] = useState(BigInt(0));
-
-    const unwatch = watchBlockNumber(
-        {
-            listen: true,
-        },
-        (blockNumber) => {
-            if(blockNumber - block > 5){
-                setBlock(blockNumber)
-            }
-        },
-    );
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -190,7 +178,7 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
         return () => {
             mounted = false;
         };
-    }, [address,block]);
+    }, [address]);
 
     return (
         <>
@@ -232,15 +220,15 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
                                     <div className="header-table-position header-table-position-2">
                                         <div className="header-title-position">
                                             <p className="token-positon">{    getTokenConfig(
-                                                            getSymbolByAddress(item.market),
+                                                            getSymbolByAddress(item?.market),
                                                         )?.symbol}/USD</p>
-                                            <p className="long-shot-position">{item.side}</p>
+                                            <p className="long-shot-position">{item?.side}</p>
                                         </div>
                                         <div className="header-title-position">
                                             <p className="size-position">
                                                 $
                                                 <BigintDisplay
-                                                    value={item.size}
+                                                    value={item?.size}
                                                     decimals={30}
                                                     fractionDigits={2}
                                                 />
@@ -250,7 +238,7 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
                                             <p className="net-value-top">
                                                 $
                                                 <BigintDisplay
-                                                    value={item.collateralValue}
+                                                    value={item?.collateralValue}
                                                     decimals={30}
                                                     fractionDigits={2}
                                                 />
@@ -258,7 +246,7 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
                                             <p className="net-value-bottom">
                                                 $
                                                 <BigintDisplay
-                                                    value={item.realizedPnl}
+                                                    value={item?.realizedPnl}
                                                     decimals={30}
                                                     fractionDigits={2}
                                                 />
@@ -269,11 +257,11 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
                                                 {' '}
                                                 $
                                                 <BigintDisplay
-                                                    value={item.entryPrice}
+                                                    value={item?.entryPrice}
                                                     decimals={
                                                         30 -
                                                         getTokenConfig(
-                                                            getSymbolByAddress(item.market),
+                                                            getSymbolByAddress(item?.market),
                                                         )?.decimals
                                                     }
                                                     fractionDigits={2}
