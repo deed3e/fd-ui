@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import logoChain from '../../assets/image/logo-bnb.png';
 import { ReactComponent as Logo } from '../../assets/image/logo-navbar.svg';
 import { screenUp } from '../../utils/styles';
-import ConnectWallet from './ConnectWallet';
+import ConnectButton from './ConnectButton';
 
 const Header: React.FC = () => {
     return (
@@ -36,10 +36,9 @@ const Header: React.FC = () => {
                 </StyledNav>
                 <StyledConnectWallet>
                     <StyledChain>
-                        <img src={logoChain} alt="" />
-                        <span>BNBTEST</span>
+                        <w3m-network-button />
                     </StyledChain>
-                    <ConnectWallet />
+                    <ConnectButton />
                 </StyledConnectWallet>
             </StyledHeader>
         </div>
@@ -75,9 +74,6 @@ const StyledLogoContainer = styled(NavLink)`
     }
 `;
 
-const StyledLogo = styled.img`
-    height: 22px;
-`;
 
 const StyledNavItem = styled.li`
     margin: 24px 21px 0 21px;
@@ -88,14 +84,6 @@ const StyledNavItem = styled.li`
     align-items: center;
     justify-content: center;
   `};
-`;
-
-const StyledIconSupportContainer = styled.div`
-    margin: -24px;
-    padding: 24px;
-    + ${StyledLogoContainer} {
-        margin-left: 4px;
-    }
 `;
 
 const StyledLogoNavItem = styled(StyledNavItem)`
@@ -112,11 +100,6 @@ const StyledLogoNavItem = styled(StyledNavItem)`
     ${screenUp('lg')`
     margin: 0;
   `}
-    ${StyledIconSupportContainer} {
-        ${screenUp('lg')`
-      display: none;
-    `}
-    }
 `;
 
 const StyledNav = styled.ul<{ visible?: boolean }>`
@@ -156,6 +139,8 @@ const StyledConnectWallet = styled.div`
     margin-left: auto;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
+    width: 620px;
 `;
 
 const StyledChain = styled.div`
@@ -163,17 +148,6 @@ const StyledChain = styled.div`
     align-items: center;
     border-right: 1px solid #363636;
     margin-right: 10px;
-    img {
-        width: 22px;
-        margin-right: 8px;
-    }
-    span {
-        padding-right: 12px;
-        font-size: 13px;
-        font-weight: 500;
-        text-transform: uppercase;
-    }
-    ${screenUp('lg')`
+    padding-right: 10px;
     display: flex;
-  `}
 `;
