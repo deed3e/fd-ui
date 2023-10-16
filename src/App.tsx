@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from '../src/component/Header';
 import Modals from './component/Modals/Modals';
+import { Tooltip } from 'react-tooltip';
 
 function App() {
     return (
@@ -24,6 +25,7 @@ function App() {
                         <Route path="/analytic" element={<Analytic />} />
                         <Route path="/faucet" element={<Faucet />} />
                     </Routes>
+                    <Tooltip id="my-tooltip" />
                 </Modals>
                 <ToastContainer position="bottom-right" />
             </BrowserRouter>

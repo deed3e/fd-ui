@@ -8,7 +8,6 @@ import {
     getAddressRouter,
     getAddressPool,
     getTokenConfig,
-    getSymbolByAddress,
 } from '../../config';
 import PoolAbi from '../../abis/Pool.json';
 import RouterAbi from '../../abis/Router.json';
@@ -21,7 +20,7 @@ import {
     usePrepareContractWrite,
     useWaitForTransaction,
 } from 'wagmi';
-import { formatUnits, getAddress, maxUint256, parseUnits } from 'viem';
+import { formatUnits, maxUint256, parseUnits } from 'viem';
 import IcLoading from '../../assets/image/ic-loading.png';
 import MockErc20 from '../../abis/MockERC20.json';
 import { BigintDisplay } from '../../component/BigIntDisplay';
@@ -32,19 +31,10 @@ import {
     StatusHistoryTransaction,
 } from '../../component/TransactionHistory';
 import { ReactComponent as IcSwap } from '../../assets/icons/ic-swap.svg';
-
-import dowIcon from '../../assets/image/Expand_down_double.png';
-
-import { getSwapsByCondition } from '../../apis/swap';
-import { SwapType } from '../../types';
-import { useQuery } from '@tanstack/react-query';
-import { getTimeDistance } from '../../utils/times';
-import { TokenSymbol } from '../../component/TokenSymbol';
-import ContentLoader from '../../component/ContentLoader';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import * as React from 'react';
-import { useLastBlockUpdate } from '../../contexts/ApplicationProvider';
+import History from './component/History';
 
 enum ButtonStatus {
     notConnect,
@@ -95,20 +85,8 @@ export default function Swap() {
     const tokenToConfig = getTokenConfig(tokenTo);
     const getPrice = useOracle([tokenFromConfig?.symbol ?? '', tokenToConfig?.symbol ?? '']);
     const [open, setOpen] = useState(false);
-    const lastBlockUpdate = useLastBlockUpdate();
 
-    const swapQuery = useQuery({
-        queryKey: ['getSwapsByCondition', address, '1'],
-        queryFn: () => getSwapsByCondition(address, '1'),
-    });
-
-    const loading = useMemo(() => {
-        if (swapQuery?.isFetching || swapQuery?.isLoading) {
-            return true;
-        }
-        return false;
-    }, [swapQuery]);
-
+   
     const tokens = useMemo(() => {
         return getPoolAssetSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
     }, []);
@@ -251,9 +229,7 @@ export default function Swap() {
         waitingTransaction?.isSuccess,
     ]);
 
-    useEffect(() => {
-        swapQuery.refetch();
-    }, [lastBlockUpdate]);
+   
 
     useEffect(() => {
         const handleStore = () => {
@@ -446,64 +422,7 @@ export default function Swap() {
         <div className="container">
             <div className="left-content-container">
                 <div className="bottom-left-content-container">
-                    <StyledHeader>
-                        <div className="token">From/To</div>
-                        <div>Amount</div>
-                        <div>Receive</div>
-                        <div>Time</div>
-                    </StyledHeader>
-                    <StyledTableBody>
-                        {swapQuery.data?.map((item: SwapType) => (
-                            <StyledTableRow>
-                                <div className="token">
-                                    <div>
-                                        <TokenSymbol
-                                            symbol={
-                                                getSymbolByAddress(getAddress(item.tokenIn)) ??
-                                                'BTC'
-                                            }
-                                        />
-                                    </div>
-                                    <div className="token-to">
-                                        <TokenSymbol
-                                            symbol={
-                                                getSymbolByAddress(getAddress(item.tokenOut)) ??
-                                                'BTC'
-                                            }
-                                        />
-                                    </div>
-                                </div>
-                                <div>
-                                    <BigintDisplay
-                                        value={item.amountIn}
-                                        decimals={
-                                            getTokenConfig(
-                                                getSymbolByAddress(getAddress(item.tokenIn)) ??
-                                                    'BTC',
-                                            )?.decimals ?? 0
-                                        }
-                                        fractionDigits={5}
-                                        threshold={0.00001}
-                                    />
-                                </div>
-                                <div>
-                                    <BigintDisplay
-                                        value={item.amountOut}
-                                        decimals={
-                                            getTokenConfig(
-                                                getSymbolByAddress(getAddress(item.tokenOut)) ??
-                                                    'BTC',
-                                            )?.decimals ?? 0
-                                        }
-                                        fractionDigits={5}
-                                        threshold={0.00001}
-                                    />
-                                </div>
-                                <div>{getTimeDistance(item.time)}</div>
-                            </StyledTableRow>
-                        ))}
-                        {loading && <ContentLoader.HistorySwap />}
-                    </StyledTableBody>
+                   <History/>
                 </div>
             </div>
             <div className="right-content-container">

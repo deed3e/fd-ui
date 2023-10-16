@@ -1,14 +1,30 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import logoChain from '../../assets/image/logo-bnb.png';
 import { ReactComponent as Logo } from '../../assets/image/logo-navbar.svg';
+import { ReactComponent as IcDot } from '../../assets/icons/ic-dot-green.svg';
 import { screenUp } from '../../utils/styles';
 import ConnectButton from './ConnectButton';
+import { useMemo } from 'react';
+import { useLastBlockUpdate } from '../../contexts/ApplicationProvider';
+import { formatUnits } from 'viem';
 
 const Header: React.FC = () => {
+    const location = useLocation();
+    const lastBlockUpdate = useLastBlockUpdate();
+
+    const isHome = useMemo(() => {
+        if (location.pathname === '/') {
+            return true;
+        }
+        return false;
+    }, [location]);
+
+    const currentBlock = useMemo(() => {
+        return lastBlockUpdate ? formatUnits(lastBlockUpdate, 0) : '-';
+    }, [lastBlockUpdate]);
     return (
         <div>
-            <StyledHeader>
+            <StyledHeader isHome={isHome}>
                 <StyledNav>
                     <StyledLogoNavItem>
                         <StyledLogoContainer to="/">
@@ -41,13 +57,21 @@ const Header: React.FC = () => {
                     <ConnectButton />
                 </StyledConnectWallet>
             </StyledHeader>
+            <StyledLastBlockNumber>
+                <IcDot></IcDot>
+                <a data-tooltip-id="my-tooltip" data-tooltip-html={`${currentBlock} is the most recent <br/> block number on this network.<br/> 
+The connection is stable.`}
+>
+                    {currentBlock}
+                </a>
+            </StyledLastBlockNumber>
         </div>
     );
 };
 
 export default Header;
 
-const StyledHeader = styled.header`
+const StyledHeader = styled.header<{ isHome: boolean }>`
     position: fixed;
     left: 0;
     right: 0;
@@ -58,10 +82,9 @@ const StyledHeader = styled.header`
     justify-content: center;
     padding: 0 16px;
     border-bottom: 0.5px solid #363636;
-    ${screenUp('lg')`
+    background: ${(p) => (p.isHome ? '' : 'black')};
     padding: 0 25px;
     z-index: 1000;
-  `}
 `;
 
 const StyledLogoContainer = styled(NavLink)`
@@ -74,20 +97,15 @@ const StyledLogoContainer = styled(NavLink)`
     }
 `;
 
-
 const StyledNavItem = styled.li`
-    margin: 24px 21px 0 21px;
     padding: 0;
     display: flex;
-    ${screenUp('lg')`
     margin: 0 15px;
     align-items: center;
     justify-content: center;
-  `};
 `;
 
 const StyledLogoNavItem = styled(StyledNavItem)`
-    margin-top: 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -97,9 +115,7 @@ const StyledLogoNavItem = styled(StyledNavItem)`
       margin: 0 15px;
     `}
     }
-    ${screenUp('lg')`
     margin: 0;
-  `}
 `;
 
 const StyledNav = styled.ul<{ visible?: boolean }>`
@@ -124,15 +140,12 @@ const StyledNav = styled.ul<{ visible?: boolean }>`
 const StyledNavItemLink = styled(NavLink)`
     padding: 0;
     color: #979595;
-    font-size: 16px;
     font-weight: 500;
     &:hover,
     &.active {
         color: #6763e3;
     }
-    ${screenUp('lg')`
     font-size: 14px;
-  `}
 `;
 
 const StyledConnectWallet = styled.div`
@@ -144,10 +157,25 @@ const StyledConnectWallet = styled.div`
 `;
 
 const StyledChain = styled.div`
-    display: none;
     align-items: center;
     border-right: 1px solid #363636;
     margin-right: 10px;
     padding-right: 10px;
     display: flex;
+`;
+
+const StyledLastBlockNumber = styled.div`
+    position: fixed;
+    bottom: 10px;
+    left: 15px;
+    font-size: 12px;
+    color: #12d712;
+    svg {
+        height: 7px;
+        width: 7px;
+    }
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
 `;
