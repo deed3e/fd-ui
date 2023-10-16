@@ -100,7 +100,6 @@ const PlaceOrderPanel: React.FC = () => {
     const [value, setValue] = useState(0);
     const [selectOrder, setSelectOrder] = useState('Market Order');
 
-
     const [inputPay, setInputPay] = useState<BigInt>(BigInt(0));
     const [inputTokenTwo, setInputTokenTwo] = useState<BigInt>(BigInt(0));
     const [tokenPay, setTokenPay] = useState<string>('BTC');
@@ -116,6 +115,7 @@ const PlaceOrderPanel: React.FC = () => {
     const [orderType, setOrderType] = useState(0);
     const [collateralValue, setCollateralValue] = useState<BigInt>(BigInt(0));
     const [entryPriceLimitOrder, setEntryPriceLimitOrder] = useState<BigInt>(BigInt(0));
+    const [priceToPlaceOrder, setPriceToPlaceOrder] = useState<BigInt>(BigInt(0));
 
     const tokenBTCConfig = getTokenConfig('BTC');
     const tokenETHConfig = getTokenConfig('ETH');
@@ -206,9 +206,6 @@ const PlaceOrderPanel: React.FC = () => {
     const amountChangeHandler = useCallback((amount: BigInt) => {
         // if (orderType == 0) {
         setPrice(amount);
-        // } else {
-        //     setPrice(amount);
-        // }
     }, []);
 
     useEffect(() => {
@@ -225,17 +222,23 @@ const PlaceOrderPanel: React.FC = () => {
         setInputPay(value);
     }, []);
 
-    const amountTokenTwoChange = useCallback((value: BigInt) => {
-        setInputTokenTwo(sizeChange);
-    }, [sizeChange]);
+    const amountTokenTwoChange = useCallback(
+        (value: BigInt) => {
+            setInputTokenTwo(sizeChange);
+        },
+        [sizeChange],
+    );
 
     const handleTokenPayChange = useCallback((symbol: string) => {
         setTokenPay(symbol);
     }, []);
 
-    const handleTokenTwoChange = useCallback((symbol: string) => {
-        setTokenTwo(token);
-    }, [token]);
+    const handleTokenTwoChange = useCallback(
+        (symbol: string) => {
+            setTokenTwo(token);
+        },
+        [token],
+    );
 
     const handleValueInput = useCallback(
         (value: number) => {
@@ -257,12 +260,12 @@ const PlaceOrderPanel: React.FC = () => {
             tokenConfig?.symbol == 'BTC'
                 ? getPriceBTC.data
                 : tokenConfig?.symbol == 'ETH'
-                    ? getPriceETH.data
-                    : tokenConfig?.symbol == 'USDC'
-                        ? getPriceUSDC.data
-                        : tokenConfig?.symbol == 'WETH'
-                            ? getPriceWETH.data
-                            : BigInt(0);
+                ? getPriceETH.data
+                : tokenConfig?.symbol == 'USDC'
+                ? getPriceUSDC.data
+                : tokenConfig?.symbol == 'WETH'
+                ? getPriceWETH.data
+                : BigInt(0);
 
         setCollateralValue(amountRealUserInput * priceOfTokenConfig);
         switch (leverage) {
@@ -301,7 +304,7 @@ const PlaceOrderPanel: React.FC = () => {
             tokenConfig?.address,
             inputPay,
             sizeChange,
-            price,
+            priceToPlaceOrder,
             orderType,
         ],
     });
@@ -321,6 +324,13 @@ const PlaceOrderPanel: React.FC = () => {
     });
 
     const handlerPlaceOrder = useCallback(() => {
+        if (selectOrder === 'Market Order') {
+            setPriceToPlaceOrder(BigInt(0));
+        } else {
+            var value = parseUnits(price.toString(), 30 - (tokenConfigSizeChange?.decimals ?? 0)) as BigInt;
+            setPriceToPlaceOrder(value);
+        }
+
         if (inputPay <= dataAlowance?.data) {
             contractWritePlaceOrder?.write();
         } else {
@@ -335,17 +345,22 @@ const PlaceOrderPanel: React.FC = () => {
     });
 
     useEffect(() => {
-        var value = parseUnits(price.toString(), tokenConfigSizeChange?.decimals ?? 0) as BigInt;
-        var priceToken = tokenConfigSizeChange?.symbol === 'BTC' ? getPriceBTC.data :
-            tokenConfigSizeChange?.symbol === 'ETH' ? getPriceETH.data :
-                tokenConfigSizeChange?.symbol === 'USDC' ? getPriceUSDC.data :
-                    tokenConfigSizeChange?.symbol === 'WETH' ? getPriceWETH.data : BigInt(0);
+        var value = parseUnits(
+            price.toString(),
+            tokenConfigSizeChange?.decimals ?? 0,
+        ) as BigInt;
+        var priceToken =
+            tokenConfigSizeChange?.symbol === 'BTC'
+                ? getPriceBTC.data
+                : tokenConfigSizeChange?.symbol === 'ETH'
+                ? getPriceETH.data
+                : tokenConfigSizeChange?.symbol === 'USDC'
+                ? getPriceUSDC.data
+                : tokenConfigSizeChange?.symbol === 'WETH'
+                ? getPriceWETH.data
+                : BigInt(0);
         setEntryPriceLimitOrder(value * priceToken);
     }, [price]);
-
-
-    console.log("getPriceTokenConfigSizeChange.data", getPriceTokenConfigSizeChange.data)
-    console.log("entry", entryPriceLimitOrder);
 
     return (
         <>
@@ -427,8 +442,9 @@ const PlaceOrderPanel: React.FC = () => {
                                 <div className="item-leverage-container">
                                     {leverages?.map((i) => (
                                         <div
-                                            className={`item-leverage ${i === leverage ? 'active-leverage' : ''
-                                                }`}
+                                            className={`item-leverage ${
+                                                i === leverage ? 'active-leverage' : ''
+                                            }`}
                                             onClick={() => setLeverage(i)}
                                         >
                                             {i}
@@ -463,20 +479,24 @@ const PlaceOrderPanel: React.FC = () => {
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Entry Price</p>
                                     <p className="content-place-order">
-                                        {selectOrder === 'Market Order' &&
+                                        {selectOrder === 'Market Order' && (
                                             <BigintDisplay
-                                                value={getPriceTokenConfigSizeChange.data as BigInt}
+                                                value={
+                                                    getPriceTokenConfigSizeChange.data as BigInt
+                                                }
                                                 currency="USD"
-                                                decimals={30 - tokenConfigSizeChange?.decimals ?? 0}
+                                                decimals={
+                                                    30 - tokenConfigSizeChange?.decimals ?? 0
+                                                }
                                             />
-                                        }
-                                        {selectOrder != 'Market Order' &&
+                                        )}
+                                        {selectOrder != 'Market Order' && (
                                             <BigintDisplay
                                                 value={entryPriceLimitOrder}
                                                 currency="USD"
                                                 decimals={30}
                                             />
-                                        }
+                                        )}
                                     </p>
                                 </div>
                                 <div className="info-trading-place-order">
@@ -502,7 +522,9 @@ const PlaceOrderPanel: React.FC = () => {
                                             fractionDigits={tokenConfig?.fractionDigits}
                                             threshold={tokenConfig?.threshold}
                                         ></BigintDisplay>{' '}
-                                        <span className="title-detail">{tokenConfig?.symbol}</span>
+                                        <span className="title-detail">
+                                            {tokenConfig?.symbol}
+                                        </span>
                                     </p>
                                 </div>
                             </div>
@@ -565,8 +587,9 @@ const PlaceOrderPanel: React.FC = () => {
                                 <div className="item-leverage-container">
                                     {leverages?.map((i) => (
                                         <div
-                                            className={`item-leverage ${i === leverage ? 'active-leverage' : ''
-                                                }`}
+                                            className={`item-leverage ${
+                                                i === leverage ? 'active-leverage' : ''
+                                            }`}
                                             onClick={() => setLeverage(i)}
                                         >
                                             {i}
@@ -601,20 +624,24 @@ const PlaceOrderPanel: React.FC = () => {
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Entry Price</p>
                                     <p className="content-place-order">
-                                        {selectOrder === 'Market Order' &&
+                                        {selectOrder === 'Market Order' && (
                                             <BigintDisplay
-                                                value={getPriceTokenConfigSizeChange.data as BigInt}
+                                                value={
+                                                    getPriceTokenConfigSizeChange.data as BigInt
+                                                }
                                                 currency="USD"
-                                                decimals={30 - tokenConfigSizeChange?.decimals ?? 0}
+                                                decimals={
+                                                    30 - tokenConfigSizeChange?.decimals ?? 0
+                                                }
                                             />
-                                        }
-                                        {selectOrder != 'Market Order' &&
+                                        )}
+                                        {selectOrder != 'Market Order' && (
                                             <BigintDisplay
                                                 value={entryPriceLimitOrder}
                                                 currency="USD"
                                                 decimals={30}
                                             />
-                                        }
+                                        )}
                                     </p>
                                 </div>
                                 <div className="info-trading-place-order">
@@ -640,7 +667,9 @@ const PlaceOrderPanel: React.FC = () => {
                                             fractionDigits={tokenConfig?.fractionDigits}
                                             threshold={tokenConfig?.threshold}
                                         ></BigintDisplay>{' '}
-                                        <span className="title-detail">{tokenConfig?.symbol}</span>
+                                        <span className="title-detail">
+                                            {tokenConfig?.symbol}
+                                        </span>
                                     </p>
                                 </div>
                             </div>
@@ -686,7 +715,7 @@ export const StyledToken = styled.div`
     }
 `;
 
-const StyledTokenSelect = styled(StyledToken) <{ pointer?: boolean }>`
+const StyledTokenSelect = styled(StyledToken)<{ pointer?: boolean }>`
     cursor: ${({ pointer }) => (pointer ? 'pointer' : 'auto')};
     :hover {
         border: 1px solid #515050;
