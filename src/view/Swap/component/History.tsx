@@ -4,7 +4,7 @@ import { useLastBlockUpdate } from "../../../contexts/ApplicationProvider";
 import { getSwapsByCondition } from "../../../apis/swap";
 import { useAccount } from "wagmi";
 import { TokenSymbol } from "../../../component/TokenSymbol";
-import { useEffect, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { getTimeDistance } from "../../../utils/times";
 import { getAddress } from "viem";
 import { BigintDisplay } from "../../../component/BigIntDisplay";
@@ -12,7 +12,7 @@ import { SwapType } from "../../../types";
 import ContentLoader from "../../../component/ContentLoader"
 import { useQuery } from '@tanstack/react-query';
 
-export default function History() {
+function History() {
     const { address, isConnected } = useAccount();
     const lastBlockUpdate = useLastBlockUpdate();
 
@@ -95,6 +95,8 @@ export default function History() {
        </>
     );
 }
+
+export default memo(History);
 
 const StyledTableBody = styled.div`
     width: 100%;

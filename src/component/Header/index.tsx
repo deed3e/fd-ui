@@ -57,14 +57,19 @@ const Header: React.FC = () => {
                     <ConnectButton />
                 </StyledConnectWallet>
             </StyledHeader>
-            <StyledLastBlockNumber>
-                <IcDot></IcDot>
-                <a data-tooltip-id="my-tooltip" data-tooltip-html={`${currentBlock} is the most recent <br/> block number on this network.<br/> 
+            {!isHome && (
+                <StyledLastBlockNumber>
+                    <IcDot></IcDot>
+                    <a
+                        data-tooltip-id="my-tooltip"
+                        data-tooltip-html={`${currentBlock} is the most recent <br/> block number on this network.<br/> 
 The connection is stable.`}
->
-                    {currentBlock}
-                </a>
-            </StyledLastBlockNumber>
+                        style={{ fontFamily: 'IBM Plex Mono' }}
+                    >
+                        {currentBlock}
+                    </a>
+                </StyledLastBlockNumber>
+            )}
         </div>
     );
 };
