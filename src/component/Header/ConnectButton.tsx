@@ -28,7 +28,7 @@ export default function ConnectButton() {
                 <StyledButtonConnect onClick={() => open()}>
                     {/* <IconConnectWallet />
                     <span>CONNECT</span> */}
-                    <w3m-connect-button />
+                    <w3m-connect-button size='sm' />
                 </StyledButtonConnect>
             )}
             {isConnected && (
