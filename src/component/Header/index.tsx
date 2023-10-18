@@ -41,9 +41,6 @@ const Header: React.FC = () => {
         } catch (err) {}
     }, []);
 
-    console.log('checkOracleHealth', checkOracleHealth);
-    console.log('checkKeeperHealth', checkKeeperHealth);
-
     const checkErr = useMemo(() => {
         return checkKeeperHealth && checkOracleHealth;
     }, [checkKeeperHealth, checkOracleHealth]);
