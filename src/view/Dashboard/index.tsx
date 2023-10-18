@@ -198,12 +198,12 @@ const StyledAltText = styled.p`
     font-family: IBM Plex Mono;
     font-size: 13px;
     text-align: center;
-    margin-top: 10px;
+    margin-top: 7px;
     margin-bottom: 0;
 `;
 
 const StyledAltTextSecond = styled(StyledAltText)`
-    margin-top: 5px;
+    margin-top: 0;
     align-items: center;
     display: flex;
     padding-left: 40%;
