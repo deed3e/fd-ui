@@ -78,7 +78,7 @@ const StyledValue = styled.div`
     color: #fff;
     font-weight: 700;
     font-size: 28px;
-    font-family: IBM Plex Mono;
+    font-family: 'IBM Plex Sans',ui-sans-serif,system-ui,'-apple-system','BlinkMacSystemFont','Segoe UI','Roboto','Helvetica Neue','Arial','Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
     line-height: normal;
 `
 
