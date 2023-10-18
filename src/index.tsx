@@ -35,6 +35,9 @@ createWeb3Modal({
     chains,
     chainImages: {
        
+      },
+      themeVariables: {
+        '--w3m-accent': '#6763e3',
       }
 });
 

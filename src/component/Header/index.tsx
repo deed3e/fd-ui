@@ -4,13 +4,15 @@ import { ReactComponent as Logo } from '../../assets/image/logo-navbar.svg';
 import { ReactComponent as IcDot } from '../../assets/icons/ic-dot-green.svg';
 import { screenUp } from '../../utils/styles';
 import ConnectButton from './ConnectButton';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLastBlockUpdate } from '../../contexts/ApplicationProvider';
 import { formatUnits } from 'viem';
 
 const Header: React.FC = () => {
     const location = useLocation();
     const lastBlockUpdate = useLastBlockUpdate();
+    const [checkOracleHealth, setCheckOracleHealth] = useState<boolean>(false);
+    const [checkKeeperHealth, setCheckKeeperHealth] = useState<boolean>(false);
 
     const isHome = useMemo(() => {
         if (location.pathname === '/') {
@@ -19,9 +21,37 @@ const Header: React.FC = () => {
         return false;
     }, [location]);
 
+    useEffect(() => {
+        try {
+            fetch('https://api.fdex.me/price-feed/health').then((res) => {
+                if(res.status === 200){
+                    setCheckOracleHealth(true);
+                }
+            });
+        } catch (err) {}}, []);
+
+    useEffect(() => {
+        try {
+            fetch('https://api.fdex.me/keeper/health').then((res) => {
+                if(res.status === 200){
+                    setCheckKeeperHealth(true);
+                }
+            })
+        } catch (err) {
+        }
+    }, []);
+   
+    console.log('checkOracleHealth',checkOracleHealth)
+    console.log('checkKeeperHealth',checkKeeperHealth)
+
+    const checkErr = useMemo(() => {
+        return checkKeeperHealth && checkOracleHealth;
+    }, [checkKeeperHealth, checkOracleHealth]);
+
     const currentBlock = useMemo(() => {
         return lastBlockUpdate ? formatUnits(lastBlockUpdate, 0) : '-';
     }, [lastBlockUpdate]);
+
     return (
         <div>
             <StyledHeader isHome={isHome}>
@@ -32,22 +62,22 @@ const Header: React.FC = () => {
                         </StyledLogoContainer>
                     </StyledLogoNavItem>
                     <StyledNavItem>
-                        <StyledNavItemLink to="/">DASHBOARD</StyledNavItemLink>
+                        <StyledNavItemLink to="/">Dashboard</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
-                        <StyledNavItemLink to="/trading/btc/long">TRADING</StyledNavItemLink>
+                        <StyledNavItemLink to="/trading/btc/long">Trading</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
-                        <StyledNavItemLink to="/swap">SWAP</StyledNavItemLink>
+                        <StyledNavItemLink to="/swap">Swap</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
-                        <StyledNavItemLink to="/liquidity">LIQUIDITY</StyledNavItemLink>
+                        <StyledNavItemLink to="/liquidity">Liquidity</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
-                        <StyledNavItemLink to="/analytic">ANALYTIC</StyledNavItemLink>
+                        <StyledNavItemLink to="/analytic">Analytics</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
-                        <StyledNavItemLink to="/faucet">FAUCET</StyledNavItemLink>
+                        <StyledNavItemLink to="/faucet">Faucet</StyledNavItemLink>
                     </StyledNavItem>
                 </StyledNav>
                 <StyledConnectWallet>
@@ -58,7 +88,7 @@ const Header: React.FC = () => {
                 </StyledConnectWallet>
             </StyledHeader>
             {!isHome && (
-                <StyledLastBlockNumber>
+                <StyledLastBlockNumber err={!checkErr}>
                     <IcDot></IcDot>
                     <a
                         data-tooltip-id="my-tooltip"
@@ -68,6 +98,8 @@ The connection is stable.`}
                     >
                         {currentBlock}
                     </a>
+                    {!checkOracleHealth && <>&nbsp;&&nbsp;oracle error</>}
+                    {!checkKeeperHealth && <>&nbsp;&&nbsp;keeper error</>}
                 </StyledLastBlockNumber>
             )}
         </div>
@@ -115,10 +147,7 @@ const StyledLogoNavItem = styled(StyledNavItem)`
     align-items: center;
     justify-content: space-between;
     + ${StyledNavItem} {
-        margin-top: 36px;
-        ${screenUp('lg')`
-      margin: 0 15px;
-    `}
+        margin: 0 15px;
     }
     margin: 0;
 `;
@@ -144,11 +173,12 @@ const StyledNav = styled.ul<{ visible?: boolean }>`
 
 const StyledNavItemLink = styled(NavLink)`
     padding: 0;
-    color: #979595;
-    font-weight: 500;
+    color: #7e7e7e;
+    font-weight: 600;
     &:hover,
     &.active {
-        color: #6763e3;
+        color: #fff;
+        font-weight: 700;
     }
     font-size: 14px;
 `;
@@ -169,15 +199,18 @@ const StyledChain = styled.div`
     display: flex;
 `;
 
-const StyledLastBlockNumber = styled.div`
+const StyledLastBlockNumber = styled.div<{ err: boolean }>`
     position: fixed;
     bottom: 10px;
     left: 15px;
     font-size: 12px;
-    color: #12d712;
+    color: ${(p) => (p.err ? '#f0d10a' : '#12d712')};
     svg {
         height: 7px;
         width: 7px;
+        circle {
+            fill: ${(p) => (p.err ? '#f0d10a' : '#12d712')};
+        }
     }
     display: flex;
     align-items: center;
