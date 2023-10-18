@@ -13,6 +13,7 @@ import { getDashboardItemData } from '../../apis/dashboard';
 import { useQuery } from '@tanstack/react-query';
 import CountUp from 'react-countup';
 import { formatUnits } from 'viem';
+import TextLoop from 'react-text-loop';
 
 const Dashboard: React.FC = () => {
     const dataReadTotalPool = useContractRead({
@@ -32,10 +33,17 @@ const Dashboard: React.FC = () => {
                 <StyledDivTop>
                     <StyledMainText>Decentralized Perpetual Exchange</StyledMainText>
                     <StyledAltText>
-                        Trade BTC, ETH, BNB and other top cryptocurrencies with up to
-                        <br />
-                        30x leverage directly from your wallet
+                        Trade BTC, ETH and other top cryptocurrencies with up to 30x leverage
                     </StyledAltText>
+                    <StyledAltTextSecond>
+                        very&nbsp;
+                        <StyledTextLoop>
+                            <div>transparent</div>
+                            <div>simple ux/ui</div>
+                            <div>reliable</div>
+                            <div>self-custody</div>
+                        </StyledTextLoop>
+                    </StyledAltTextSecond>
                 </StyledDivTop>
                 <StyledDivBottom>
                     <>
@@ -190,12 +198,27 @@ const StyledAltText = styled.p`
     font-family: IBM Plex Mono;
     font-size: 13px;
     text-align: center;
-    margin-top: 7px;
+    margin-top: 10px;
+    margin-bottom: 0;
 `;
+
+const StyledAltTextSecond = styled(StyledAltText)`
+    margin-top: 5px;
+    align-items: center;
+    display: flex;
+    padding-left: 40%;
+    `;
 
 const StyledDivTop = styled.div`
     padding-top: 47px;
 `;
+
+const StyledTextLoop = styled(TextLoop)`
+      width: 100px;
+      color: white;
+      font-size: 18px;
+      font-family: Jockey One;
+`
 
 const StyledDivBottom = styled.div`
     padding-bottom: 41px;

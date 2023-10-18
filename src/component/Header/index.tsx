@@ -4,7 +4,7 @@ import { ReactComponent as Logo } from '../../assets/image/logo-navbar.svg';
 import { ReactComponent as IcDot } from '../../assets/icons/ic-dot-green.svg';
 import { screenUp } from '../../utils/styles';
 import ConnectButton from './ConnectButton';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLastBlockUpdate } from '../../contexts/ApplicationProvider';
 import { formatUnits } from 'viem';
 
@@ -24,25 +24,25 @@ const Header: React.FC = () => {
     useEffect(() => {
         try {
             fetch('https://api.fdex.me/price-feed/health').then((res) => {
-                if(res.status === 200){
+                if (res.status === 200) {
                     setCheckOracleHealth(true);
                 }
             });
-        } catch (err) {}}, []);
+        } catch (err) {}
+    }, []);
 
     useEffect(() => {
         try {
             fetch('https://api.fdex.me/keeper/health').then((res) => {
-                if(res.status === 200){
+                if (res.status === 200) {
                     setCheckKeeperHealth(true);
                 }
-            })
-        } catch (err) {
-        }
+            });
+        } catch (err) {}
     }, []);
-   
-    console.log('checkOracleHealth',checkOracleHealth)
-    console.log('checkKeeperHealth',checkKeeperHealth)
+
+    console.log('checkOracleHealth', checkOracleHealth);
+    console.log('checkKeeperHealth', checkKeeperHealth);
 
     const checkErr = useMemo(() => {
         return checkKeeperHealth && checkOracleHealth;
