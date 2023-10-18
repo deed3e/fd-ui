@@ -214,7 +214,7 @@ const StyledDivTop = styled.div`
 `;
 
 const StyledTextLoop = styled(TextLoop)`
-      width: 100px;
+      width: 50px;
       color: white;
       font-size: 18px;
       font-family: Jockey One;
