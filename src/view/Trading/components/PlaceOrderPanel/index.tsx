@@ -27,6 +27,8 @@ import Pool from '../../../../abis/Pool.json';
 import Mock from '../../../../abis/MockERC20.json';
 import { BigintDisplay } from '../../../../component/BigIntDisplay';
 
+import IcLoading from '../../../../assets/image/ic-loading.png';
+
 import {
     useBalance,
     useContractRead,
@@ -53,6 +55,19 @@ interface TabPanelProps {
     dir?: string;
     index: number;
     value: number;
+}
+
+enum ButtonStatus {
+    notConnect,
+    notInput,
+    loading,
+    notApprove,
+    ready,
+    insufficientPool,
+    insufficientBalance,
+    sameToken,
+    minInput, // min 10 u
+    timeOutOracle,
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -82,6 +97,16 @@ function a11yProps(index: number) {
     };
 }
 
+import {
+    IHistoryTransaction,
+    StatusHistoryTransaction,
+} from '../../../../component/TransactionHistory';
+
+import { store } from '../../../../utils/store';
+import { useShowToast } from '../../../../hooks/useShowToast';
+
+const MIN_VALUE_INPUT = 9.9 * 1e8; // 10u
+
 const PlaceOrderPanel: React.FC = () => {
     const theme = useTheme();
     const { market } = useParams();
@@ -100,7 +125,7 @@ const PlaceOrderPanel: React.FC = () => {
 
     const [value, setValue] = useState(0);
     const [selectOrder, setSelectOrder] = useState('Market Order');
-
+    const showToast = useShowToast();
     const [inputPay, setInputPay] = useState<BigInt>(BigInt(0));
     const [inputTokenTwo, setInputTokenTwo] = useState<BigInt>(BigInt(0));
     const [tokenPay, setTokenPay] = useState<string>('BTC');
@@ -121,86 +146,87 @@ const PlaceOrderPanel: React.FC = () => {
     const [fee, setFee] = useState<BigInt>(BigInt(0));
     const [pnl, setPnl] = useState<BigInt>(BigInt(0));
     const [indexPrice, setIndexPrice] = useState<BigInt>(BigInt(0));
+    const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
 
     const getLiquidationFee = useContractRead({
         address: getAddressPool(),
         abi: Pool,
         functionName: 'fee',
     });
-    const [liquidationFee, setLiquidationFee] = useState<BigInt>(
-        getLiquidationFee.data[6] as BigInt,
-    );
+    // const [liquidationFee, setLiquidationFee] = useState<BigInt>(
+    //     getLiquidationFee.data[6] as BigInt,
+    // );
 
-    const [positionFee, setPositionFee] = useState<BigInt>(getLiquidationFee.data[7] as BigInt);
+    // const [positionFee, setPositionFee] = useState<BigInt>(getLiquidationFee.data[7] as BigInt);
 
-    useEffect(() => {
-        const positionFeeTmp: bigint = positionFee;
-        const divisor: bigint = 10000000000n;
+    // useEffect(() => {
+    //     const positionFeeTmp: bigint = positionFee;
+    //     const divisor: bigint = 10000000000n;
 
-        var valueOfFee = positionFee * sizeChange;
-        valueOfFee = valueOfFee / divisor;
+    //     var valueOfFee = positionFee * sizeChange;
+    //     valueOfFee = valueOfFee / divisor;
 
-        setFee(valueOfFee);
-    }, [sizeChange, positionFee]);
+    //     setFee(valueOfFee);
+    // }, [sizeChange, positionFee]);
 
-    useEffect(() => {
-        var valueOfPnl = collateralValue - (fee + liquidationFee);
-        setPnl(valueOfPnl);
-    }, [liquidationFee, fee, collateralValue]);
+    // useEffect(() => {
+    //     var valueOfPnl = collateralValue - (fee + liquidationFee);
+    //     setPnl(valueOfPnl);
+    // }, [liquidationFee, fee, collateralValue]);
 
-    useEffect(() => {
-        if (side === 0) {
-            if (selectOrder === 'Market Order') {
-                if (
-                    getPriceTokenConfigSizeChange.data > BigInt(0) &&
-                    sizeChange / getPriceTokenConfigSizeChange.data > BigInt(0)
-                ) {
-                    var indexPrice =
-                        pnl / (sizeChange / getPriceTokenConfigSizeChange.data) +
-                        getPriceTokenConfigSizeChange.data;
-                    setIndexPrice(indexPrice);
-                } else {
-                    setIndexPrice(BigInt(0));
-                }
-            } else {
-                if (
-                    entryPriceLimitOrder > BigInt(0) &&
-                    sizeChange / entryPriceLimitOrder > BigInt(0)
-                ) {
-                    var indexPrice =
-                        pnl / (sizeChange / entryPriceLimitOrder) + entryPriceLimitOrder;
-                    setIndexPrice(indexPrice);
-                } else {
-                    setIndexPrice(BigInt(0));
-                }
-            }
-        } else {
-            if (selectOrder === 'Market Order') {
-                if (
-                    getPriceTokenConfigSizeChange.data > BigInt(0) &&
-                    sizeChange / getPriceTokenConfigSizeChange.data > BigInt(0)
-                ) {
-                    var indexPrice =
-                        getPriceTokenConfigSizeChange.data -
-                        pnl / (sizeChange / getPriceTokenConfigSizeChange.data);
-                    setIndexPrice(indexPrice);
-                } else {
-                    setIndexPrice(BigInt(0));
-                }
-            } else {
-                if (
-                    entryPriceLimitOrder > BigInt(0) &&
-                    sizeChange / entryPriceLimitOrder > BigInt(0)
-                ) {
-                    var indexPrice =
-                        gentryPriceLimitOrder - pnl / (sizeChange / entryPriceLimitOrder);
-                    setIndexPrice(indexPrice);
-                } else {
-                    setIndexPrice(BigInt(0));
-                }
-            }
-        }
-    }, [pnl, sizeChange, inputTokenTwo, side, entryPriceLimitOrder, selectOrder]);
+    // useEffect(() => {
+    //     if (side === 0) {
+    //         if (selectOrder === 'Market Order') {
+    //             if (
+    //                 getPriceTokenConfigSizeChange.data > BigInt(0) &&
+    //                 sizeChange / getPriceTokenConfigSizeChange.data > BigInt(0)
+    //             ) {
+    //                 var indexPrice =
+    //                     pnl / (sizeChange / getPriceTokenConfigSizeChange.data) +
+    //                     getPriceTokenConfigSizeChange.data;
+    //                 setIndexPrice(indexPrice);
+    //             } else {
+    //                 setIndexPrice(BigInt(0));
+    //             }
+    //         } else {
+    //             if (
+    //                 entryPriceLimitOrder > BigInt(0) &&
+    //                 sizeChange / entryPriceLimitOrder > BigInt(0)
+    //             ) {
+    //                 var indexPrice =
+    //                     pnl / (sizeChange / entryPriceLimitOrder) + entryPriceLimitOrder;
+    //                 setIndexPrice(indexPrice);
+    //             } else {
+    //                 setIndexPrice(BigInt(0));
+    //             }
+    //         }
+    //     } else {
+    //         if (selectOrder === 'Market Order') {
+    //             if (
+    //                 getPriceTokenConfigSizeChange.data > BigInt(0) &&
+    //                 sizeChange / getPriceTokenConfigSizeChange.data > BigInt(0)
+    //             ) {
+    //                 var indexPrice =
+    //                     getPriceTokenConfigSizeChange.data -
+    //                     pnl / (sizeChange / getPriceTokenConfigSizeChange.data);
+    //                 setIndexPrice(indexPrice);
+    //             } else {
+    //                 setIndexPrice(BigInt(0));
+    //             }
+    //         } else {
+    //             if (
+    //                 entryPriceLimitOrder > BigInt(0) &&
+    //                 sizeChange / entryPriceLimitOrder > BigInt(0)
+    //             ) {
+    //                 var indexPrice =
+    //                     gentryPriceLimitOrder - pnl / (sizeChange / entryPriceLimitOrder);
+    //                 setIndexPrice(indexPrice);
+    //             } else {
+    //                 setIndexPrice(BigInt(0));
+    //             }
+    //         }
+    //     }
+    // }, [pnl, sizeChange, inputTokenTwo, side, entryPriceLimitOrder, selectOrder]);
 
     const tokenBTCConfig = getTokenConfig('BTC');
     const tokenETHConfig = getTokenConfig('ETH');
@@ -266,6 +292,10 @@ const PlaceOrderPanel: React.FC = () => {
     const handleChangeIndex = (index: number) => {
         setValue(index);
     };
+
+    const handleInsufficientBalance = useCallback((check: boolean) => {
+        setInsufficientBalance(check);
+    }, []);
 
     const orders = ['Market Order', 'Limit Order'];
 
@@ -408,6 +438,14 @@ const PlaceOrderPanel: React.FC = () => {
         args: [addressOrderManager, inputPay],
     });
 
+    const waitingForTransactionApprove = useWaitForTransaction({
+        hash: contractWriteApprove?.data?.hash,
+    });
+
+    const waitingForTransactionPlaceOrder = useWaitForTransaction({
+        hash: contractWritePlaceOrder?.data?.hash,
+    });
+
     const handlerPlaceOrder = useCallback(() => {
         if (selectOrder === 'Market Order') {
             setPriceToPlaceOrder(BigInt(0));
@@ -465,6 +503,148 @@ const PlaceOrderPanel: React.FC = () => {
     //     }
 
     // }, [valueInputTokenTwo,entryPriceLimitOrder,getPriceTokenConfigSizeChange.data,inputPay]);
+
+    const status = useMemo(() => {
+        if (!isConnected) {
+            return ButtonStatus.notConnect;
+        } else if (!inputPay) {
+            return ButtonStatus.notInput;
+        } else if (insufficientBalance) {
+            return ButtonStatus.insufficientBalance;
+        } else if (inputPay < MIN_VALUE_INPUT) {
+            return ButtonStatus.minInput;
+        } else if (
+            waitingForTransactionApprove?.isLoading ||
+            waitingForTransactionPlaceOrder?.isLoading
+        ) {
+            return ButtonStatus.loading;
+        } else if (dataAlowance?.data < inputPay) {
+            return ButtonStatus.notApprove;
+        }
+
+        return ButtonStatus.ready;
+    }, [
+        isConnected,
+        inputPay,
+        dataAlowance?.data,
+        waitingForTransactionApprove?.isLoading,
+        waitingForTransactionPlaceOrder?.isLoading,
+        insufficientBalance,
+    ]);
+
+    const buttonText = useMemo(() => {
+        switch (status) {
+            case ButtonStatus.notConnect:
+                return 'Connect Wallet';
+            case ButtonStatus.notInput:
+                return 'Enter An Amount';
+            case ButtonStatus.insufficientBalance:
+                return 'Insufficient Your Balance';
+            case ButtonStatus.minInput:
+                return 'Min Amount 10 USD';
+            case ButtonStatus.loading:
+                return ``;
+            case ButtonStatus.notApprove:
+                return 'Approve';
+            default:
+                return 'PLACE ORDER';
+        }
+    }, [status]);
+
+    const disableButton = useMemo(() => {
+        if (status !== ButtonStatus.ready && status !== ButtonStatus.notApprove) {
+            return true;
+        }
+        return false;
+    }, [status]);
+
+    useEffect(() => {
+        const handleStore = () => {
+            const localStore: IHistoryTransaction[] | undefined = store.get(address ?? 'guest');
+            const current = {
+                hash: contractWriteApprove?.data?.hash,
+                title: `Approve ${formatUnits(
+                    inputPay as bigint,
+                    tokenConfig?.decimals ?? 0,
+                )} ${tokenConfig?.symbol} `,
+                status: waitingForTransactionApprove?.isSuccess
+                    ? StatusHistoryTransaction.success
+                    : StatusHistoryTransaction.false,
+            };
+            const newLocalStore = localStore ? [...localStore, current] : [current];
+            store.set(address ?? 'guest', newLocalStore);
+            contractWriteApprove?.reset();
+        };
+
+        if (waitingForTransactionApprove?.isLoading) {
+            showToast(`Waiting Approve from token ${tokenConfig?.symbol}`, '', 'warning');
+        } else {
+            if (waitingForTransactionApprove?.isSuccess) {
+                showToast(`Success Approve`, '', 'success');
+                dataAlowance?.refetch();
+                handleStore();
+                // setRefesh(!refresh);
+            } else if (waitingForTransactionApprove?.isError) {
+                showToast(`Can not Approve`, '', 'error');
+                handleStore();
+            }
+        }
+    }, [
+        waitingForTransactionApprove?.isLoading,
+        waitingForTransactionApprove?.isSuccess,
+        waitingForTransactionApprove?.isError,
+        showToast,
+        dataAlowance?.data,
+        tokenConfig?.symbol,
+    ]);
+
+    useEffect(() => {
+        const handleStore = () => {
+            const localStore: IHistoryTransaction[] | undefined = store.get(address ?? 'guest');
+            const current = {
+                hash: contractWritePlaceOrder?.data?.hash,
+                title: `Place order ${formatUnits(
+                    inputPay as bigint,
+                    tokenConfig?.decimals ?? 0,
+                )} ${tokenConfig?.symbol}`,
+                status: waitingForTransactionPlaceOrder?.isSuccess
+                    ? StatusHistoryTransaction.success
+                    : StatusHistoryTransaction.false,
+            };
+            const newLocalStore = localStore ? [...localStore, current] : [current];
+            store.set(address ?? 'guest', newLocalStore);
+            contractWritePlaceOrder?.reset();
+            dataAlowance?.refetch();
+        };
+
+        if (waitingForTransactionPlaceOrder?.isLoading) {
+            showToast(
+                `Waiting Swap from ${formatUnits(
+                    inputPay as bigint,
+                    tokenConfig?.decimals ?? 0,
+                )} ${tokenConfig?.symbol}`,
+                '',
+                'warning',
+            );
+        } else {
+            if (waitingForTransactionPlaceOrder?.isSuccess) {
+                showToast(`Success place order`, '', 'success');
+                handleStore();
+                // setRefesh(!refresh);
+            } else if (waitingForTransactionPlaceOrder?.isError) {
+                showToast(`Can not place order`, '', 'error');
+                handleStore();
+            }
+        }
+    }, [
+        waitingForTransactionPlaceOrder?.isLoading,
+        waitingForTransactionPlaceOrder?.isSuccess,
+        waitingForTransactionPlaceOrder?.isError,
+        showToast,
+        dataAlowance?.data,
+        tokenConfig?.symbol,
+    ]);
+
     return (
         <>
             <Box sx={{ bgcolor: 'background.paper', width: 500 }}>
@@ -524,6 +704,7 @@ const PlaceOrderPanel: React.FC = () => {
                                         disable={false}
                                         disableSelect={false}
                                         valueChange={handleValueInput}
+                                        insufficientBalanceChange={handleInsufficientBalance}
                                     />
                                 </div>
                                 <div className="two-icon-down">
@@ -554,9 +735,36 @@ const PlaceOrderPanel: React.FC = () => {
                                         </div>
                                     ))}
                                 </div>
-                                <StyleButton className="btn-place-order">
+                                {/* <StyleButton className="btn-place-order">
                                     <div onClick={handlerPlaceOrder}>PLACE ORDER</div>
-                                </StyleButton>
+                                </StyleButton> */}
+
+                                <StyledWrapButton>
+                                    {/* {buttonText != 'Approve' && ( */}
+                                    <StyleButton
+                                        onClick={handlerPlaceOrder}
+                                        disabled={disableButton}
+                                    >
+                                        <div>{buttonText}</div>
+                                        <img
+                                            hidden={status !== ButtonStatus.loading}
+                                            src={IcLoading}
+                                            alt=""
+                                        ></img>
+                                    </StyleButton>
+                                    {/* )} */}
+                                    {/* 
+                    {buttonText === 'Approve' && (
+                        <StyleButton onClick={handleOnClick} disabled={disableButton}>
+                            <div>{buttonText}</div>
+                            <img
+                                hidden={status !== ButtonStatus.loading}
+                                src={IcLoading}
+                                alt=""
+                            ></img>
+                        </StyleButton>
+                    )} */}
+                                </StyledWrapButton>
 
                                 <div className="info-trading-place-order">
                                     <p className="title-place-order">Collateral Asset</p>
@@ -800,6 +1008,14 @@ const PlaceOrderPanel: React.FC = () => {
 };
 
 export default memo(PlaceOrderPanel);
+
+const StyledWrapButton = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 18px;
+    margin-bottom: 5px;
+`;
 
 const StyledSelectToken = styled.div`
     justify-self: self-end;
