@@ -1,0 +1,135 @@
+.container-referer {
+    padding: 0px 150px;
+    padding-top: 127px;
+}
+
+.add-info-referer-container {
+    .header-title-referal {
+        color: var(--white, #fff);
+        font-family: Jockey One;
+        font-size: 36px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        text-align: center;
+    }
+}
+
+.insert-referer-box {
+    border-radius: 5px;
+    background: rgba(54, 54, 54, 0.5);
+    width: 666px;
+    margin: auto;
+    padding: 0 65px;
+    padding-top: 12px;
+    padding-bottom: 23px;
+
+    .title-insert-referer {
+        color: var(--white, #fff);
+        font-family: IBM Plex Mono;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+    }
+
+    .input-referer {
+        border-radius: 10px;
+        background: #172132;
+        width: 535px;
+        height: 49px;
+        color: #fff;
+    }
+
+    .agree-btn-referer {
+        width: 257px;
+        height: 37px;
+        border-radius: 10px;
+        background: var(--primary-color, #6763e3);
+        color: var(--d-9-d-9-d-9, #d9d9d9);
+        font-family: IBM Plex Mono;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        margin-top: 28px;
+    }
+}
+
+.btn-confirm-referer {
+    text-align: center;
+}
+
+.referral-wallet-container {
+    width: 666px;
+    padding: 0 22px;
+    border-radius: 10px;
+    border: 1px solid var(--primary-color, #6763e3);
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+
+    .agree-copy-referral {
+        border-radius: 10px;
+        background: var(--primary-color, #6763e3);
+        color: var(--d-9-d-9-d-9, #d9d9d9);
+        font-family: IBM Plex Mono;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+    }
+}
+
+.guides-container {
+    color: var(--white, #fff);
+    font-family: Jockey One;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 10px;
+}
+
+.box-square {
+    width: 308px;
+    height: 255px;
+    border-radius: 5px;
+    background: rgba(54, 54, 54, 0.5);
+    position: relative;
+    z-index: 1;
+    .img-step {
+        text-align: center;
+        img {
+            margin-top: 35px;
+        }
+    }
+    .step-content {
+        margin-left: 20px;
+    }
+
+    .box-right-square {
+        width: 62px;
+        height: 43px;
+        flex-shrink: 0;
+        background: rgba(54, 54, 54, 0.5);
+        position: absolute;
+        right: -62px;
+        bottom: 100px;
+        z-index: 0;
+
+        .image-arrow {
+            position: absolute;
+            right: -33px;
+            top: -12px;
+        }
+    }
+}
+
+.guides-container-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

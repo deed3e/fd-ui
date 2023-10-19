@@ -77,20 +77,9 @@ div#full-width-tabpanel-1 {
 }
 
 .dropdown-price {
-    .sc-caXVBt {
+    div {
         flex: 1;
-        margin-right: 10px;
-
-        .sc-bczRLJ {
-            width: 100%;
-
-            .sc-hjriPb {
-                padding: 13px 0px !important;
-                border-radius: 10px;
-            }
-        }
     }
-
     .input-cpn {
         flex: 1;
     }
@@ -179,4 +168,13 @@ div#full-width-tabpanel-1 {
 
 .padding-top-zero {
     padding-top: 0;
+}
+
+
+.container-order-type {
+    div:first-child {
+        padding: 13px 0px !important;
+        border-radius: 10px;
+        margin-right: 10px;
+    }
 }

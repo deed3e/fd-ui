@@ -31,23 +31,29 @@ export const DropdownSelectOrder: React.FC<DropdownSelectOrderProps> = ({
         [onSelect],
     );
     return (
+        // <StyledOrderType>
+
         <Dropdown>
-            <DropdownToggle>{children}</DropdownToggle>
-            <StyledDropdownMenu position={position}>
-                <StyleDropdownList>
-                    {orders?.map((order) => (
-                        <StyleDropdownItem
-                            data-symbol={order}
-                            key={order}
-                            onClick={onSelectOrder}
-                            active={order === selectedOrder}
-                        >
-                            <div className="info">{order}</div>
-                        </StyleDropdownItem>
-                    ))}
-                </StyleDropdownList>
-            </StyledDropdownMenu>
+            <div className="container-order-type">
+                <DropdownToggle>{children}</DropdownToggle>
+
+                <StyledDropdownMenu position={position}>
+                    <StyleDropdownList>
+                        {orders?.map((order) => (
+                            <StyleDropdownItem
+                                data-symbol={order}
+                                key={order}
+                                onClick={onSelectOrder}
+                                active={order === selectedOrder}
+                            >
+                                <div className="info">{order}</div>
+                            </StyleDropdownItem>
+                        ))}
+                    </StyleDropdownList>
+                </StyledDropdownMenu>
+            </div>
         </Dropdown>
+        // </StyledOrderType>
     );
 };
 
@@ -77,6 +83,10 @@ const StyleDropdownList = styled.div`
     margin-top: -8px;
     margin-left: -8px;
     margin-right: -8px;
+`;
+
+const StyledOrderType = styled.div`
+    flex: 1;
 `;
 
 const StyleDropdownItem = styled.div<{ active?: boolean }>`

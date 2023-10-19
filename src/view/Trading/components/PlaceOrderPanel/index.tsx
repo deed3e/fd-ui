@@ -675,17 +675,19 @@ const PlaceOrderPanel: React.FC = () => {
                                 </div>
                                 <div className="dropdown-price">
                                     <StyledSelectToken>
-                                        <DropdownSelectOrder
-                                            selectedOrder={selectOrder}
-                                            orders={orders}
-                                            position={'right'}
-                                            onSelect={onDropDownItemClick}
-                                        >
-                                            <StyledTokenSelect pointer={orders?.length >= 0}>
-                                                <span>{selectOrder}</span>
-                                                <IconArrowDown />
-                                            </StyledTokenSelect>
-                                        </DropdownSelectOrder>
+                                            <DropdownSelectOrder
+                                                selectedOrder={selectOrder}
+                                                orders={orders}
+                                                position={'right'}
+                                                onSelect={onDropDownItemClick}
+                                            >
+                                                <StyledTokenSelect
+                                                    pointer={orders?.length >= 0}
+                                                >
+                                                    <span>{selectOrder}</span>
+                                                    <IconArrowDown />
+                                                </StyledTokenSelect>
+                                            </DropdownSelectOrder>
                                     </StyledSelectToken>
                                     <div className="input-cpn">
                                         <Input
