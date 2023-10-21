@@ -74,10 +74,10 @@ const Header: React.FC = () => {
                         <StyledNavItemLink to="/analytic">Analytics</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
-                        <StyledNavItemLink to="/faucet">Faucet</StyledNavItemLink>
+                        <StyledNavItemLink to="/referer">Referral</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
-                        <StyledNavItemLink to="/referer">Referer</StyledNavItemLink>
+                        <StyledNavItemLink to="/faucet">Faucet</StyledNavItemLink>
                     </StyledNavItem>
                 </StyledNav>
                 <StyledConnectWallet>
