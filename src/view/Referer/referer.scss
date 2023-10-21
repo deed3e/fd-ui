@@ -1,5 +1,5 @@
 .container-referer {
-    padding: 0px 150px;
+    padding: 0px 210px;
     padding-top: 127px;
 }
 
@@ -110,21 +110,27 @@
         margin-left: 20px;
     }
 
-    .box-right-square {
-        width: 62px;
-        height: 43px;
-        flex-shrink: 0;
-        background: rgba(54, 54, 54, 0.5);
-        position: absolute;
-        right: -62px;
-        bottom: 100px;
-        z-index: 0;
+    // .box-right-square {
+    //     width: 62px;
+    //     height: 43px;
+    //     flex-shrink: 0;
+    //     background: rgba(54, 54, 54, 0.5);
+    //     position: absolute;
+    //     right: -62px;
+    //     bottom: 100px;
+    //     z-index: 0;
 
-        .image-arrow {
-            position: absolute;
-            right: -33px;
-            top: -12px;
-        }
+    //     .image-arrow {
+    //         position: absolute;
+    //         right: -33px;
+    //         top: -12px;
+    //     }
+    // }
+    .box-right-square-img {
+        position: absolute;
+        right: -95px;
+        top: 85px;
+        bottom: 0;
     }
 }
 
