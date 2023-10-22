@@ -11,6 +11,12 @@ import { useState, useCallback, useEffect } from 'react';
 import { useShowToast } from '../../hooks/useShowToast';
 import { getAccountStatus, postReferralUser } from '../../apis/referral';
 
+import Pagination from '@mui/material/Pagination';
+import PaginationItem from '@mui/material/PaginationItem';
+import Stack from '@mui/material/Stack';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+
 const Referer: React.FC = () => {
     const { address, isConnected } = useAccount();
     const [addressReferral, setAddressReferral] = useState<string>('');
@@ -155,6 +161,74 @@ const Referer: React.FC = () => {
                             Trade to get trade point <br /> and get reward!
                         </p>
                     </div>
+                </div>
+            </div>
+
+            <div className="referral-table-container">
+                <div className="table-info-referral">
+                    <div className="table-info-referral-header">
+                        <div className="left-header">
+                            <p className="title-head">Trading Point</p>
+                            <p className="amount">1000</p>
+                        </div>
+                        <div className="right-header">
+                            <p className="title-head">Trading Point</p>
+                            <p className="amount">1000</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="table-info-detail-container">
+                    <div className="header-table-detail">
+                        <div className="title-table-info-referral">Wallet</div>
+                        <div className="title-table-info-referral">Trading Point</div>
+                        <div className="title-table-info-referral">Referred Date</div>
+                    </div>
+                    <div className="body-tb-referral">
+                        <div className="body-table-detail-referral">
+                            <div className="title-table-info-referral">0x123..456</div>
+                            <div className="title-table-info-referral">300</div>
+                            <div className="title-table-info-referral">01/01/2023</div>
+                        </div>
+
+                        <div className="body-table-detail-referral">
+                            <div className="title-table-info-referral">0x123..456</div>
+                            <div className="title-table-info-referral">300</div>
+                            <div className="title-table-info-referral">01/01/2023</div>
+                        </div>
+
+                        <div className="body-table-detail-referral">
+                            <div className="title-table-info-referral">0x123..456</div>
+                            <div className="title-table-info-referral">300</div>
+                            <div className="title-table-info-referral">01/01/2023</div>
+                        </div>
+
+                        <div className="body-table-detail-referral">
+                            <div className="title-table-info-referral">0x123..456</div>
+                            <div className="title-table-info-referral">300</div>
+                            <div className="title-table-info-referral">01/01/2023</div>
+                        </div>
+                    </div>
+                </div>
+                <div className="paging-referral">
+                    <Stack spacing={2}>
+                        <Pagination
+                            count={10}
+                            renderItem={(item) => (
+                                <PaginationItem
+                                    slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+                                    {...item}
+                                />
+                            )}
+                        />
+                    </Stack>
+                </div>
+            </div>
+            <div className="your-referral-reward">
+                <div className="title-reward">Your referral reward: </div>
+                <div className="amount-reward-container">
+                    <p className="amount-reward">1000$</p>
+                    <Button className="claim-referral">Claim</Button>
                 </div>
             </div>
         </div>
