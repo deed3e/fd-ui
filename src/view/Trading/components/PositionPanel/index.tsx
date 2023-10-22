@@ -10,8 +10,10 @@ import { gql } from 'graphql-request';
 import { useAccount } from 'wagmi';
 import { BigintDisplay } from '../../../../component/BigIntDisplay';
 import { getSymbolByAddress, getTokenConfig } from '../../../../config';
-import { watchBlockNumber } from '@wagmi/core';
 import { MarketInfo } from '../..';
+import { getAddress } from 'viem';
+import { useLastBlockUpdate } from '../../../../contexts/ApplicationProvider';
+
 
 const query = gql`
     query _query($wallet: String!) {
@@ -110,13 +112,14 @@ function a11yProps(index: number) {
     };
 }
 
-const PositionPanel: React.FC<MarketInfo> = ({current}) => {
+const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
     const [value, setValue] = React.useState(0);
     const [loading, setLoading] = useState(true);
     const [orders, setOrders] = useState<Order[]>([]);
     const [positions, setPositions] = useState<Position[]>([]);
     const { address } = useAccount();
     const [pnl, setPnl] = useState(BigInt(0));
+    const lastBlockUpdate = useLastBlockUpdate();
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -178,7 +181,7 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
         return () => {
             mounted = false;
         };
-    }, [address]);
+    }, [address, lastBlockUpdate]);
 
     return (
         <>
@@ -219,16 +222,16 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
                                 <div className="content-body-table">
                                     <div className="header-table-position header-table-position-2">
                                         <div className="header-title-position">
-                                            <p className="token-positon">{    getTokenConfig(
-                                                            getSymbolByAddress(item?.market),
-                                                        )?.symbol}/USD</p>
+                                            <p className="token-positon">{getTokenConfig(
+                                                getSymbolByAddress(getAddress(item?.market)) || 'BTC',
+                                            )?.symbol}/USD</p>
                                             <p className="long-shot-position">{item?.side}</p>
                                         </div>
                                         <div className="header-title-position">
                                             <p className="size-position">
                                                 $
                                                 <BigintDisplay
-                                                    value={item?.size}
+                                                    value={BigInt(item?.size)}
                                                     decimals={30}
                                                     fractionDigits={2}
                                                 />
@@ -238,7 +241,7 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
                                             <p className="net-value-top">
                                                 $
                                                 <BigintDisplay
-                                                    value={item?.collateralValue}
+                                                    value={BigInt(item?.collateralValue)}
                                                     decimals={30}
                                                     fractionDigits={2}
                                                 />
@@ -246,7 +249,7 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
                                             <p className="net-value-bottom">
                                                 $
                                                 <BigintDisplay
-                                                    value={item?.realizedPnl}
+                                                    value={BigInt(item?.realizedPnl)}
                                                     decimals={30}
                                                     fractionDigits={2}
                                                 />
@@ -257,12 +260,12 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
                                                 {' '}
                                                 $
                                                 <BigintDisplay
-                                                    value={item?.entryPrice}
+                                                    value={BigInt(item?.entryPrice)}
                                                     decimals={
                                                         30 -
-                                                        getTokenConfig(
-                                                            getSymbolByAddress(item?.market),
-                                                        )?.decimals
+                                                        (getTokenConfig(
+                                                            getSymbolByAddress(getAddress(item?.market)) || 'BTC',
+                                                        )?.decimals || 0)
                                                     }
                                                     fractionDigits={2}
                                                 />
@@ -278,7 +281,7 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
                         ))}
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={1}>
-                    <div className="padding-for-header-table">
+                        <div className="padding-for-header-table">
                             <div className="header-table-position">
                                 <div className="header-title-position">Position</div>
                                 <div className="header-title-position">Size</div>
@@ -288,42 +291,42 @@ const PositionPanel: React.FC<MarketInfo> = ({current}) => {
                                 <div className="header-title-position">Action</div>
                             </div>
                         </div>
-                    {orders.map((item, index) => (
+                        {orders.map((item, index) => (
                             <div className="padding-for-body-table" key={index}>
                                 <div className="content-body-table">
                                     <div className="header-table-position header-table-position-2">
                                         <div className="header-title-position">
-                                            <p className="token-positon">{    getTokenConfig(
-                                                            getSymbolByAddress(item.indexToken),
-                                                        )?.symbol}/USD</p>
+                                            <p className="token-positon">{getTokenConfig(
+                                                getSymbolByAddress(getAddress(item?.indexToken))||'BTC',
+                                            )?.symbol}/USD</p>
                                             <p className="long-shot-position">{item.side}</p>
                                         </div>
                                         <div className="header-title-position">
                                             <p className="size-position">
                                                 $
                                                 <BigintDisplay
-                                                    value={item.sizeChange}
+                                                    value={BigInt(item?.sizeChange)}
                                                     decimals={30}
                                                     fractionDigits={2}
                                                 />
                                             </p>
                                         </div>
-                                       
+
                                         <div className="header-title-position">
                                             <p className="entry-price-position">
-                                            {item.positionType}
+                                                {item.positionType}
                                             </p>
                                         </div>
                                         <div className="header-title-position">
                                             <p className="entry-price-position">
-                                            $
+                                                $
                                                 <BigintDisplay
-                                                    value={item.price}
+                                                    value={BigInt(item?.price)}
                                                     decimals={
                                                         30 -
-                                                        getTokenConfig(
-                                                            getSymbolByAddress(item.indexToken),
-                                                        )?.decimals
+                                                        (getTokenConfig(
+                                                            getSymbolByAddress(getAddress(item?.indexToken)) || 'BTC',
+                                                        )?.decimals || 0)
                                                     }
                                                     fractionDigits={2}
                                                 />

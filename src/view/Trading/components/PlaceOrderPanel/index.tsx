@@ -9,43 +9,30 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import styled from 'styled-components';
-import { formatUnits, getAddress, parseEther, parseUnits } from 'viem';
+import { formatUnits, getAddress, parseUnits } from 'viem';
 import { useOracle } from '../../../../hooks/useOracle';
-
+import twoIconDown from '../../../../assets/svg/two-icon-down.svg'
 import { DropdownSelectOrder } from '../PlaceOrderPanel/components/DropdownSelectOrder';
 import { ReactComponent as IconArrowDown } from '../../../../assets/svg/ic-arrow-down.svg';
-
 import Input from './components/Input';
 import InputTokenWithSelect from '../../../../component/InputToken/InputTokenWithSelect';
 import InputTokenWithoutSelect from './components/InputTokenWithoutSelect';
-import Button from '@mui/material/Button';
-import twoIconDown from '../../../../assets/svg/two-icon-down.svg';
-
 import OrderManager from '../../../../abis/OrderManager.json';
 import Oracle from '../../../../abis/Oracle.json';
-import Pool from '../../../../abis/Pool.json';
-import Mock from '../../../../abis/MockERC20.json';
 import { BigintDisplay } from '../../../../component/BigIntDisplay';
-
 import IcLoading from '../../../../assets/image/ic-loading.png';
-
+import ERC20  from '../../../../abis/IERC20.json';
 import {
     useBalance,
     useContractRead,
     useAccount,
-    usePrepareContractWrite,
-    useContractWrite,
     useWaitForTransaction,
-    useContractReads,
+    useContractWrite
 } from 'wagmi';
-
 import {
     getAllTokenSymbol,
-    getWrapNativeTokenSymbol,
     getTokenConfig,
     getAddressPool,
-    getAddressRouter,
-    getLpSymbol,
     getAddressOrderManager,
     getAddressOracle,
 } from '../../../../config';
@@ -148,86 +135,6 @@ const PlaceOrderPanel: React.FC = () => {
     const [indexPrice, setIndexPrice] = useState<BigInt>(BigInt(0));
     const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
 
-    const getLiquidationFee = useContractRead({
-        address: getAddressPool(),
-        abi: Pool,
-        functionName: 'fee',
-    });
-    // const [liquidationFee, setLiquidationFee] = useState<BigInt>(
-    //     getLiquidationFee.data[6] as BigInt,
-    // );
-
-    // const [positionFee, setPositionFee] = useState<BigInt>(getLiquidationFee.data[7] as BigInt);
-
-    // useEffect(() => {
-    //     const positionFeeTmp: bigint = positionFee;
-    //     const divisor: bigint = 10000000000n;
-
-    //     var valueOfFee = positionFee * sizeChange;
-    //     valueOfFee = valueOfFee / divisor;
-
-    //     setFee(valueOfFee);
-    // }, [sizeChange, positionFee]);
-
-    // useEffect(() => {
-    //     var valueOfPnl = collateralValue - (fee + liquidationFee);
-    //     setPnl(valueOfPnl);
-    // }, [liquidationFee, fee, collateralValue]);
-
-    // useEffect(() => {
-    //     if (side === 0) {
-    //         if (selectOrder === 'Market Order') {
-    //             if (
-    //                 getPriceTokenConfigSizeChange.data > BigInt(0) &&
-    //                 sizeChange / getPriceTokenConfigSizeChange.data > BigInt(0)
-    //             ) {
-    //                 var indexPrice =
-    //                     pnl / (sizeChange / getPriceTokenConfigSizeChange.data) +
-    //                     getPriceTokenConfigSizeChange.data;
-    //                 setIndexPrice(indexPrice);
-    //             } else {
-    //                 setIndexPrice(BigInt(0));
-    //             }
-    //         } else {
-    //             if (
-    //                 entryPriceLimitOrder > BigInt(0) &&
-    //                 sizeChange / entryPriceLimitOrder > BigInt(0)
-    //             ) {
-    //                 var indexPrice =
-    //                     pnl / (sizeChange / entryPriceLimitOrder) + entryPriceLimitOrder;
-    //                 setIndexPrice(indexPrice);
-    //             } else {
-    //                 setIndexPrice(BigInt(0));
-    //             }
-    //         }
-    //     } else {
-    //         if (selectOrder === 'Market Order') {
-    //             if (
-    //                 getPriceTokenConfigSizeChange.data > BigInt(0) &&
-    //                 sizeChange / getPriceTokenConfigSizeChange.data > BigInt(0)
-    //             ) {
-    //                 var indexPrice =
-    //                     getPriceTokenConfigSizeChange.data -
-    //                     pnl / (sizeChange / getPriceTokenConfigSizeChange.data);
-    //                 setIndexPrice(indexPrice);
-    //             } else {
-    //                 setIndexPrice(BigInt(0));
-    //             }
-    //         } else {
-    //             if (
-    //                 entryPriceLimitOrder > BigInt(0) &&
-    //                 sizeChange / entryPriceLimitOrder > BigInt(0)
-    //             ) {
-    //                 var indexPrice =
-    //                     gentryPriceLimitOrder - pnl / (sizeChange / entryPriceLimitOrder);
-    //                 setIndexPrice(indexPrice);
-    //             } else {
-    //                 setIndexPrice(BigInt(0));
-    //             }
-    //         }
-    //     }
-    // }, [pnl, sizeChange, inputTokenTwo, side, entryPriceLimitOrder, selectOrder]);
-
     const tokenBTCConfig = getTokenConfig('BTC');
     const tokenETHConfig = getTokenConfig('ETH');
     const tokenUSDCConfig = getTokenConfig('USDC');
@@ -319,7 +226,6 @@ const PlaceOrderPanel: React.FC = () => {
     }, []);
 
     const amountChangeHandler = useCallback((amount: BigInt) => {
-        // if (orderType == 0) {
         setPrice(amount);
     }, []);
 
@@ -334,6 +240,7 @@ const PlaceOrderPanel: React.FC = () => {
     }, [token]);
 
     const amountPayChange = useCallback((value: BigInt) => {
+        console.log('setInputPay',value)
         setInputPay(value);
     }, []);
 
@@ -426,14 +333,14 @@ const PlaceOrderPanel: React.FC = () => {
 
     const dataAlowance = useContractRead({
         address: getAddress(tokenConfig?.address ?? ''),
-        abi: Mock,
+        abi: ERC20,
         functionName: 'allowance',
         args: [address, addressOrderManager],
     });
 
     const contractWriteApprove = useContractWrite({
         address: getAddress(tokenConfig?.address ?? ''),
-        abi: Mock,
+        abi: ERC20,
         functionName: 'approve',
         args: [addressOrderManager, inputPay],
     });
@@ -511,8 +418,6 @@ const PlaceOrderPanel: React.FC = () => {
             return ButtonStatus.notInput;
         } else if (insufficientBalance) {
             return ButtonStatus.insufficientBalance;
-        } else if (inputPay < MIN_VALUE_INPUT) {
-            return ButtonStatus.minInput;
         } else if (
             waitingForTransactionApprove?.isLoading ||
             waitingForTransactionPlaceOrder?.isLoading
@@ -619,7 +524,7 @@ const PlaceOrderPanel: React.FC = () => {
 
         if (waitingForTransactionPlaceOrder?.isLoading) {
             showToast(
-                `Waiting Swap from ${formatUnits(
+                `Waiting place order from ${formatUnits(
                     inputPay as bigint,
                     tokenConfig?.decimals ?? 0,
                 )} ${tokenConfig?.symbol}`,
@@ -644,6 +549,10 @@ const PlaceOrderPanel: React.FC = () => {
         dataAlowance?.data,
         tokenConfig?.symbol,
     ]);
+
+    const positionSize = useMemo(()=>{
+        return sizeChange as bigint / BigInt(29856*1e8);
+    },[sizeChange])
 
     return (
         <>
@@ -714,13 +623,10 @@ const PlaceOrderPanel: React.FC = () => {
                                 </div>
                                 <InputTokenWithoutSelect
                                     tokens={tokensTwo}
-                                    amountChange={amountTokenTwoChange}
-                                    tokenChange={handleTokenTwoChange}
                                     title="Position Size"
                                     disable={true}
-                                    valueChange={handleValueInputTokenTwo}
                                     pickToken={token}
-                                    value={formatUnits(sizeChange as bigint, 30)}
+                                    value={formatUnits(positionSize as bigint, 22)}
                                 />
                                 <div>
                                     <p className="leverage-title">Leverage</p>
@@ -737,12 +643,8 @@ const PlaceOrderPanel: React.FC = () => {
                                         </div>
                                     ))}
                                 </div>
-                                {/* <StyleButton className="btn-place-order">
-                                    <div onClick={handlerPlaceOrder}>PLACE ORDER</div>
-                                </StyleButton> */}
 
                                 <StyledWrapButton>
-                                    {/* {buttonText != 'Approve' && ( */}
                                     <StyleButton
                                         onClick={handlerPlaceOrder}
                                         disabled={disableButton}
@@ -754,18 +656,6 @@ const PlaceOrderPanel: React.FC = () => {
                                             alt=""
                                         ></img>
                                     </StyleButton>
-                                    {/* )} */}
-                                    {/* 
-                    {buttonText === 'Approve' && (
-                        <StyleButton onClick={handleOnClick} disabled={disableButton}>
-                            <div>{buttonText}</div>
-                            <img
-                                hidden={status !== ButtonStatus.loading}
-                                src={IcLoading}
-                                alt=""
-                            ></img>
-                        </StyleButton>
-                    )} */}
                                 </StyledWrapButton>
 
                                 <div className="info-trading-place-order">

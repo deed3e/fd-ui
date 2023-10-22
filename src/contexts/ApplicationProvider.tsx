@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { config } from '../config';
 import { watchBlockNumber } from '@wagmi/core';
 
@@ -64,6 +64,7 @@ export const useWebSocket = () => {
         return context?.ws;
     }, [context?.ws]);
 };
+
 export const useLastBlockUpdate= () => {
     const context = useApplicationContext();
 
