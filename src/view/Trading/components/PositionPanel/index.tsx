@@ -7,13 +7,13 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { graphClient } from '../../../../utils/constant';
 import { gql } from 'graphql-request';
-import { useAccount } from 'wagmi';
+import { useAccount, useContractWrite } from 'wagmi';
 import { BigintDisplay } from '../../../../component/BigIntDisplay';
-import { getSymbolByAddress, getTokenConfig } from '../../../../config';
+import { getAddressOrderManager, getSymbolByAddress, getTokenConfig } from '../../../../config';
 import { MarketInfo } from '../..';
-import { getAddress } from 'viem';
+import { Address, getAddress } from 'viem';
 import { useLastBlockUpdate } from '../../../../contexts/ApplicationProvider';
-
+import OrderManager from '../../../../abis/OrderManager.json';
 
 const query = gql`
     query _query($wallet: String!) {
@@ -111,6 +111,13 @@ function a11yProps(index: number) {
         'aria-controls': `simple-tabpanel-${index}`,
     };
 }
+type CloseProps ={
+    side: number,
+    indexToken: Address,
+    collateralToken: Address,
+    collateralAmount: BigInt,
+    sizeChange: BigInt
+}
 
 const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
     const [value, setValue] = React.useState(0);
@@ -120,10 +127,30 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
     const { address } = useAccount();
     const [pnl, setPnl] = useState(BigInt(0));
     const lastBlockUpdate = useLastBlockUpdate();
+    const [propsClosePosition, setPropsClosePosition] = useState<CloseProps>();
+
+    const contractWriteCloseOrder = useContractWrite({
+        address: getAddressOrderManager(),
+        abi: OrderManager,
+        value: BigInt(1e16),
+        functionName: 'placeOrder',
+        args: [
+            1,
+            propsClosePosition?.side,
+            propsClosePosition?.indexToken,
+            propsClosePosition?.collateralToken,
+            propsClosePosition?.collateralAmount,
+            propsClosePosition?.sizeChange,
+            0,
+            0,
+        ],
+    });
+
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
+
     useEffect(() => {
         let mounted = true;
         graphClient
@@ -297,7 +324,7 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
                                     <div className="header-table-position header-table-position-2">
                                         <div className="header-title-position">
                                             <p className="token-positon">{getTokenConfig(
-                                                getSymbolByAddress(getAddress(item?.indexToken))||'BTC',
+                                                getSymbolByAddress(getAddress(item?.indexToken)) || 'BTC',
                                             )?.symbol}/USD</p>
                                             <p className="long-shot-position">{item.side}</p>
                                         </div>

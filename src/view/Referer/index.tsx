@@ -3,7 +3,6 @@ import './referer.scss';
 import stepOne from '../../assets/svg/steponeimage.svg';
 import stepTwo from '../../assets/svg/step2.svg';
 import stepThree from '../../assets/svg/step3.svg';
-import Polygon from '../../assets/svg/Polygon.svg';
 import arrowLeft from '../../assets/svg/arrow-left.svg';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAccount } from 'wagmi';
