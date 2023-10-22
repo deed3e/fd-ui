@@ -9,13 +9,14 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAccount } from 'wagmi';
 import { useState, useCallback, useEffect } from 'react';
 import { useShowToast } from '../../hooks/useShowToast';
-import { getAccountStatus, postReferralUser } from '../../apis/referral';
+import { GetReferralLevelInformation, getAccountStatus, getReferredUsers, postReferralUser } from '../../apis/referral';
 
 import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
 import Stack from '@mui/material/Stack';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { parseDatetimeToDate } from '../../utils/times';
 
 const Referer: React.FC = () => {
     const { address, isConnected } = useAccount();
@@ -33,6 +34,19 @@ const Referer: React.FC = () => {
         queryKey: ['GetAccountStatus'],
         queryFn: () => getAccountStatus(address || ''),
     });
+
+    const referredUsers = useQuery({
+        queryKey: ['getReferredUsers'],
+        queryFn: () => getReferredUsers(address || ''),
+    });
+
+    const referralLevelInformation = useQuery({
+        queryKey: ['GetReferralLevelInformation'],
+        queryFn: () => GetReferralLevelInformation(address || ''),
+    });
+
+    console.log('referralLevelInformation', referralLevelInformation.data);
+
 
     const handleChangeReferral = useCallback((e: any) => {
         setAddressReferral(e.target.value);
@@ -169,11 +183,11 @@ const Referer: React.FC = () => {
                     <div className="table-info-referral-header">
                         <div className="left-header">
                             <p className="title-head">Trading Point</p>
-                            <p className="amount">1000</p>
+                            <p className="amount">{referralLevelInformation?.data?.tradePoint ?? 0}</p>
                         </div>
                         <div className="right-header">
-                            <p className="title-head">Trading Point</p>
-                            <p className="amount">1000</p>
+                            <p className="title-head">Referral Point</p>
+                            <p className="amount">{referralLevelInformation?.data?.referralPoint ?? 0}</p>
                         </div>
                     </div>
                 </div>
@@ -181,11 +195,29 @@ const Referer: React.FC = () => {
                 <div className="table-info-detail-container">
                     <div className="header-table-detail">
                         <div className="title-table-info-referral">Wallet</div>
-                        <div className="title-table-info-referral">Trading Point</div>
+                        <div className="title-table-info-referral">Referral Point</div>
                         <div className="title-table-info-referral">Referred Date</div>
                     </div>
                     <div className="body-tb-referral">
-                        <div className="body-table-detail-referral">
+                        {referredUsers.data?.map((item: any, index: number) => (
+                            <div className="body-table-detail-referral">
+                                <div className="title-table-info-referral">
+                                    {item.wallet?.slice(0, 3) +
+                                        '...' +
+                                        item.wallet?.slice(
+                                            item.wallet.length - 4,
+                                            item.wallet.length,
+                                        )}{' '}
+                                </div>
+                                <div className="title-table-info-referral">
+                                    {item.referralPoint}
+                                </div>
+                                <div className="title-table-info-referral">
+                                    {parseDatetimeToDate(item.referredDate)}
+                                </div>
+                            </div>
+                        ))}
+                        {/* <div className="body-table-detail-referral">
                             <div className="title-table-info-referral">0x123..456</div>
                             <div className="title-table-info-referral">300</div>
                             <div className="title-table-info-referral">01/01/2023</div>
@@ -201,13 +233,7 @@ const Referer: React.FC = () => {
                             <div className="title-table-info-referral">0x123..456</div>
                             <div className="title-table-info-referral">300</div>
                             <div className="title-table-info-referral">01/01/2023</div>
-                        </div>
-
-                        <div className="body-table-detail-referral">
-                            <div className="title-table-info-referral">0x123..456</div>
-                            <div className="title-table-info-referral">300</div>
-                            <div className="title-table-info-referral">01/01/2023</div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
                 <div className="paging-referral">

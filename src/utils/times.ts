@@ -10,6 +10,13 @@ export const formatDate = (date: Date, formatter?: string) => {
     return format(date, formatter || 'MMM dd yyyy HH:mm:ss');
 };
 
+export const parseDatetimeToDate = (datetime: string) => {
+    const dateobj = parseISO(datetime);
+
+    const formattedDate = format(dateobj, 'dd/MM/yyyy');
+    return formattedDate;
+};
+
 export const delay = (time: number) => {
     return new Promise((resolve) => setTimeout(resolve, time));
 };
