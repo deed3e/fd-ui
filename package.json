@@ -65,9 +65,7 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "serve": "vite preview",
-    "gentype": "typechain --target ethers-v6 --out-dir src/typechain 'src/abis/*json' --ts-nocheck",
-    "postinstall": "gentype"
+    "serve": "vite preview"
   },
   "eslintConfig": {
     "extends": [

@@ -95,468 +95,469 @@ import { useShowToast } from '../../../../hooks/useShowToast';
 const MIN_VALUE_INPUT = 9.9 * 1e8; // 10u
 
 const PlaceOrderPanel: React.FC = () => {
-    const theme = useTheme();
-    const { market } = useParams();
+    // const theme = useTheme();
+    // const { market } = useParams();
 
-    const tokentmp = market?.toUpperCase();
-    const [token, setToken] = useState(tokentmp || 'BTC');
+    // const tokentmp = market?.toUpperCase();
+    // const [token, setToken] = useState(tokentmp || 'BTC');
 
-    const tokenConfigSizeChange = getTokenConfig(token || 'BTC');
+    // const tokenConfigSizeChange = getTokenConfig(token || 'BTC');
 
-    const getPriceTokenConfigSizeChange = useContractRead({
-        address: getAddressOracle(),
-        abi: Oracle,
-        functionName: 'getPrice',
-        args: [getAddress(tokenConfigSizeChange?.address ?? '')],
-    });
+    // const getPriceTokenConfigSizeChange = useContractRead({
+    //     address: getAddressOracle(),
+    //     abi: Oracle,
+    //     functionName: 'getPrice',
+    //     args: [getAddress(tokenConfigSizeChange?.address ?? '')],
+    // });
 
-    const [value, setValue] = useState(0);
-    const [selectOrder, setSelectOrder] = useState('Market Order');
-    const showToast = useShowToast();
-    const [inputPay, setInputPay] = useState<BigInt>(BigInt(0));
-    const [inputTokenTwo, setInputTokenTwo] = useState<BigInt>(BigInt(0));
-    const [tokenPay, setTokenPay] = useState<string>('BTC');
-    const [tokenTwo, setTokenTwo] = useState<string>(token);
-    const [valueInput, setValueInput] = useState<number>(0);
-    const [valueInputTokenTwo, setValueInputTokenTwo] = useState<number>(0);
-    const [leverage, setLeverage] = useState<string>('2x');
-    const [side, setSide] = useState(0);
-    const [positionType, setPositionType] = useState(0);
-    const [sizeChange, setSizeChange] = useState<BigInt>(BigInt(0));
-    const [indexToken, setIndexToken] = useState(getTokenConfig('BTC')?.address);
-    const [priceOfOrderType, setPriceOfOrderType] = useState<BigInt>(BigInt(0));
-    const [orderType, setOrderType] = useState(0);
-    const [collateralValue, setCollateralValue] = useState<BigInt>(BigInt(0));
-    const [entryPriceLimitOrder, setEntryPriceLimitOrder] = useState<BigInt>(BigInt(0));
-    const [priceToPlaceOrder, setPriceToPlaceOrder] = useState<BigInt>(BigInt(0));
-    const [liquidationPrice, setLiquidationPrice] = useState<BigInt>(BigInt(0));
-    const [fee, setFee] = useState<BigInt>(BigInt(0));
-    const [pnl, setPnl] = useState<BigInt>(BigInt(0));
-    const [indexPrice, setIndexPrice] = useState<BigInt>(BigInt(0));
-    const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
+    // const [value, setValue] = useState(0);
+    // const [selectOrder, setSelectOrder] = useState('Market Order');
+    // const showToast = useShowToast();
+    // const [inputPay, setInputPay] = useState<BigInt>(BigInt(0));
+    // const [inputTokenTwo, setInputTokenTwo] = useState<BigInt>(BigInt(0));
+    // const [tokenPay, setTokenPay] = useState<string>('BTC');
+    // const [tokenTwo, setTokenTwo] = useState<string>(token);
+    // const [valueInput, setValueInput] = useState<number>(0);
+    // const [valueInputTokenTwo, setValueInputTokenTwo] = useState<number>(0);
+    // const [leverage, setLeverage] = useState<string>('2x');
+    // const [side, setSide] = useState(0);
+    // const [positionType, setPositionType] = useState(0);
+    // const [sizeChange, setSizeChange] = useState<BigInt>(BigInt(0));
+    // const [indexToken, setIndexToken] = useState(getTokenConfig('BTC')?.address);
+    // const [priceOfOrderType, setPriceOfOrderType] = useState<BigInt>(BigInt(0));
+    // const [orderType, setOrderType] = useState(0);
+    // const [collateralValue, setCollateralValue] = useState<BigInt>(BigInt(0));
+    // const [entryPriceLimitOrder, setEntryPriceLimitOrder] = useState<BigInt>(BigInt(0));
+    // const [priceToPlaceOrder, setPriceToPlaceOrder] = useState<BigInt>(BigInt(0));
+    // const [liquidationPrice, setLiquidationPrice] = useState<BigInt>(BigInt(0));
+    // const [fee, setFee] = useState<BigInt>(BigInt(0));
+    // const [pnl, setPnl] = useState<BigInt>(BigInt(0));
+    // const [indexPrice, setIndexPrice] = useState<BigInt>(BigInt(0));
+    // const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
 
-    const tokenBTCConfig = getTokenConfig('BTC');
-    const tokenETHConfig = getTokenConfig('ETH');
-    const tokenUSDCConfig = getTokenConfig('USDC');
-    const tokenWETHConfig = getTokenConfig('WETH');
+    // const tokenBTCConfig = getTokenConfig('BTC');
+    // const tokenETHConfig = getTokenConfig('ETH');
+    // const tokenUSDCConfig = getTokenConfig('USDC');
+    // const tokenWETHConfig = getTokenConfig('WETH');
 
-    const { address, isConnected } = useAccount();
+    // const { address, isConnected } = useAccount();
 
-    const getPrice = useOracle(['BTC', 'ETH', 'USDC', 'WETH']); //['BTC','ETH']
+    // const getPrice = useOracle(['BTC', 'ETH', 'USDC', 'WETH']); //['BTC','ETH']
 
-    const getPriceETH = useContractRead({
-        address: getAddressOracle(),
-        abi: Oracle,
-        functionName: 'getPrice',
-        args: [getAddress(tokenETHConfig?.address ?? '')],
-    });
+    // const getPriceETH = useContractRead({
+    //     address: getAddressOracle(),
+    //     abi: Oracle,
+    //     functionName: 'getPrice',
+    //     args: [getAddress(tokenETHConfig?.address ?? '')],
+    // });
 
-    const getPriceBTC = useContractRead({
-        address: getAddressOracle(),
-        abi: Oracle,
-        functionName: 'getPrice',
-        args: [getAddress(tokenBTCConfig?.address ?? '')],
-    });
+    // const getPriceBTC = useContractRead({
+    //     address: getAddressOracle(),
+    //     abi: Oracle,
+    //     functionName: 'getPrice',
+    //     args: [getAddress(tokenBTCConfig?.address ?? '')],
+    // });
 
-    const getPriceUSDC = useContractRead({
-        address: getAddressOracle(),
-        abi: Oracle,
-        functionName: 'getPrice',
-        args: [getAddress(tokenUSDCConfig?.address ?? '')],
-    });
+    // const getPriceUSDC = useContractRead({
+    //     address: getAddressOracle(),
+    //     abi: Oracle,
+    //     functionName: 'getPrice',
+    //     args: [getAddress(tokenUSDCConfig?.address ?? '')],
+    // });
 
-    const getPriceWETH = useContractRead({
-        address: getAddressOracle(),
-        abi: Oracle,
-        functionName: 'getPrice',
-        args: [getAddress(tokenWETHConfig?.address ?? '')],
-    });
+    // const getPriceWETH = useContractRead({
+    //     address: getAddressOracle(),
+    //     abi: Oracle,
+    //     functionName: 'getPrice',
+    //     args: [getAddress(tokenWETHConfig?.address ?? '')],
+    // });
 
-    const [price, setPrice] = useState<BigInt>(BigInt(0));
+    // const [price, setPrice] = useState<BigInt>(BigInt(0));
 
-    const addressOrderManager = getAddressOrderManager();
+    // const addressOrderManager = getAddressOrderManager();
 
-    const leverages = ['2x', '5x', '10x', '20x', '30x'];
+    // const leverages = ['2x', '5x', '10x', '20x', '30x'];
 
-    const tokens = useMemo(() => {
-        return getAllTokenSymbol()?.filter((i) => i != 'FLP');
-    }, []);
+    // const tokens = useMemo(() => {
+    //     return getAllTokenSymbol()?.filter((i) => i != 'FLP');
+    // }, []);
 
-    const tokensTwo = useMemo(() => {
-        return getAllTokenSymbol()?.filter((i) => i != 'FLP');
-    }, []);
+    // const tokensTwo = useMemo(() => {
+    //     return getAllTokenSymbol()?.filter((i) => i != 'FLP');
+    // }, []);
 
-    const tokenConfig = getTokenConfig(tokenPay);
+    // const tokenConfig = getTokenConfig(tokenPay);
 
-    const tokenConfigTwo = getTokenConfig(tokenPay);
+    // const tokenConfigTwo = getTokenConfig(tokenPay);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        setInputPay(BigInt(0));
-        setSide(newValue);
-        setValue(newValue);
-    };
+    // const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    //     setInputPay(BigInt(0));
+    //     setSide(newValue);
+    //     setValue(newValue);
+    // };
 
-    const handleChangeIndex = (index: number) => {
-        setValue(index);
-    };
+    // const handleChangeIndex = (index: number) => {
+    //     setValue(index);
+    // };
 
-    const handleInsufficientBalance = useCallback((check: boolean) => {
-        setInsufficientBalance(check);
-    }, []);
+    // const handleInsufficientBalance = useCallback((check: boolean) => {
+    //     setInsufficientBalance(check);
+    // }, []);
 
-    const orders = ['Market Order', 'Limit Order'];
-
-    useEffect(() => {
-        if (selectOrder === 'Market Order') {
-            setPriceOfOrderType(BigInt(0));
-            setOrderType(0);
-        } else {
-            setPriceOfOrderType(price);
-            setOrderType(1);
-        }
-    }, [selectOrder]);
-
-    useEffect(() => {
-        var tokenObjectGetFromIndexToken = getTokenConfig(token || 'BTC');
-        setIndexToken(tokenObjectGetFromIndexToken?.address);
-    }, [token]);
-
-    const onDropDownItemClick = useCallback((symbol: string) => {
-        setSelectOrder(symbol);
-    }, []);
-
-    const amountChangeHandler = useCallback((amount: BigInt) => {
-        setPrice(amount);
-    }, []);
-
-    useEffect(() => {
-        var tokenGet = market?.toUpperCase();
-        setToken(tokenGet || 'BTC');
-    }, [market]);
-
-    useMemo(() => {
-        var tokenGet = market?.toUpperCase();
-        setToken(tokenGet || 'BTC');
-    }, [token]);
-
-    const amountPayChange = useCallback((value: BigInt) => {
-        console.log('setInputPay',value)
-        setInputPay(value);
-    }, []);
-
-    const amountTokenTwoChange = useCallback(
-        (value: BigInt) => {
-            setInputTokenTwo(sizeChange);
-        },
-        [sizeChange],
-    );
-
-    const handleTokenPayChange = useCallback((symbol: string) => {
-        setTokenPay(symbol);
-    }, []);
-
-    const handleTokenTwoChange = useCallback(
-        (symbol: string) => {
-            setTokenTwo(token);
-        },
-        [token],
-    );
-
-    const handleValueInput = useCallback(
-        (value: number) => {
-            setValueInput(Math.round(formatUnits(value, tokenConfig?.decimals)));
-        },
-        [tokenConfig?.decimals],
-    );
-
-    const handleValueInputTokenTwo = useCallback(
-        (value: number) => {
-            setValueInputTokenTwo(sizeChange);
-        },
-        [tokenConfigTwo?.decimals],
-    );
-
-    useEffect(() => {
-        var amountRealUserInput: bigint = inputPay;
-        var priceOfTokenConfig =
-            tokenConfig?.symbol == 'BTC'
-                ? getPriceBTC.data
-                : tokenConfig?.symbol == 'ETH'
-                ? getPriceETH.data
-                : tokenConfig?.symbol == 'USDC'
-                ? getPriceUSDC.data
-                : tokenConfig?.symbol == 'WETH'
-                ? getPriceWETH.data
-                : BigInt(0);
-
-        setCollateralValue(amountRealUserInput * priceOfTokenConfig);
-        switch (leverage) {
-            case '2x':
-                var sizeChange: bigint = amountRealUserInput * 2n * priceOfTokenConfig;
-                setSizeChange(sizeChange);
-                break;
-            case '5x':
-                var sizeChange: bigint = amountRealUserInput * 5n * priceOfTokenConfig;
-                setSizeChange(sizeChange);
-                break;
-            case '10x':
-                var sizeChange: bigint = amountRealUserInput * 10n * priceOfTokenConfig;
-                setSizeChange(sizeChange);
-                break;
-            case '20x':
-                var sizeChange: bigint = amountRealUserInput * 20n * priceOfTokenConfig;
-                setSizeChange(sizeChange);
-                break;
-            case '30x':
-                var sizeChange: bigint = amountRealUserInput * 30n * priceOfTokenConfig;
-                setSizeChange(sizeChange);
-                break;
-        }
-    }, [inputPay, leverage, getPrice, side, collateralValue]);
-
-    const contractWritePlaceOrder = useContractWrite({
-        address: getAddressOrderManager(),
-        abi: OrderManager,
-        value: BigInt(1e16),
-        functionName: 'placeOrder',
-        args: [
-            0,
-            side,
-            indexToken,
-            tokenConfig?.address,
-            inputPay,
-            sizeChange,
-            priceToPlaceOrder,
-            orderType,
-        ],
-    });
-
-    const dataAlowance = useContractRead({
-        address: getAddress(tokenConfig?.address ?? ''),
-        abi: ERC20,
-        functionName: 'allowance',
-        args: [address, addressOrderManager],
-    });
-
-    const contractWriteApprove = useContractWrite({
-        address: getAddress(tokenConfig?.address ?? ''),
-        abi: ERC20,
-        functionName: 'approve',
-        args: [addressOrderManager, inputPay],
-    });
-
-    const waitingForTransactionApprove = useWaitForTransaction({
-        hash: contractWriteApprove?.data?.hash,
-    });
-
-    const waitingForTransactionPlaceOrder = useWaitForTransaction({
-        hash: contractWritePlaceOrder?.data?.hash,
-    });
-
-    const handlerPlaceOrder = useCallback(() => {
-        if (selectOrder === 'Market Order') {
-            setPriceToPlaceOrder(BigInt(0));
-        } else {
-            var value = parseUnits(
-                price.toString(),
-                30 - (tokenConfigSizeChange?.decimals ?? 0),
-            ) as BigInt;
-            setPriceToPlaceOrder(value);
-        }
-
-        if (inputPay <= dataAlowance?.data) {
-            contractWritePlaceOrder?.write();
-        } else {
-            contractWriteApprove?.write();
-            dataAlowance.refetch();
-        }
-    }, [contractWritePlaceOrder]);
-
-    const balancePool = useBalance({
-        address: getAddressPool(),
-        token: tokenConfig?.address,
-    });
-
-    useEffect(() => {
-        var value = parseUnits(
-            price.toString(),
-            tokenConfigSizeChange?.decimals ?? 0,
-        ) as BigInt;
-        var priceToken =
-            tokenConfigSizeChange?.symbol === 'BTC'
-                ? getPriceBTC.data
-                : tokenConfigSizeChange?.symbol === 'ETH'
-                ? getPriceETH.data
-                : tokenConfigSizeChange?.symbol === 'USDC'
-                ? getPriceUSDC.data
-                : tokenConfigSizeChange?.symbol === 'WETH'
-                ? getPriceWETH.data
-                : BigInt(0);
-        setEntryPriceLimitOrder(value * priceToken);
-    }, [price]);
+    // const orders = ['Market Order', 'Limit Order'];
 
     // useEffect(() => {
-    //     console.log("TokenTwo",valueInputTokenTwo);
-    //     console.log("entry price limit",entryPriceLimitOrder);
+    //     if (selectOrder === 'Market Order') {
+    //         setPriceOfOrderType(BigInt(0));
+    //         setOrderType(0);
+    //     } else {
+    //         setPriceOfOrderType(price);
+    //         setOrderType(1);
+    //     }
+    // }, [selectOrder]);
 
-    //     if(selectOrder === 'Market Order'){
-    //         if(side === 0){
+    // useEffect(() => {
+    //     var tokenObjectGetFromIndexToken = getTokenConfig(token || 'BTC');
+    //     setIndexToken(tokenObjectGetFromIndexToken?.address);
+    // }, [token]);
 
-    //         }else {
+    // const onDropDownItemClick = useCallback((symbol: string) => {
+    //     setSelectOrder(symbol);
+    // }, []);
 
-    //         }
-    //     }else{
+    // const amountChangeHandler = useCallback((amount: BigInt) => {
+    //     setPrice(amount);
+    // }, []);
 
+    // useEffect(() => {
+    //     var tokenGet = market?.toUpperCase();
+    //     setToken(tokenGet || 'BTC');
+    // }, [market]);
+
+    // useMemo(() => {
+    //     var tokenGet = market?.toUpperCase();
+    //     setToken(tokenGet || 'BTC');
+    // }, [token]);
+
+    // const amountPayChange = useCallback((value: BigInt) => {
+    //     console.log('setInputPay',value)
+    //     setInputPay(value);
+    // }, []);
+
+    // const amountTokenTwoChange = useCallback(
+    //     (value: BigInt) => {
+    //         setInputTokenTwo(sizeChange);
+    //     },
+    //     [sizeChange],
+    // );
+
+    // const handleTokenPayChange = useCallback((symbol: string) => {
+    //     setTokenPay(symbol);
+    // }, []);
+
+    // const handleTokenTwoChange = useCallback(
+    //     (symbol: string) => {
+    //         setTokenTwo(token);
+    //     },
+    //     [token],
+    // );
+
+    // const handleValueInput = useCallback(
+    //     (value: number) => {
+    //         setValueInput(Math.round(formatUnits(value, tokenConfig?.decimals)));
+    //     },
+    //     [tokenConfig?.decimals],
+    // );
+
+    // const handleValueInputTokenTwo = useCallback(
+    //     (value: number) => {
+    //         setValueInputTokenTwo(sizeChange);
+    //     },
+    //     [tokenConfigTwo?.decimals],
+    // );
+
+    // useEffect(() => {
+    //     var amountRealUserInput: bigint = inputPay;
+    //     var priceOfTokenConfig =
+    //         tokenConfig?.symbol == 'BTC'
+    //             ? getPriceBTC.data
+    //             : tokenConfig?.symbol == 'ETH'
+    //             ? getPriceETH.data
+    //             : tokenConfig?.symbol == 'USDC'
+    //             ? getPriceUSDC.data
+    //             : tokenConfig?.symbol == 'WETH'
+    //             ? getPriceWETH.data
+    //             : BigInt(0);
+
+    //     setCollateralValue(amountRealUserInput * priceOfTokenConfig);
+    //     switch (leverage) {
+    //         case '2x':
+    //             var sizeChange: bigint = amountRealUserInput * 2n * priceOfTokenConfig;
+    //             setSizeChange(sizeChange);
+    //             break;
+    //         case '5x':
+    //             var sizeChange: bigint = amountRealUserInput * 5n * priceOfTokenConfig;
+    //             setSizeChange(sizeChange);
+    //             break;
+    //         case '10x':
+    //             var sizeChange: bigint = amountRealUserInput * 10n * priceOfTokenConfig;
+    //             setSizeChange(sizeChange);
+    //             break;
+    //         case '20x':
+    //             var sizeChange: bigint = amountRealUserInput * 20n * priceOfTokenConfig;
+    //             setSizeChange(sizeChange);
+    //             break;
+    //         case '30x':
+    //             var sizeChange: bigint = amountRealUserInput * 30n * priceOfTokenConfig;
+    //             setSizeChange(sizeChange);
+    //             break;
+    //     }
+    // }, [inputPay, leverage, getPrice, side, collateralValue]);
+
+    // const contractWritePlaceOrder = useContractWrite({
+    //     address: getAddressOrderManager(),
+    //     abi: OrderManager,
+    //     value: BigInt(1e16),
+    //     functionName: 'placeOrder',
+    //     args: [
+    //         0,
+    //         side,
+    //         indexToken,
+    //         tokenConfig?.address,
+    //         inputPay,
+    //         sizeChange,
+    //         priceToPlaceOrder,
+    //         orderType,
+    //     ],
+    // });
+
+    // const dataAlowance = useContractRead({
+    //     address: getAddress(tokenConfig?.address ?? ''),
+    //     abi: ERC20,
+    //     functionName: 'allowance',
+    //     args: [address, addressOrderManager],
+    // });
+
+    // const contractWriteApprove = useContractWrite({
+    //     address: getAddress(tokenConfig?.address ?? ''),
+    //     abi: ERC20,
+    //     functionName: 'approve',
+    //     args: [addressOrderManager, inputPay],
+    // });
+
+    // const waitingForTransactionApprove = useWaitForTransaction({
+    //     hash: contractWriteApprove?.data?.hash,
+    // });
+
+    // const waitingForTransactionPlaceOrder = useWaitForTransaction({
+    //     hash: contractWritePlaceOrder?.data?.hash,
+    // });
+
+    // const handlerPlaceOrder = useCallback(() => {
+    //     if (selectOrder === 'Market Order') {
+    //         setPriceToPlaceOrder(BigInt(0));
+    //     } else {
+    //         var value = parseUnits(
+    //             price.toString(),
+    //             30 - (tokenConfigSizeChange?.decimals ?? 0),
+    //         ) as BigInt;
+    //         setPriceToPlaceOrder(value);
     //     }
 
-    // }, [valueInputTokenTwo,entryPriceLimitOrder,getPriceTokenConfigSizeChange.data,inputPay]);
+    //     if (inputPay <= dataAlowance?.data) {
+    //         contractWritePlaceOrder?.write();
+    //     } else {
+    //         contractWriteApprove?.write();
+    //         dataAlowance.refetch();
+    //     }
+    // }, [contractWritePlaceOrder]);
 
-    const status = useMemo(() => {
-        if (!isConnected) {
-            return ButtonStatus.notConnect;
-        } else if (!inputPay) {
-            return ButtonStatus.notInput;
-        } else if (insufficientBalance) {
-            return ButtonStatus.insufficientBalance;
-        } else if (
-            waitingForTransactionApprove?.isLoading ||
-            waitingForTransactionPlaceOrder?.isLoading
-        ) {
-            return ButtonStatus.loading;
-        } else if (dataAlowance?.data < inputPay) {
-            return ButtonStatus.notApprove;
-        }
+    // const balancePool = useBalance({
+    //     address: getAddressPool(),
+    //     token: tokenConfig?.address,
+    // });
 
-        return ButtonStatus.ready;
-    }, [
-        isConnected,
-        inputPay,
-        dataAlowance?.data,
-        waitingForTransactionApprove?.isLoading,
-        waitingForTransactionPlaceOrder?.isLoading,
-        insufficientBalance,
-    ]);
+    // useEffect(() => {
+    //     var value = parseUnits(
+    //         price.toString(),
+    //         tokenConfigSizeChange?.decimals ?? 0,
+    //     ) as BigInt;
+    //     var priceToken =
+    //         tokenConfigSizeChange?.symbol === 'BTC'
+    //             ? getPriceBTC.data
+    //             : tokenConfigSizeChange?.symbol === 'ETH'
+    //             ? getPriceETH.data
+    //             : tokenConfigSizeChange?.symbol === 'USDC'
+    //             ? getPriceUSDC.data
+    //             : tokenConfigSizeChange?.symbol === 'WETH'
+    //             ? getPriceWETH.data
+    //             : BigInt(0);
+    //     setEntryPriceLimitOrder(value * priceToken);
+    // }, [price]);
 
-    const buttonText = useMemo(() => {
-        switch (status) {
-            case ButtonStatus.notConnect:
-                return 'Connect Wallet';
-            case ButtonStatus.notInput:
-                return 'Enter An Amount';
-            case ButtonStatus.insufficientBalance:
-                return 'Insufficient Your Balance';
-            case ButtonStatus.minInput:
-                return 'Min Amount 10 USD';
-            case ButtonStatus.loading:
-                return ``;
-            case ButtonStatus.notApprove:
-                return 'Approve';
-            default:
-                return 'PLACE ORDER';
-        }
-    }, [status]);
+    // // useEffect(() => {
+    // //     console.log("TokenTwo",valueInputTokenTwo);
+    // //     console.log("entry price limit",entryPriceLimitOrder);
 
-    const disableButton = useMemo(() => {
-        if (status !== ButtonStatus.ready && status !== ButtonStatus.notApprove) {
-            return true;
-        }
-        return false;
-    }, [status]);
+    // //     if(selectOrder === 'Market Order'){
+    // //         if(side === 0){
 
-    useEffect(() => {
-        const handleStore = () => {
-            const localStore: IHistoryTransaction[] | undefined = store.get(address ?? 'guest');
-            const current = {
-                hash: contractWriteApprove?.data?.hash,
-                title: `Approve ${formatUnits(
-                    inputPay as bigint,
-                    tokenConfig?.decimals ?? 0,
-                )} ${tokenConfig?.symbol} `,
-                status: waitingForTransactionApprove?.isSuccess
-                    ? StatusHistoryTransaction.success
-                    : StatusHistoryTransaction.false,
-            };
-            const newLocalStore = localStore ? [...localStore, current] : [current];
-            store.set(address ?? 'guest', newLocalStore);
-            contractWriteApprove?.reset();
-        };
+    // //         }else {
 
-        if (waitingForTransactionApprove?.isLoading) {
-            showToast(`Waiting Approve from token ${tokenConfig?.symbol}`, '', 'warning');
-        } else {
-            if (waitingForTransactionApprove?.isSuccess) {
-                showToast(`Success Approve`, '', 'success');
-                dataAlowance?.refetch();
-                handleStore();
-                // setRefesh(!refresh);
-            } else if (waitingForTransactionApprove?.isError) {
-                showToast(`Can not Approve`, '', 'error');
-                handleStore();
-            }
-        }
-    }, [
-        waitingForTransactionApprove?.isLoading,
-        waitingForTransactionApprove?.isSuccess,
-        waitingForTransactionApprove?.isError,
-        showToast,
-        dataAlowance?.data,
-        tokenConfig?.symbol,
-    ]);
+    // //         }
+    // //     }else{
 
-    useEffect(() => {
-        const handleStore = () => {
-            const localStore: IHistoryTransaction[] | undefined = store.get(address ?? 'guest');
-            const current = {
-                hash: contractWritePlaceOrder?.data?.hash,
-                title: `Place order ${formatUnits(
-                    inputPay as bigint,
-                    tokenConfig?.decimals ?? 0,
-                )} ${tokenConfig?.symbol}`,
-                status: waitingForTransactionPlaceOrder?.isSuccess
-                    ? StatusHistoryTransaction.success
-                    : StatusHistoryTransaction.false,
-            };
-            const newLocalStore = localStore ? [...localStore, current] : [current];
-            store.set(address ?? 'guest', newLocalStore);
-            contractWritePlaceOrder?.reset();
-            dataAlowance?.refetch();
-        };
+    // //     }
 
-        if (waitingForTransactionPlaceOrder?.isLoading) {
-            showToast(
-                `Waiting place order from ${formatUnits(
-                    inputPay as bigint,
-                    tokenConfig?.decimals ?? 0,
-                )} ${tokenConfig?.symbol}`,
-                '',
-                'warning',
-            );
-        } else {
-            if (waitingForTransactionPlaceOrder?.isSuccess) {
-                showToast(`Success place order`, '', 'success');
-                handleStore();
-                // setRefesh(!refresh);
-            } else if (waitingForTransactionPlaceOrder?.isError) {
-                showToast(`Can not place order`, '', 'error');
-                handleStore();
-            }
-        }
-    }, [
-        waitingForTransactionPlaceOrder?.isLoading,
-        waitingForTransactionPlaceOrder?.isSuccess,
-        waitingForTransactionPlaceOrder?.isError,
-        showToast,
-        dataAlowance?.data,
-        tokenConfig?.symbol,
-    ]);
+    // // }, [valueInputTokenTwo,entryPriceLimitOrder,getPriceTokenConfigSizeChange.data,inputPay]);
 
-    const positionSize = useMemo(()=>{
-        return sizeChange as bigint / BigInt(29856*1e8);
-    },[sizeChange])
+    // const status = useMemo(() => {
+    //     if (!isConnected) {
+    //         return ButtonStatus.notConnect;
+    //     } else if (!inputPay) {
+    //         return ButtonStatus.notInput;
+    //     } else if (insufficientBalance) {
+    //         return ButtonStatus.insufficientBalance;
+    //     } else if (
+    //         waitingForTransactionApprove?.isLoading ||
+    //         waitingForTransactionPlaceOrder?.isLoading
+    //     ) {
+    //         return ButtonStatus.loading;
+    //     } else if (dataAlowance?.data < inputPay) {
+    //         return ButtonStatus.notApprove;
+    //     }
+
+    //     return ButtonStatus.ready;
+    // }, [
+    //     isConnected,
+    //     inputPay,
+    //     dataAlowance?.data,
+    //     waitingForTransactionApprove?.isLoading,
+    //     waitingForTransactionPlaceOrder?.isLoading,
+    //     insufficientBalance,
+    // ]);
+
+    // const buttonText = useMemo(() => {
+    //     switch (status) {
+    //         case ButtonStatus.notConnect:
+    //             return 'Connect Wallet';
+    //         case ButtonStatus.notInput:
+    //             return 'Enter An Amount';
+    //         case ButtonStatus.insufficientBalance:
+    //             return 'Insufficient Your Balance';
+    //         case ButtonStatus.minInput:
+    //             return 'Min Amount 10 USD';
+    //         case ButtonStatus.loading:
+    //             return ``;
+    //         case ButtonStatus.notApprove:
+    //             return 'Approve';
+    //         default:
+    //             return 'PLACE ORDER';
+    //     }
+    // }, [status]);
+
+    // const disableButton = useMemo(() => {
+    //     if (status !== ButtonStatus.ready && status !== ButtonStatus.notApprove) {
+    //         return true;
+    //     }
+    //     return false;
+    // }, [status]);
+
+    // useEffect(() => {
+    //     const handleStore = () => {
+    //         const localStore: IHistoryTransaction[] | undefined = store.get(address ?? 'guest');
+    //         const current = {
+    //             hash: contractWriteApprove?.data?.hash,
+    //             title: `Approve ${formatUnits(
+    //                 inputPay as bigint,
+    //                 tokenConfig?.decimals ?? 0,
+    //             )} ${tokenConfig?.symbol} `,
+    //             status: waitingForTransactionApprove?.isSuccess
+    //                 ? StatusHistoryTransaction.success
+    //                 : StatusHistoryTransaction.false,
+    //         };
+    //         const newLocalStore = localStore ? [...localStore, current] : [current];
+    //         store.set(address ?? 'guest', newLocalStore);
+    //         contractWriteApprove?.reset();
+    //     };
+
+    //     if (waitingForTransactionApprove?.isLoading) {
+    //         showToast(`Waiting Approve from token ${tokenConfig?.symbol}`, '', 'warning');
+    //     } else {
+    //         if (waitingForTransactionApprove?.isSuccess) {
+    //             showToast(`Success Approve`, '', 'success');
+    //             dataAlowance?.refetch();
+    //             handleStore();
+    //             // setRefesh(!refresh);
+    //         } else if (waitingForTransactionApprove?.isError) {
+    //             showToast(`Can not Approve`, '', 'error');
+    //             handleStore();
+    //         }
+    //     }
+    // }, [
+    //     waitingForTransactionApprove?.isLoading,
+    //     waitingForTransactionApprove?.isSuccess,
+    //     waitingForTransactionApprove?.isError,
+    //     showToast,
+    //     dataAlowance?.data,
+    //     tokenConfig?.symbol,
+    // ]);
+
+    // useEffect(() => {
+    //     const handleStore = () => {
+    //         const localStore: IHistoryTransaction[] | undefined = store.get(address ?? 'guest');
+    //         const current = {
+    //             hash: contractWritePlaceOrder?.data?.hash,
+    //             title: `Place order ${formatUnits(
+    //                 inputPay as bigint,
+    //                 tokenConfig?.decimals ?? 0,
+    //             )} ${tokenConfig?.symbol}`,
+    //             status: waitingForTransactionPlaceOrder?.isSuccess
+    //                 ? StatusHistoryTransaction.success
+    //                 : StatusHistoryTransaction.false,
+    //         };
+    //         const newLocalStore = localStore ? [...localStore, current] : [current];
+    //         store.set(address ?? 'guest', newLocalStore);
+    //         contractWritePlaceOrder?.reset();
+    //         dataAlowance?.refetch();
+    //     };
+
+    //     if (waitingForTransactionPlaceOrder?.isLoading) {
+    //         showToast(
+    //             `Waiting place order from ${formatUnits(
+    //                 inputPay as bigint,
+    //                 tokenConfig?.decimals ?? 0,
+    //             )} ${tokenConfig?.symbol}`,
+    //             '',
+    //             'warning',
+    //         );
+    //     } else {
+    //         if (waitingForTransactionPlaceOrder?.isSuccess) {
+    //             showToast(`Success place order`, '', 'success');
+    //             handleStore();
+    //             // setRefesh(!refresh);
+    //         } else if (waitingForTransactionPlaceOrder?.isError) {
+    //             showToast(`Can not place order`, '', 'error');
+    //             handleStore();
+    //         }
+    //     }
+    // }, [
+    //     waitingForTransactionPlaceOrder?.isLoading,
+    //     waitingForTransactionPlaceOrder?.isSuccess,
+    //     waitingForTransactionPlaceOrder?.isError,
+    //     showToast,
+    //     dataAlowance?.data,
+    //     tokenConfig?.symbol,
+    // ]);
+
+    // const positionSize = useMemo(()=>{
+    //     return sizeChange as bigint / BigInt(29856*1e8);
+    // },[sizeChange])
 
     return (
         <>
-            <Box sx={{ bgcolor: 'background.paper', width: 500 }}>
+        123
+            {/* <Box sx={{ bgcolor: 'background.paper', width: 500 }}>
                 <AppBar position="static">
                     <Tabs
                         value={value}
@@ -894,7 +895,7 @@ const PlaceOrderPanel: React.FC = () => {
                         </TabPanel>
                     </SwipeableViews>
                 </div>
-            </Box>
+            </Box> */}
         </>
     );
 };
