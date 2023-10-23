@@ -6,7 +6,7 @@ import stepThree from '../../assets/svg/step3.svg';
 import arrowLeft from '../../assets/svg/arrow-left.svg';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAccount } from 'wagmi';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useShowToast } from '../../hooks/useShowToast';
 import { GetReferralLevelInformation, getAccountStatus, getReferredUsers, postReferralUser } from '../../apis/referral';
 
@@ -17,16 +17,30 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { parseDatetimeToDate } from '../../utils/times';
 
+enum ButtonStatus {
+    notConnect,
+    notInput,
+    loading,
+    notApprove,
+    ready,
+    insufficientPool,
+    insufficientBalance,
+    sameToken,
+    minInput, // min 10 u
+    timeOutOracle,
+}
+
 const Referer: React.FC = () => {
     const { address, isConnected } = useAccount();
     const [addressReferral, setAddressReferral] = useState<string>('');
     const [isReferralState, setIsReferralState] = useState<boolean>(false);
     const showToast = useShowToast();
     const [isSuccessReferral, setIsSuccessReferral] = useState<boolean>(false);
+    const [isShowReferral, setIsShowReferral] = useState<boolean>(false);
 
     const handleCopy = useCallback(() => {
         navigator.clipboard.writeText(address || '');
-        showToast('Copied ' + address + ' to clipboard', 'success');
+        showToast('Copied to clipboard', '', 'success');
     }, [address]);
 
     const isReferral = useQuery({
@@ -43,9 +57,6 @@ const Referer: React.FC = () => {
         queryKey: ['GetReferralLevelInformation'],
         queryFn: () => GetReferralLevelInformation(address || ''),
     });
-
-    console.log('referralLevelInformation', referralLevelInformation.data);
-
 
     const handleChangeReferral = useCallback((e: any) => {
         setAddressReferral(e.target.value);
@@ -82,10 +93,50 @@ const Referer: React.FC = () => {
 
     useEffect(() => {
         if (isSuccessReferral) {
-            showToast('Referral success', 'success');
+            showToast('Referral success', '', 'success');
             isReferral.refetch();
         }
     }, [isSuccessReferral]);
+
+
+    const status = useMemo(() => {
+        if (!isConnected) {
+            return ButtonStatus.notConnect;
+        } else if (addressReferral.length === 0) {
+            return ButtonStatus.notInput;
+        }
+        return ButtonStatus.ready;
+    }, [addressReferral, isConnected]);
+
+    const buttonText = useMemo(() => {
+        switch (status) {
+            case ButtonStatus.notConnect:
+                return 'Connect Wallet';
+            case ButtonStatus.notInput:
+                return 'Enter referral wallet';
+            default:
+                return 'Confirm';
+        }
+    }, [status]);
+
+    const disableButton = useMemo(() => {
+        if (status !== ButtonStatus.ready || isReferral?.data) {
+            return true;
+        }
+        return false;
+    }, [status, isReferral?.data]);
+
+    const handleClickShow = useCallback(() => {
+        setIsShowReferral(prev => !prev);
+    }, []);
+
+    const textShowReferral = useMemo(() => {
+        if(!isShowReferral){
+            return 'Click here to show your referral infomation';
+        }else {
+            return 'Click here to show guide';
+        }
+    }, [isShowReferral])
 
     return (
         <div className="container-referer">
@@ -105,11 +156,11 @@ const Referer: React.FC = () => {
                     />
                     <div className="btn-confirm-referer">
                         <Button
-                            disabled={isReferral?.data}
+                            disabled={disableButton}
                             onClick={handlerConfirmReferral}
                             className="agree-btn-referer"
                         >
-                            Confirm
+                            {buttonText}
                         </Button>
                     </div>
                 </div>
@@ -127,135 +178,129 @@ const Referer: React.FC = () => {
                 </p>
             </div>
 
-            <h1 className="guides-container">Guides:</h1>
-            <div className="guides-container-body">
-                <div className="guide-box-container">
-                    <div className="box-square">
-                        <div className="img-step">
-                            <img src={stepOne} alt="" />
-                        </div>
-                        <p className="step-content">Step 1</p>
-                        <p className="step-content">
-                            Share your referral <br /> wallet to your friend
-                        </p>
-                        <div className="box-right-square-img">
-                            {/* <div className="image-arrow"> */}
-                            <img src={arrowLeft} alt="" />
-                            {/* </div> */}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="guide-box-container">
-                    <div className="box-square">
-                        <div className="img-step">
-                            <img src={stepTwo} alt="" />
-                        </div>
-                        <p className="step-content">Step 2</p>
-                        <p className="step-content">
-                            Your friend enter your <br /> wallet and trade to get <br />{' '}
-                            referral point
-                        </p>
-                        <div className="box-right-square-img">
-                            {/* <div className="image-arrow"> */}
-                            <img src={arrowLeft} alt="" />
-                            {/* </div> */}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="guide-box-container">
-                    <div className="box-square">
-                        <div className="img-step">
-                            <img src={stepThree} alt="" />
-                        </div>
-                        <p className="step-content">Step 3</p>
-                        <p className="step-content">
-                            Trade to get trade point <br /> and get reward!
-                        </p>
-                    </div>
-                </div>
+            <div className="show-info-referral" onClick={handleClickShow}>
+                <div className='click-referral'>{textShowReferral}</div>
             </div>
-
-            <div className="referral-table-container">
-                <div className="table-info-referral">
-                    <div className="table-info-referral-header">
-                        <div className="left-header">
-                            <p className="title-head">Trading Point</p>
-                            <p className="amount">{referralLevelInformation?.data?.tradePoint ?? 0}</p>
-                        </div>
-                        <div className="right-header">
-                            <p className="title-head">Referral Point</p>
-                            <p className="amount">{referralLevelInformation?.data?.referralPoint ?? 0}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="table-info-detail-container">
-                    <div className="header-table-detail">
-                        <div className="title-table-info-referral">Wallet</div>
-                        <div className="title-table-info-referral">Referral Point</div>
-                        <div className="title-table-info-referral">Referred Date</div>
-                    </div>
-                    <div className="body-tb-referral">
-                        {referredUsers.data?.map((item: any, index: number) => (
-                            <div className="body-table-detail-referral">
-                                <div className="title-table-info-referral">
-                                    {item.wallet?.slice(0, 3) +
-                                        '...' +
-                                        item.wallet?.slice(
-                                            item.wallet.length - 4,
-                                            item.wallet.length,
-                                        )}{' '}
+            {!isShowReferral &&
+                <div className="guide-container-referral">
+                    <h1 className="guides-container">Guides:</h1>
+                    <div className="guides-container-body">
+                        <div className="guide-box-container">
+                            <div className="box-square">
+                                <div className="img-step">
+                                    <img src={stepOne} alt="" />
                                 </div>
-                                <div className="title-table-info-referral">
-                                    {item.referralPoint}
-                                </div>
-                                <div className="title-table-info-referral">
-                                    {parseDatetimeToDate(item.referredDate)}
+                                <p className="step-content">Step 1</p>
+                                <p className="step-content">
+                                    Share your referral <br /> wallet to your friend
+                                </p>
+                                <div className="box-right-square-img">
+                                    {/* <div className="image-arrow"> */}
+                                    <img src={arrowLeft} alt="" />
+                                    {/* </div> */}
                                 </div>
                             </div>
-                        ))}
-                        {/* <div className="body-table-detail-referral">
-                            <div className="title-table-info-referral">0x123..456</div>
-                            <div className="title-table-info-referral">300</div>
-                            <div className="title-table-info-referral">01/01/2023</div>
                         </div>
 
-                        <div className="body-table-detail-referral">
-                            <div className="title-table-info-referral">0x123..456</div>
-                            <div className="title-table-info-referral">300</div>
-                            <div className="title-table-info-referral">01/01/2023</div>
+                        <div className="guide-box-container">
+                            <div className="box-square">
+                                <div className="img-step">
+                                    <img src={stepTwo} alt="" />
+                                </div>
+                                <p className="step-content">Step 2</p>
+                                <p className="step-content">
+                                    Your friend enter your <br /> wallet and trade to get <br />{' '}
+                                    referral point
+                                </p>
+                                <div className="box-right-square-img">
+                                    {/* <div className="image-arrow"> */}
+                                    <img src={arrowLeft} alt="" />
+                                    {/* </div> */}
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="body-table-detail-referral">
-                            <div className="title-table-info-referral">0x123..456</div>
-                            <div className="title-table-info-referral">300</div>
-                            <div className="title-table-info-referral">01/01/2023</div>
-                        </div> */}
+                        <div className="guide-box-container">
+                            <div className="box-square">
+                                <div className="img-step">
+                                    <img src={stepThree} alt="" />
+                                </div>
+                                <p className="step-content">Step 3</p>
+                                <p className="step-content">
+                                    Trade to get trade point <br /> and get reward!
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div className="paging-referral">
-                    <Stack spacing={2}>
-                        <Pagination
-                            count={10}
-                            renderItem={(item) => (
-                                <PaginationItem
-                                    slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
-                                    {...item}
+            }
+            {isShowReferral &&
+                <div>
+                    <div className="referral-table-container">
+                        <div className="table-info-referral">
+                            <div className="table-info-referral-header">
+                                <div className="left-header">
+                                    <p className="title-head">Trading Point</p>
+                                    <p className="amount">{referralLevelInformation?.data?.tradePoint ?? 0}</p>
+                                </div>
+                                <div className="right-header">
+                                    <p className="title-head">Referral Point</p>
+                                    <p className="amount">{referralLevelInformation?.data?.referralPoint ?? 0}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="table-info-detail-container">
+                            <div className="header-table-detail">
+                                <div className="title-table-info-referral">Wallet</div>
+                                <div className="title-table-info-referral">Referral Point</div>
+                                <div className="title-table-info-referral">Referred Date</div>
+                            </div>
+                            <div className="body-tb-referral">
+                                {referredUsers.data?.map((item: any, index: number) => (
+                                    <div className="body-table-detail-referral">
+                                        <div className="title-table-info-referral">
+                                            {item.wallet?.slice(0, 3) +
+                                                '...' +
+                                                item.wallet?.slice(
+                                                    item.wallet.length - 4,
+                                                    item.wallet.length,
+                                                )}{' '}
+                                        </div>
+                                        <div className="title-table-info-referral">
+                                            {item.referralPoint}
+                                        </div>
+                                        <div className="title-table-info-referral">
+                                            {parseDatetimeToDate(item.referredDate)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="paging-referral">
+                            <Stack spacing={2}>
+                                <Pagination
+                                    count={10}
+                                    renderItem={(item) => (
+                                        <PaginationItem
+                                            slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+                                            {...item}
+                                        />
+                                    )}
                                 />
-                            )}
-                        />
-                    </Stack>
+                            </Stack>
+                        </div>
+                    </div>
+
+                    <div className="your-referral-reward">
+                        <div className="title-reward">Your referral reward: </div>
+                        <div className="amount-reward-container">
+                            <p className="amount-reward">1000$</p>
+                            <Button className="claim-referral">Claim</Button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div className="your-referral-reward">
-                <div className="title-reward">Your referral reward: </div>
-                <div className="amount-reward-container">
-                    <p className="amount-reward">1000$</p>
-                    <Button className="claim-referral">Claim</Button>
-                </div>
-            </div>
+            }
         </div>
     );
 };
