@@ -412,7 +412,7 @@ const PlaceOrderPanel: React.FC = () => {
 
                 <InputTokenWithSelect
                     title="Pay"
-                    tokens={['BTC', 'ETH', 'WETH', 'USDC']}
+                    tokens={['BTC', 'ETH', 'USDC']}
                     amountChange={handleCollateralAmountChange}
                     tokenChange={handleCollateralTokenChange}
                     refresh={refreshCollateral}
