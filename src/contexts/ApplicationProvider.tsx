@@ -15,21 +15,23 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     const value = useMemo(() => {
         return {
-            ws,lastBlockUpdate
+            ws, lastBlockUpdate
         }
-    }, [ws,lastBlockUpdate]);
+    }, [ws, lastBlockUpdate]);
 
-   watchBlockNumber(
-        {
-            listen: true,
-        },
-        (blockNumber) => {
-            if (lastBlockUpdate ? blockNumber - lastBlockUpdate > 10 : blockNumber) {
-                setLastBlockUpdate(blockNumber);
-            }
-        },
-    );
+    useEffect(() => {
+        watchBlockNumber(
+            {
+                listen: true,
+            },
+            (blockNumber) => {
+                if (lastBlockUpdate ? blockNumber - lastBlockUpdate > 10 : blockNumber) {
+                    setLastBlockUpdate(blockNumber);
+                }
+            },
+        );
 
+    }, [])
     useEffect(() => {
         const connect = () => {
             const ws = new WebSocket(config.chartUrlWs);
@@ -65,7 +67,7 @@ export const useWebSocket = () => {
     }, [context?.ws]);
 };
 
-export const useLastBlockUpdate= () => {
+export const useLastBlockUpdate = () => {
     const context = useApplicationContext();
 
     return useMemo(() => {

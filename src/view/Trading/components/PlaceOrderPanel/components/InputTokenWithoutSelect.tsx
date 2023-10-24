@@ -45,7 +45,6 @@ const InputTokenWithoutSelect: React.FC<InputTokenWithoutSelectProps> = ({
     const [amount, setAmount] = useState('');
     const [subValue, setSubValue] = useState<BigInt>();
     const [isSelectWETH, setIsSelectWETH] = useState(false);
-    // const [pickTokenTmp, setPickTokenTmp] = useState('BTC');
 
     const getPrice = useOracle(tokens); //['BTC','ETH']
 
@@ -188,19 +187,11 @@ const InputTokenWithoutSelect: React.FC<InputTokenWithoutSelectProps> = ({
                     {isShowMax && <StyledMaxValue>Max</StyledMaxValue>}
                     <StyledSelectToken>
                         {
-                            /* <DropdownSelectToken
-                            selectedToken={selectToken}
-                            tokens={tokens}
-                            position={'right'}
-                            onSelect={onDropDownItemClick}
-                            disable={disableSelect}
-                        >*/
                             <StyledTokenSelect pointer={tokens?.length >= 0}>
                                 <TokenSymbol symbol={selectToken} size={24} />
                                 <span>{selectToken === 'WETH' ? 'BNB' : selectToken}</span>
                                 <IconArrowDown />
                             </StyledTokenSelect>
-                            /*  </DropdownSelectToken> */
                         }
                     </StyledSelectToken>
                 </StyledContainerInput>
@@ -261,6 +252,7 @@ const StyledWrapInputAndSubValue = styled.div`
 
 const StyledAmount = styled.div`
     font-family: 'IBM Plex Mono', monospace;
+    color: rgba(255, 255, 255, 0.8);
 `;
 
 const StyledBalance = styled.div`

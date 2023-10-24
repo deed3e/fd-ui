@@ -1,15 +1,15 @@
-import styled from "styled-components";
-import { getSymbolByAddress, getTokenConfig } from "../../../config";
-import { useLastBlockUpdate } from "../../../contexts/ApplicationProvider";
-import { getSwapsByCondition } from "../../../apis/swap";
-import { useAccount } from "wagmi";
-import { TokenSymbol } from "../../../component/TokenSymbol";
-import { memo, useEffect, useMemo } from "react";
-import { getTimeDistance } from "../../../utils/times";
-import { getAddress } from "viem";
-import { BigintDisplay } from "../../../component/BigIntDisplay";
-import { SwapType } from "../../../types";
-import ContentLoader from "../../../component/ContentLoader"
+import styled from 'styled-components';
+import { getSymbolByAddress, getTokenConfig } from '../../../config';
+import { useLastBlockUpdate } from '../../../contexts/ApplicationProvider';
+import { getSwapsByCondition } from '../../../apis/swap';
+import { useAccount } from 'wagmi';
+import { TokenSymbol } from '../../../component/TokenSymbol';
+import { memo, useEffect, useMemo } from 'react';
+import { getTimeDistance } from '../../../utils/times';
+import { getAddress } from 'viem';
+import { BigintDisplay } from '../../../component/BigIntDisplay';
+import { SwapType } from '../../../types';
+import ContentLoader from '../../../component/ContentLoader';
 import { useQuery } from '@tanstack/react-query';
 
 function History() {
@@ -33,66 +33,62 @@ function History() {
     }, [lastBlockUpdate]);
 
     return (
-       <>
-        <StyledHeader>
-                        <div className="token">From/To</div>
-                        <div>Amount</div>
-                        <div>Receive</div>
-                        <div>Time</div>
-                    </StyledHeader>
-                    <StyledTableBody>
-                        {swapQuery.data?.map((item: SwapType) => (
-                            <StyledTableRow>
-                                <div className="token">
-                                    <div>
-                                        <TokenSymbol
-                                            symbol={
-                                                getSymbolByAddress(getAddress(item.tokenIn)) ??
-                                                'BTC'
-                                            }
-                                        />
-                                    </div>
-                                    <div className="token-to">
-                                        <TokenSymbol
-                                            symbol={
-                                                getSymbolByAddress(getAddress(item.tokenOut)) ??
-                                                'BTC'
-                                            }
-                                        />
-                                    </div>
-                                </div>
-                                <div>
-                                    <BigintDisplay
-                                        value={item.amountIn}
-                                        decimals={
-                                            getTokenConfig(
-                                                getSymbolByAddress(getAddress(item.tokenIn)) ??
-                                                    'BTC',
-                                            )?.decimals ?? 0
-                                        }
-                                        fractionDigits={5}
-                                        threshold={0.00001}
-                                    />
-                                </div>
-                                <div>
-                                    <BigintDisplay
-                                        value={item.amountOut}
-                                        decimals={
-                                            getTokenConfig(
-                                                getSymbolByAddress(getAddress(item.tokenOut)) ??
-                                                    'BTC',
-                                            )?.decimals ?? 0
-                                        }
-                                        fractionDigits={5}
-                                        threshold={0.00001}
-                                    />
-                                </div>
-                                <div>{getTimeDistance(item.time)}</div>
-                            </StyledTableRow>
-                        ))}
-                        {loading && <ContentLoader.HistorySwap />}
-                    </StyledTableBody>
-       </>
+        <>
+            <StyledHeader>
+                <div className="token">From/To</div>
+                <div>Amount</div>
+                <div>Receive</div>
+                <div>Time</div>
+            </StyledHeader>
+            <StyledTableBody>
+                {swapQuery.data?.map((item: SwapType, index: any) => (
+                    <StyledTableRow key={item.time}>
+                        <div className="token">
+                            <div>
+                                <TokenSymbol
+                                    symbol={
+                                        getSymbolByAddress(getAddress(item.tokenIn)) ?? 'BTC'
+                                    }
+                                />
+                            </div>
+                            <div className="token-to">
+                                <TokenSymbol
+                                    symbol={
+                                        getSymbolByAddress(getAddress(item.tokenOut)) ?? 'BTC'
+                                    }
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <BigintDisplay
+                                value={item.amountIn}
+                                decimals={
+                                    getTokenConfig(
+                                        getSymbolByAddress(getAddress(item.tokenIn)) ?? 'BTC',
+                                    )?.decimals ?? 0
+                                }
+                                fractionDigits={5}
+                                threshold={0.00001}
+                            />
+                        </div>
+                        <div>
+                            <BigintDisplay
+                                value={item.amountOut}
+                                decimals={
+                                    getTokenConfig(
+                                        getSymbolByAddress(getAddress(item.tokenOut)) ?? 'BTC',
+                                    )?.decimals ?? 0
+                                }
+                                fractionDigits={5}
+                                threshold={0.00001}
+                            />
+                        </div>
+                        <div>{getTimeDistance(item.time)}</div>
+                    </StyledTableRow>
+                ))}
+                {loading && <ContentLoader.HistorySwap />}
+            </StyledTableBody>
+        </>
     );
 }
 
@@ -121,7 +117,7 @@ const StyledTableRow = styled(StyledHeader)`
     margin-bottom: 4px;
     background: none;
     :hover {
-        background: #231844;
+        background: rgba(201, 201, 201, 0.1);
         color: #fff;
     }
     .token {
@@ -137,4 +133,3 @@ const StyledTableRow = styled(StyledHeader)`
         }
     }
 `;
-

@@ -119,7 +119,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
                 valueChange(valueTmp);
             }
         }
-    }, [amount, configSelectToken?.decimals, configSelectToken?.symbol, getPrice, valueChange]);
+    }, [amount, configSelectToken, getPrice, valueChange]);
 
     const overBalance = useMemo(() => {
         if (disableOverBalance) {
@@ -249,6 +249,7 @@ const StyledWrapInputAndSubValue = styled.div`
 
 const StyledAmount = styled.div`
 font-family: 'IBM Plex Mono', monospace;
+color: rgba(255, 255, 255, 0.8);
 `;
 
 const StyledBalance = styled.div`
