@@ -131,9 +131,9 @@ const Referer: React.FC = () => {
     }, []);
 
     const textShowReferral = useMemo(() => {
-        if(!isShowReferral){
+        if (!isShowReferral) {
             return 'Click here to show your referral infomation';
-        }else {
+        } else {
             return 'Click here to show guide';
         }
     }, [isShowReferral])
@@ -165,22 +165,24 @@ const Referer: React.FC = () => {
                     </div>
                 </div>
             </div>
-
-            <div className="referral-wallet-container">
-                <p className="referral-wallet-title">Your referral wallet :</p>
-                <p className="referaal-wallet-info">
-                    {address?.slice(0, 3) +
-                        '...' +
-                        address?.slice(address.length - 4, address.length)}{' '}
-                    <Button onClick={handleCopy} className="agree-copy-referral">
-                        copy
-                    </Button>
-                </p>
-            </div>
-
-            <div className="show-info-referral" onClick={handleClickShow}>
-                <div className='click-referral'>{textShowReferral}</div>
-            </div>
+            {isConnected &&
+                <div className="referral-wallet-container">
+                    <p className="referral-wallet-title">Your referral wallet :</p>
+                    <p className="referaal-wallet-info">
+                        {address?.slice(0, 3) +
+                            '...' +
+                            address?.slice(address.length - 4, address.length)}{' '}
+                        <Button onClick={handleCopy} className="agree-copy-referral">
+                            copy
+                        </Button>
+                    </p>
+                </div>
+            }
+            {isConnected &&
+                <div className="show-info-referral" onClick={handleClickShow}>
+                    <div className='click-referral'>{textShowReferral}</div>
+                </div>
+            }
             {!isShowReferral &&
                 <div className="guide-container-referral">
                     <h1 className="guides-container">Guides:</h1>

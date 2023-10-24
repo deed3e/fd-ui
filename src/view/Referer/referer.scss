@@ -93,6 +93,10 @@
     margin-bottom: 10px;
 }
 
+.guide-box-container {
+    margin-right: 125px;
+}
+
 .box-square {
     width: 308px;
     height: 255px;
@@ -140,7 +144,11 @@
 .guides-container-body {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+}
+
+.guides-container {
+    margin-left: 96px;
 }
 
 .referral-table-container {
