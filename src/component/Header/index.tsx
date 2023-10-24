@@ -28,7 +28,7 @@ const Header: React.FC = () => {
                     setCheckOracleHealth(true);
                 }
             });
-        } catch (err) {}
+        } catch (err) { }
     }, []);
 
     useEffect(() => {
@@ -38,7 +38,7 @@ const Header: React.FC = () => {
                     setCheckKeeperHealth(true);
                 }
             });
-        } catch (err) {}
+        } catch (err) { }
     }, []);
 
     const checkErr = useMemo(() => {
@@ -75,6 +75,9 @@ const Header: React.FC = () => {
                     </StyledNavItem>
                     <StyledNavItem>
                         <StyledNavItemLink to="/referer">Referral</StyledNavItemLink>
+                    </StyledNavItem>
+                    <StyledNavItem>
+                        <StyledNavItemLink to="/leaderBoard">Leader Board</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
                         <StyledNavItemLink to="/faucet">Faucet</StyledNavItemLink>

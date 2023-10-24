@@ -1,0 +1,88 @@
+.leader-board-container {
+    padding: 120px 0px;
+    width: 881px;
+    margin: auto;
+}
+
+.trader-position-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .trader-tab {
+        padding: 8px 95px;
+        border-radius: 0px 10px 10px 0px;
+        background: rgba(15, 9, 30, 0.93);
+        color: var(--d-9-d-9-d-9, #D9D9D9);
+        font-family: IBM Plex Mono;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        cursor: pointer;
+
+        &.active {
+            background: var(--primary-color, #6763E3);
+            border-radius: 10px;
+        }
+    }
+
+    .position-tab {
+        padding: 8px 95px;
+        border-radius: 0px 10px 10px 0px;
+        background: rgba(15, 9, 30, 0.93);
+        color: var(--d-9-d-9-d-9, #D9D9D9);
+        font-family: IBM Plex Mono;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        cursor: pointer;
+
+        &.active {
+            background: var(--primary-color, #6763E3);
+            border-radius: 10px;
+        }
+    }
+}
+
+.title-time-leader-board {
+    margin-top: 44px;
+
+    .title-leader-board {
+        color: var(--white, #FFF);
+        font-family: Jockey One;
+        font-size: 34px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+    }
+}
+
+.time-leader-board {
+    display: flex;
+    align-items: center;
+
+    .time-select-board {
+        padding: 7px 18px;
+        color: var(--d-9-d-9-d-9, #D9D9D9);
+        text-align: center;
+        font-family: IBM Plex Mono;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        background: rgba(15, 9, 30, 0.93);
+        cursor: pointer;
+
+        &.active {
+            background: var(--primary-color, #6763E3);
+            border-radius: 10px;
+        }
+    }
+}
+
+.header-table-leader-board {
+    display: flex;
+    align-items: center;
+}
