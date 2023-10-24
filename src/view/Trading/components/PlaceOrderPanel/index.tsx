@@ -340,7 +340,10 @@ const PlaceOrderPanel: React.FC = () => {
                 poolAmount: data[4],
             };
         }
-        return null;
+        return {
+            borrowIndex: BigInt(0),
+            poolAmount: BigInt(0),
+        };;
     }, [contracInfoRead]);
 
     const liquidityPrice = useMemo(() => {
