@@ -347,17 +347,20 @@ const PlaceOrderPanel: React.FC = () => {
     }, [contracInfoRead]);
 
     const liquidityPrice = useMemo(() => {
-        if (priceIndex[indexToken] || collateralValue || sizeChange) return BigInt(0);
-        const _entryPrice = orderType
-            ? BigInt(price) * BigInt(1e8)
-            : BigInt(priceIndex[indexToken] as bigint);
-        return liqPrice(
-            _entryPrice as bigint,
-            side === Side.LONG,
-            (collateralValue * BigInt(1e22)) /
-                BigInt(10 ** (collateralTokenConfig?.decimals || 0)),
-            sizeChange,
-        );
+        try {
+            const _entryPrice = orderType
+                ? BigInt(price) * BigInt(1e8)
+                : BigInt(priceIndex[indexToken] as bigint);
+            return liqPrice(
+                _entryPrice as bigint,
+                side === Side.LONG,
+                (collateralValue * BigInt(1e22)) /
+                    BigInt(10 ** (collateralTokenConfig?.decimals || 0)),
+                sizeChange,
+            );
+        } catch (error) {
+            return BigInt(0);
+        }
     }, [price, orderType, priceIndex, indexToken, side, collateralValue, sizeChange]);
 
     return (
