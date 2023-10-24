@@ -179,8 +179,8 @@ const Referer: React.FC = () => {
                 </div>
             }
             {isConnected &&
-                <div className="show-info-referral" onClick={handleClickShow}>
-                    <div className='click-referral'>{textShowReferral}</div>
+                <div className="show-info-referral">
+                    <div className='click-referral' onClick={handleClickShow}>{textShowReferral}</div>
                 </div>
             }
             {!isShowReferral &&
