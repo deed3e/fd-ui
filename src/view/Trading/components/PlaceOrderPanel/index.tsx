@@ -343,10 +343,11 @@ const PlaceOrderPanel: React.FC = () => {
         return {
             borrowIndex: BigInt(0),
             poolAmount: BigInt(0),
-        };;
+        };
     }, [contracInfoRead]);
 
     const liquidityPrice = useMemo(() => {
+        if (priceIndex[indexToken] || collateralValue || sizeChange) return BigInt(0);
         const _entryPrice = orderType
             ? BigInt(price) * BigInt(1e8)
             : BigInt(priceIndex[indexToken] as bigint);
