@@ -1,10 +1,13 @@
 import { useContractRead } from 'wagmi';
 import abiOracle from '../abis/Oracle.json';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { getTokenConfig, getAddressOracle } from '../config';
 import { getAddress, formatUnits, parseUnits } from 'viem';
+import { useLastBlockUpdate } from '../contexts/ApplicationProvider';
 
 export const useOracle = (tokens: string[]): Record<string, BigInt> => {
+    const lastBlockNumber = useLastBlockUpdate();
+
     const addresss = useMemo(() => {
         return tokens.map((e) => getAddress(getTokenConfig(e)?.address ?? ''));
     }, [tokens]);
@@ -15,6 +18,10 @@ export const useOracle = (tokens: string[]): Record<string, BigInt> => {
         functionName: 'getMultiplePrices',
         args: [addresss],
     });
+
+    useEffect(() => {
+        contractRead?.refetch();
+    }, [contractRead, lastBlockNumber]);
 
     return useMemo(() => {
         const rs: Record<string, BigInt> = {};

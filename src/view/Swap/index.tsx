@@ -85,8 +85,8 @@ export default function Swap() {
     const tokenToConfig = getTokenConfig(tokenTo);
     const getPrice = useOracle([tokenFromConfig?.symbol ?? '', tokenToConfig?.symbol ?? '']);
     const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-   
     const tokens = useMemo(() => {
         return getPoolAssetSymbol()?.filter((i) => i !== getWrapNativeTokenSymbol());
     }, []);
@@ -195,9 +195,11 @@ export default function Swap() {
             store.set(address ?? 'guest', newLocalStore);
             contractRouterWrite?.reset();
             contracInfoRead?.refetch();
+            setLoading(false);
         };
 
-        if (waitingTransaction?.isLoading) {
+        if (waitingTransaction?.isLoading && !loading) {
+            setLoading(true);
             showToast(
                 `Waiting Swap from ${formatUnits(
                     inputFromAmount as bigint,
@@ -217,7 +219,6 @@ export default function Swap() {
             }
         }
     }, [
-        contracInfoRead,
         contractRouterWrite,
         inputFromAmount,
         refresh,
@@ -228,8 +229,6 @@ export default function Swap() {
         waitingTransaction?.isLoading,
         waitingTransaction?.isSuccess,
     ]);
-
-   
 
     useEffect(() => {
         const handleStore = () => {
@@ -247,9 +246,11 @@ export default function Swap() {
             const newLocalStore = localStore ? [...localStore, current] : [current];
             store.set(address ?? 'guest', newLocalStore);
             contractApproveWrite?.reset();
+            setLoading(false);
         };
 
-        if (waitingTransactionApprove?.isLoading) {
+        if (waitingTransactionApprove?.isLoading && !loading) {
+            setLoading(true);
             showToast(`Waiting Approve from token ${tokenFromConfig?.symbol}`, '', 'warning');
         } else {
             if (waitingTransactionApprove?.isSuccess) {
@@ -263,7 +264,6 @@ export default function Swap() {
             }
         }
     }, [
-        contracInfoRead,
         contractApproveWrite,
         showToast,
         refresh,
@@ -422,7 +422,7 @@ export default function Swap() {
         <div className="container">
             <div className="left-content-container">
                 <div className="bottom-left-content-container">
-                   <History/>
+                    <History />
                 </div>
             </div>
             <div className="right-content-container">

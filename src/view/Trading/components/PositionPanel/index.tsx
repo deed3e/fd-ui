@@ -249,41 +249,41 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
                                 <div className="content-body-table">
                                     <div className="header-table-position header-table-position-2">
                                         <div className="header-title-position">
-                                            <p className="token-positon">{getTokenConfig(
+                                            <span className="token-positon">{getTokenConfig(
                                                 getSymbolByAddress(getAddress(item?.market)) || 'BTC',
-                                            )?.symbol}/USD</p>
+                                            )?.symbol}/USD</span>
                                             <p className="long-shot-position">{item?.side}</p>
                                         </div>
                                         <div className="header-title-position">
-                                            <p className="size-position">
+                                            <span className="size-position">
                                                 $
                                                 <BigintDisplay
                                                     value={BigInt(item?.size)}
                                                     decimals={30}
                                                     fractionDigits={2}
                                                 />
-                                            </p>
+                                            </span>
                                         </div>
                                         <div className="header-title-position">
-                                            <p className="net-value-top">
+                                            <span className="net-value-top">
                                                 $
                                                 <BigintDisplay
                                                     value={BigInt(item?.collateralValue)}
                                                     decimals={30}
                                                     fractionDigits={2}
                                                 />
-                                            </p>
-                                            <p className="net-value-bottom">
+                                            </span>
+                                            <span className="net-value-bottom">
                                                 $
                                                 <BigintDisplay
                                                     value={BigInt(item?.realizedPnl)}
                                                     decimals={30}
                                                     fractionDigits={2}
                                                 />
-                                            </p>
+                                            </span>
                                         </div>
                                         <div className="header-title-position">
-                                            <p className="entry-price-position">
+                                            <span className="entry-price-position">
                                                 {' '}
                                                 $
                                                 <BigintDisplay
@@ -296,10 +296,10 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
                                                     }
                                                     fractionDigits={2}
                                                 />
-                                            </p>
+                                            </span>
                                         </div>
                                         <div className="header-title-position">
-                                            <p className="liquidation-price-position">-</p>
+                                            <span className="liquidation-price-position">-</span>
                                         </div>
                                         <div className="header-title-position">Close</div>
                                     </div>
@@ -323,20 +323,20 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
                                 <div className="content-body-table">
                                     <div className="header-table-position header-table-position-2">
                                         <div className="header-title-position">
-                                            <p className="token-positon">{getTokenConfig(
+                                            <span className="token-positon">{getTokenConfig(
                                                 getSymbolByAddress(getAddress(item?.indexToken)) || 'BTC',
-                                            )?.symbol}/USD</p>
-                                            <p className="long-shot-position">{item.side}</p>
+                                            )?.symbol}/USD</span>
+                                            <span className="long-shot-position">{item.side}</span>
                                         </div>
                                         <div className="header-title-position">
-                                            <p className="size-position">
+                                            <span className="size-position">
                                                 $
                                                 <BigintDisplay
                                                     value={BigInt(item?.sizeChange)}
                                                     decimals={30}
                                                     fractionDigits={2}
                                                 />
-                                            </p>
+                                            </span>
                                         </div>
 
                                         <div className="header-title-position">
