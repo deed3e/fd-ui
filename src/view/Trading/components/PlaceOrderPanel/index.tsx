@@ -149,13 +149,13 @@ const PlaceOrderPanel: React.FC = () => {
                 address: collateralTokenConfig?.address,
                 abi: ERC20,
                 functionName: 'allowance',
-                args: [getAddress(address || ''), getAddressOrderManager()],
+                args: [address, getAddressOrderManager()],
             },
             {
                 address: getAddressPool(),
                 abi: PoolAbi,
                 functionName: 'poolAssets',
-                args: [collateralTokenConfig?.address || getAddress('')],
+                args: [collateralTokenConfig?.address],
             },
         ],
     });
@@ -222,8 +222,6 @@ const PlaceOrderPanel: React.FC = () => {
         refreshCollateral,
         loading,
     ]);
-
-    console.log('render');
 
     const handleCollateralValueChange = useCallback(
         (value: number) => {

@@ -26,11 +26,6 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 listen: true,
             },
             (blockNumber) => {
-                console.log('-----------------');
-                console.log('blockNumber', blockNumber);
-                console.log('lastBlockUpdate', lastBlockUpdate);
-                console.log('minuns', blockNumber - lastBlockUpdate);
-                console.log('check', (blockNumber - lastBlockUpdate) > BigInt(100));
                 if ((blockNumber - lastBlockUpdate) > BigInt(100)) {
                     setLastBlockUpdate(blockNumber);
                 }
