@@ -6,6 +6,9 @@ import { useEffect, useState } from 'react';
 import VolumeUserRankChart from './components/VolumeUserRankChart';
 import NewUserChart from './components/NewUserChart';
 import OpenInterestChart from './components/OpenInterestChart';
+import { useQuery } from '@tanstack/react-query';
+import { GetAnalyticsRef } from '../../apis/referral';
+import ReferralChart from './components/ReferralChart';
 
 const query = gql`
     query fee($start: Int!, $end: Int!) {
@@ -83,6 +86,13 @@ export type NewUser = {
     cumulative: number;
 };
 
+export type ReferralData = {
+    level1: number;
+    level2: number;
+    level3: number;
+    level0: number;
+};
+
 const Analytics: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<Fee[]>([]);
@@ -152,6 +162,12 @@ const Analytics: React.FC = () => {
             mounted = false;
         };
     }, []);
+
+    const swapQuery = useQuery({
+        queryKey: ['GetAnalyticsRef'],
+        queryFn: () => GetAnalyticsRef(),
+    });
+
     return (
         <StyledContainer>
             <StyledItem>
@@ -165,6 +181,9 @@ const Analytics: React.FC = () => {
             </StyledItem>
             <StyledItem>
                 <NewUserChart data={newUserData} loading={loading} />
+            </StyledItem>
+            <StyledItem>
+                <ReferralChart data={swapQuery?.data} />
             </StyledItem>
         </StyledContainer>
     );

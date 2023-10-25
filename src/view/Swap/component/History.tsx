@@ -41,8 +41,8 @@ function History() {
                 <div>Time</div>
             </StyledHeader>
             <StyledTableBody>
-                {swapQuery.data?.map((item: SwapType, index: any) => (
-                    <StyledTableRow key={item.time}>
+                {swapQuery.data?.map((item: SwapType) => (
+                    <StyledTableRow key={item.time.toTimeString()}>
                         <div className="token">
                             <div>
                                 <TokenSymbol

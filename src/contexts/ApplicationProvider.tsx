@@ -11,12 +11,13 @@ export const ApplicationContext = createContext<ApplicationState>({});
 
 export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [ws, setWs] = useState<WebSocket>();
-    const [lastBlockUpdate, setLastBlockUpdate] = useState<bigint>();
+    const [lastBlockUpdate, setLastBlockUpdate] = useState(BigInt(0));
 
     const value = useMemo(() => {
         return {
-            ws, lastBlockUpdate
-        }
+            ws,
+            lastBlockUpdate,
+        };
     }, [ws, lastBlockUpdate]);
 
     useEffect(() => {
@@ -25,13 +26,18 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 listen: true,
             },
             (blockNumber) => {
-                if (lastBlockUpdate ? blockNumber - lastBlockUpdate > 10 : blockNumber) {
+                console.log('-----------------');
+                console.log('blockNumber', blockNumber);
+                console.log('lastBlockUpdate', lastBlockUpdate);
+                console.log('minuns', blockNumber - lastBlockUpdate);
+                console.log('check', (blockNumber - lastBlockUpdate) > BigInt(100));
+                if ((blockNumber - lastBlockUpdate) > BigInt(100)) {
                     setLastBlockUpdate(blockNumber);
                 }
             },
         );
-
-    }, [])
+    }, [lastBlockUpdate]);
+    
     useEffect(() => {
         const connect = () => {
             const ws = new WebSocket(config.chartUrlWs);

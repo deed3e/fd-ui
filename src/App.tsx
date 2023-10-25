@@ -22,12 +22,12 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Dashboard />} />
                         <Route path="/liquidity" element={<Liquidity />} />
-                        <Route path="/trading/:market/:side" element={<Trading />} />
+                        <Route path="/trading/:market" element={<Trading />} />
                         <Route path="/swap" element={<Swap />} />
                         <Route path="/analytic" element={<Analytic />} />
                         <Route path="/faucet" element={<Faucet />} />
                         <Route path="/referer" element={<Referer />} />
-                        <Route path="/leaderBoard" element={<LeaderBoard />} />
+                        <Route path="/leaderboard" element={<LeaderBoard />} />
                     </Routes>
                     <Tooltip id="my-tooltip" />
                 </Modals>

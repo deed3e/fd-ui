@@ -22,3 +22,8 @@ export const GetReferralLevelInformation = async (wallet: string) => {
     const response = await apiGetCall(`/api/User/GetReferralLevelInformation?wallet=${wallet}`);
     return response.data;
 };
+
+export const GetAnalyticsRef = async () => {
+    const response = await apiGetCall(`/api/User/GetReferralSystemAnalytics`);
+    return response.data;
+};

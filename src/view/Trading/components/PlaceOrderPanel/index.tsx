@@ -67,7 +67,7 @@ const PlaceOrderPanel: React.FC = () => {
     const [refreshCollateral, setRefreshCollateral] = useState(true);
     const indexTokenConfig = getTokenConfig(indexToken);
     const collateralTokenConfig = getTokenConfig(collateralToken);
-    const priceIndex = useOracle(['BTC', 'ETH', 'WETH', 'USDC']);
+    const priceIndex = useOracle(['BTC', 'ETH', 'USDC']);
     const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(false);
     const showToast = useShowToast();

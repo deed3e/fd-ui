@@ -62,7 +62,7 @@ const Header: React.FC = () => {
                         <StyledNavItemLink to="/">Dashboard</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
-                        <StyledNavItemLink to="/trading/btc/long">Trading</StyledNavItemLink>
+                        <StyledNavItemLink to="/trading/btc">Trading</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
                         <StyledNavItemLink to="/swap">Swap</StyledNavItemLink>
@@ -77,7 +77,7 @@ const Header: React.FC = () => {
                         <StyledNavItemLink to="/referer">Referral</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
-                        <StyledNavItemLink to="/leaderBoard">Leader Board</StyledNavItemLink>
+                        <StyledNavItemLink to="/leaderboard">Leaderboard</StyledNavItemLink>
                     </StyledNavItem>
                     <StyledNavItem>
                         <StyledNavItemLink to="/faucet">Faucet</StyledNavItemLink>
@@ -203,9 +203,12 @@ const StyledChain = styled.div`
 `;
 
 const StyledLastBlockNumber = styled.div<{ err: boolean }>`
+    width: 50%;
+    background-image: linear-gradient(to top right, rgba(13,13,13,1), rgba(13,13,13,0));
     position: fixed;
-    bottom: 10px;
-    left: 15px;
+    bottom: 0;
+    left: 0;
+    padding: 5px 0px 10px 10px;
     font-size: 12px;
     color: ${(p) => (p.err ? '#f0d10a' : '#12d712')};
     svg {
