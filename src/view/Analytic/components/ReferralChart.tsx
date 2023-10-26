@@ -16,16 +16,24 @@ import { ReferralData } from '..';
 import { tooltipLabelFormatter } from '../../../utils/helpers';
 import { COLORS } from './FeeChart';
 
-const ReferralChart: React.FC<{ data: ReferralData | undefined }> = ({ data }) => {
+const ReferralChart: React.FC<{ data: ReferralData[] | undefined }> = ({ data }) => {
     const res: ReferralData[] = useMemo(() => {
-        return data
-            ? [data]
-            : ([
+        return data ?? ([
                   {
-                      level0: 0,
-                      level1: 0,
-                      level2: 0,
-                      level3: 0,
+                      type: 'level1',
+                      value: 0
+                  },
+                  {
+                      type: 'level2',
+                      value: 0
+                  },
+                  {
+                      type: 'level3',
+                      value: 0
+                  },
+                  {
+                      type: 'level4',
+                      value: 0
                   },
               ] as ReferralData[]);
     }, []);
@@ -64,9 +72,9 @@ const ReferralChart: React.FC<{ data: ReferralData | undefined }> = ({ data }) =
                             paddingBottom: 2,
                         }}
                     />
-                    <Bar dataKey="level1" stackId="a" name="Level 1" fill={COLORS[11]} />
-                    <Bar dataKey="level2" stackId="b" name="Level 2" fill={COLORS[8]} />
-                    <Bar dataKey="level3" stackId="c" name="Level 3" fill={COLORS[1]} />
+                    <Bar dataKey="level1" name="Level 1" fill={COLORS[11]} />
+                    <Bar dataKey="level2" name="Level 2" fill={COLORS[8]} />
+                    <Bar dataKey="level3" name="Level 3" fill={COLORS[1]} />
                     <Legend />
                 </ComposedChart>
             </ResponsiveContainer>

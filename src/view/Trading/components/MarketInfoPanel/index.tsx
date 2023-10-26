@@ -9,7 +9,7 @@ import { BigintDisplay } from '../../../../component/BigIntDisplay';
 import ContentLoader from '../../../../component/ContentLoader';
 
 const MarketInfoPanel: React.FC<MarketInfo> = ({ current, low, high }) => {
-    const { market, side } = useParams();
+    const { market } = useParams();
     const token = market?.toUpperCase() || 'BTC';
     const [lastPrice, setLastPrice] = useState<number | undefined>();
     const [loading, setLoading] = useState<boolean>(true);
@@ -29,7 +29,7 @@ const MarketInfoPanel: React.FC<MarketInfo> = ({ current, low, high }) => {
     }, [current]);
 
     const handleSelectToken = useCallback((symbol: string) => {
-        navigate(`/trading/${symbol}/${side}`);
+        navigate(`/trading/${symbol}`);
         setLoading(true);
     }, []);
     return (

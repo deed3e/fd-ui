@@ -66,7 +66,6 @@ const NewUserChart: React.FC<{ data: NewUser[]; loading: boolean }> = ({ data, l
                     />
                     <Legend/>
                     <Bar dataKey="total" stackId="a" name="Total" fill={COLORS[10]} />
-                  
                     <Line
                         type="monotone"
                         dot={false}
