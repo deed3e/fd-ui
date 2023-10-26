@@ -295,8 +295,21 @@
 }
 
 .btn-confirm-referer {
+    button {
+        color: #fff !important;
+        font-family: IBM Plex Mono;
+        font-size: 19px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        width: 100%;
+        padding: 4px 0px;
+        border-radius: 10px;
+        background: var(--primary-color, #6763e3);
+    }
+
     .css-1e6y48t-MuiButtonBase-root-MuiButton-root.Mui-disabled {
-        background-color: #ccc;
+        background: #2a2a38;
     }
 }
 
@@ -310,7 +323,7 @@
 
     .click-referral {
         display: inline-block;
-        padding: 4px;
+        padding: 10px 6px;
         border-radius: 10px;
         background: var(--primary-color, #6763e3);
         color: var(--d-9-d-9-d-9, #d9d9d9);
