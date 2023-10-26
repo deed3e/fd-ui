@@ -240,7 +240,6 @@
         justify-content: center;
 
         li {
-            background-color: #fff;
 
             button {
                 color: #000;
@@ -250,6 +249,7 @@
                 font-style: normal;
                 font-weight: 400;
                 line-height: normal;
+                background: var(--primary-color, #6763e3);
             }
         }
     }

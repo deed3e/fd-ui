@@ -8,7 +8,12 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAccount } from 'wagmi';
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useShowToast } from '../../hooks/useShowToast';
-import { GetReferralLevelInformation, getAccountStatus, getReferredUsers, postReferralUser } from '../../apis/referral';
+import {
+    GetReferralLevelInformation,
+    getAccountStatus,
+    getReferredUsers,
+    postReferralUser,
+} from '../../apis/referral';
 
 import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
@@ -16,6 +21,10 @@ import Stack from '@mui/material/Stack';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { parseDatetimeToDate } from '../../utils/times';
+
+import { formatUnits, getAddress, parseEther, parseUnits } from 'viem';
+
+import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 
 enum ButtonStatus {
     notConnect,
@@ -37,6 +46,8 @@ const Referer: React.FC = () => {
     const showToast = useShowToast();
     const [isSuccessReferral, setIsSuccessReferral] = useState<boolean>(false);
     const [isShowReferral, setIsShowReferral] = useState<boolean>(false);
+    const [page, setPage] = useState(1);
+    const [numberOfPage, setNumberOfPage] = useState<number>(0);
 
     const handleCopy = useCallback(() => {
         navigator.clipboard.writeText(address || '');
@@ -50,8 +61,14 @@ const Referer: React.FC = () => {
 
     const referredUsers = useQuery({
         queryKey: ['getReferredUsers'],
-        queryFn: () => getReferredUsers(address || ''),
+        queryFn: () => getReferredUsers(address || '', page, 3),
     });
+
+    useEffect(() => {
+        if (referredUsers.data) {
+            setNumberOfPage(referredUsers.data.numberOfPage);
+        }
+    }, [referredUsers.data]);
 
     const referralLevelInformation = useQuery({
         queryKey: ['GetReferralLevelInformation'],
@@ -87,9 +104,28 @@ const Referer: React.FC = () => {
 
     const handlerConfirmReferral = useCallback(() => {
         if (!isReferralState) {
-            postReferalUser.mutate();
+            try {
+                if (addressReferral === address) {
+                    showToast('Referral failed,Can not referral with same wallet', '', 'error');
+                    setIsSuccessReferral(false);
+                    return;
+                }
+                var isValidAdress = getAddress(addressReferral);
+                postReferalUser.mutate();
+            } catch (error) {
+                showToast('Referral failed,Invalid address', '', 'error');
+                setIsSuccessReferral(false);
+            }
         }
+    }, [addressReferral]);
+
+    const handlePageChange = useCallback((event: any, page: number) => {
+        setPage(page);
     }, []);
+
+    useEffect(() => {
+        referredUsers.refetch();
+    }, [page]);
 
     useEffect(() => {
         if (isSuccessReferral) {
@@ -97,7 +133,6 @@ const Referer: React.FC = () => {
             isReferral.refetch();
         }
     }, [isSuccessReferral]);
-
 
     const status = useMemo(() => {
         if (!isConnected) {
@@ -127,7 +162,7 @@ const Referer: React.FC = () => {
     }, [status, isReferral?.data]);
 
     const handleClickShow = useCallback(() => {
-        setIsShowReferral(prev => !prev);
+        setIsShowReferral((prev) => !prev);
     }, []);
 
     const textShowReferral = useMemo(() => {
@@ -136,7 +171,7 @@ const Referer: React.FC = () => {
         } else {
             return 'Click here to show guide';
         }
-    }, [isShowReferral])
+    }, [isShowReferral]);
 
     return (
         <div className="container-referer">
@@ -165,7 +200,7 @@ const Referer: React.FC = () => {
                     </div>
                 </div>
             </div>
-            {isConnected &&
+            {isConnected && (
                 <div className="referral-wallet-container">
                     <p className="referral-wallet-title">Your referral wallet :</p>
                     <p className="referaal-wallet-info">
@@ -177,13 +212,15 @@ const Referer: React.FC = () => {
                         </Button>
                     </p>
                 </div>
-            }
-            {isConnected &&
+            )}
+            {isConnected && (
                 <div className="show-info-referral">
-                    <div className='click-referral' onClick={handleClickShow}>{textShowReferral}</div>
+                    <div className="click-referral" onClick={handleClickShow}>
+                        {textShowReferral}
+                    </div>
                 </div>
-            }
-            {!isShowReferral &&
+            )}
+            {!isShowReferral && (
                 <div className="guide-container-referral">
                     <h1 className="guides-container">Guides:</h1>
                     <div className="guides-container-body">
@@ -235,19 +272,23 @@ const Referer: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            }
-            {isShowReferral &&
+            )}
+            {isShowReferral && (
                 <div>
                     <div className="referral-table-container">
                         <div className="table-info-referral">
                             <div className="table-info-referral-header">
                                 <div className="left-header">
                                     <p className="title-head">Trading Point</p>
-                                    <p className="amount">{referralLevelInformation?.data?.tradePoint ?? 0}</p>
+                                    <p className="amount">
+                                        {referralLevelInformation?.data?.tradePoint ?? 0}
+                                    </p>
                                 </div>
                                 <div className="right-header">
                                     <p className="title-head">Referral Point</p>
-                                    <p className="amount">{referralLevelInformation?.data?.referralPoint ?? 0}</p>
+                                    <p className="amount">
+                                        {referralLevelInformation?.data?.referralPoint ?? 0}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -259,7 +300,7 @@ const Referer: React.FC = () => {
                                 <div className="title-table-info-referral">Referred Date</div>
                             </div>
                             <div className="body-tb-referral">
-                                {referredUsers.data?.map((item: any, index: number) => (
+                                {referredUsers.data?.users.map((item: any, index: number) => (
                                     <div className="body-table-detail-referral">
                                         <div className="title-table-info-referral">
                                             {item.wallet?.slice(0, 3) +
@@ -273,24 +314,28 @@ const Referer: React.FC = () => {
                                             {item.referralPoint}
                                         </div>
                                         <div className="title-table-info-referral">
-                                            {parseDatetimeToDate(item.referredDate)}
+                                            {item.referredDate != null &&
+                                                parseDatetimeToDate(item.referredDate)}
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
                         <div className="paging-referral">
-                            <Stack spacing={2}>
-                                <Pagination
-                                    count={10}
-                                    renderItem={(item) => (
-                                        <PaginationItem
-                                            slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
-                                            {...item}
-                                        />
-                                    )}
-                                />
-                            </Stack>
+                            <Pagination
+                                page={page}
+                                onChange={handlePageChange}
+                                count={referredUsers.data?.numberOfPage ?? 0}
+                                renderItem={(item) => (
+                                    <PaginationItem
+                                        slots={{
+                                            previous: ArrowBackIcon,
+                                            next: ArrowForwardIcon,
+                                        }}
+                                        {...item}
+                                    />
+                                )}
+                            />
                         </div>
                     </div>
 
@@ -302,7 +347,7 @@ const Referer: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            }
+            )}
         </div>
     );
 };

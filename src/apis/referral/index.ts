@@ -13,8 +13,8 @@ export const postReferralUser = async (referringUser: string, referralUser: stri
     return response.data;
 };
 
-export const getReferredUsers = async (wallet: string) => {
-    const response = await apiGetCall(`/api/User/GetReferredUsers?wallet=${wallet}`);
+export const getReferredUsers = async (wallet: string,page : number, pageSize : number) => {
+    const response = await apiGetCall(`/api/User/GetReferredUsers?Wallet=${wallet}&Page=${page}&PageSize=${pageSize}`);
     return response.data;
 };
 
@@ -27,3 +27,8 @@ export const GetAnalyticsRef = async () => {
     const response = await apiGetCall(`/api/User/GetReferralSystemAnalytics`);
     return response.data;
 };
+
+export const AddWallet = async (wallet: string) => {
+    const response = await apiPostCall(`/api/User/AddUser`, { wallet });
+    return response.data;
+}

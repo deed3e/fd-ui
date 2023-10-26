@@ -6,6 +6,8 @@ import { DropdownUser } from './DropdownUser';
 import { useCallback, useEffect } from 'react';
 import { shortenAddress } from '../../utils/addresses';
 import { watchAccount } from '@wagmi/core';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { AddWallet } from '../../apis/referral';
 
 export default function ConnectButton() {
     const { open } = useWeb3Modal();
@@ -14,13 +16,21 @@ export default function ConnectButton() {
     const { switchNetwork } = useSwitchNetwork();
     const handleUserModal = useCallback(() => {}, []);
 
+    const addWalletUser = useMutation({
+        mutationKey: ['addWalletUser'],
+        mutationFn: () => AddWallet(address ?? ''),
+    });
+
     useEffect(() => {
+        if(isConnected) {
+            addWalletUser.mutateAsync();
+        }
         if (isSuccess) {
             switchNetwork?.(97);
         }
-    }, [isSuccess, switchNetwork, address]);
+    }, [isSuccess, switchNetwork, address, isConnected]);
 
-    watchAccount(() => () => open())
+    watchAccount(() => () => open());
 
     return (
         <>
@@ -28,7 +38,7 @@ export default function ConnectButton() {
                 <StyledButtonConnect onClick={() => open()}>
                     {/* <IconConnectWallet />
                     <span>CONNECT</span> */}
-                    <w3m-connect-button size='sm' />
+                    <w3m-connect-button size="sm" />
                 </StyledButtonConnect>
             )}
             {isConnected && (
