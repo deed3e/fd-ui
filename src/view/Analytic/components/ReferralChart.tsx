@@ -65,8 +65,8 @@ const ReferralChart: React.FC<{ data: ReferralData | undefined }> = ({ data }) =
                         }}
                     />
                     <Bar dataKey="level1" stackId="a" name="Level 1" fill={COLORS[11]} />
-                    <Bar dataKey="level2" stackId="a" name="Level 2" fill={COLORS[8]} />
-                    <Bar dataKey="level3" stackId="a" name="Level 3" fill={COLORS[1]} />
+                    <Bar dataKey="level2" stackId="b" name="Level 2" fill={COLORS[8]} />
+                    <Bar dataKey="level3" stackId="c" name="Level 3" fill={COLORS[1]} />
                     <Legend />
                 </ComposedChart>
             </ResponsiveContainer>
