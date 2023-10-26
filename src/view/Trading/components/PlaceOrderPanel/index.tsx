@@ -441,7 +441,7 @@ const PlaceOrderPanel: React.FC = () => {
                     tokens={['BTC', 'ETH']}
                     disable={true}
                     pickToken={indexToken}
-                    value={formatUnits(indexAmount as bigint, 22)}
+                    value={parseFloat(formatUnits(indexAmount as bigint, 22)).toFixed(indexTokenConfig?.fractionDigits)}
                 />
 
                 <StyledLeverageContainer>
@@ -470,6 +470,7 @@ const PlaceOrderPanel: React.FC = () => {
                                 value={collateralValue}
                                 decimals={8 + (collateralTokenConfig?.decimals || 0)}
                                 fractionDigits={2}
+
                                 currency="usd"
                             ></BigintDisplay>
                         </StyledRightItem>
