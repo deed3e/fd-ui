@@ -87,10 +87,8 @@ export type NewUser = {
 };
 
 export type ReferralData = {
-    level1: number;
-    level2: number;
-    level3: number;
-    level0: number;
+    type: string;
+    value: number;
 };
 
 const Analytics: React.FC = () => {
@@ -167,6 +165,8 @@ const Analytics: React.FC = () => {
         queryKey: ['GetAnalyticsRef'],
         queryFn: () => GetAnalyticsRef(),
     });
+
+    
 
     return (
         <StyledContainer>
