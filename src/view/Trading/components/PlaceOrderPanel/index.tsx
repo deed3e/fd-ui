@@ -295,6 +295,10 @@ const PlaceOrderPanel: React.FC = () => {
                     contractApproveWrite?.write?.();
                     break;
                 default:
+                    if(orderType === OrderType.LIMIT && !price){
+                        showToast(`Please input limit price`, '', 'error');
+                        break
+                    }
                     contractOMWrite?.write?.();
             }
         } catch (err) {
