@@ -183,6 +183,7 @@ const Referer: React.FC = () => {
                 <div className="insert-referer-box">
                     <p className="title-insert-referer">Enter referral wallet</p>
                     <input
+                        placeholder='Enter referral wallet'
                         type="text"
                         className="input-referer"
                         value={addressReferral}
