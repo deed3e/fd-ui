@@ -15,14 +15,11 @@ import { useOracle } from '../../../../../hooks/useOracle';
 const Position: React.FC<{ data: PositionData[]; loading: boolean }> = ({ data, loading }) => {
     //const priceIndex = useOracle(['BTC', 'ETH']);
     const { isConnected } = useAccount();
-
     const {  isLoading, isSuccess, write } = useContractWrite({
         address: getAddressOrderManager(),
         abi: OrderManager,
         functionName: 'placeOrder',
     });
-
-    console.log('getAddressOrderManager()', getAddressOrderManager());
 
     const status = useMemo(() => {
         if (!isConnected) {
@@ -71,8 +68,22 @@ const Position: React.FC<{ data: PositionData[]; loading: boolean }> = ({ data, 
                         data?.map((item, index) => (
                             <StyledRow key={index}>
                                 <StyledItem highlight>
-                                    <div className="market">BTC/USDC</div>
-                                    <div className="side">Long</div>
+                                    <div className="market">{
+                                            getTokenConfig(
+                                                getSymbolByAddress(
+                                                    getAddress(item?.market),
+                                                ) || 'BTC',
+                                            )?.symbol
+                                        }
+                                        /
+                                        {
+                                            getTokenConfig(
+                                                getSymbolByAddress(
+                                                    getAddress(item?.collateralToken),
+                                                ) || 'BTC',
+                                            )?.symbol
+                                        }</div>
+                                    <div className="side">{item?.side}</div>
                                 </StyledItem>
                                 <StyledItem>
                                     $

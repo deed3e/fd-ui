@@ -47,7 +47,7 @@ const query = gql`
     }
 `;
 
-export type Order = {
+export type OrderData = {
     status: string;
     sizeChange: string;
     side: string;
@@ -79,7 +79,7 @@ export type PositionData = {
 
 const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
     const [loading, setLoading] = useState(true);
-    const [orders, setOrders] = useState<Order[]>([]);
+    const [orders, setOrders] = useState<OrderData[]>([]);
     const [positions, setPositions] = useState<PositionData[]>([]);
     const { address } = useAccount();
     const lastBlockUpdate = useLastBlockUpdate();
@@ -118,7 +118,7 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
                         } as PositionData;
                     });
 
-                const dataOrder = res?.orders?.map((p: Order) => {
+                const dataOrder = res?.orders?.map((p: OrderData) => {
                     return {
                         id: p.id,
                         sizeChange: p.sizeChange,
@@ -131,7 +131,7 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
                         collateralToken: p.collateralToken,
                         collateralAmount: p.collateralAmount,
                         status: p.status,
-                    } as Order;
+                    } as OrderData;
                 });
 
                 setPositions(dataPosition);
@@ -320,7 +320,7 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
             </StyledRouter>
             <StyledBody>
                 {selector === 1 && <Position data={positions} loading={loading} />}
-                {selector === 2 && <Orders />}
+                {selector === 2 && <Orders  data={orders} loading={loading}/>}
                 {selector === 3 && (
                     <Suspense fallback={<></>}>
                         <History />
