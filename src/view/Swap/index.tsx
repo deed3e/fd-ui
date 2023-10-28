@@ -148,7 +148,7 @@ export default function Swap() {
         return undefined;
     }, [contracInfoRead?.data, contracInfoRead?.isSuccess, tokenToConfig?.decimals]);
 
-    const amountToChange = useCallback((value: BigInt) => {}, []);
+    const amountToChange = useCallback((value: BigInt) => { }, []);
 
     const handleInsufficientBalance = useCallback((check: boolean) => {
         setInsufficientBalance(check);
