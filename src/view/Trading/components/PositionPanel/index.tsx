@@ -97,23 +97,26 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
                     return;
                 }
                 console.log('res', res);
-                const dataPosition = res?.positions?.map((p: PositionData) => {
-                    return {
-                        id: p.id,
-                        entryPrice: p.entryPrice,
-                        entryInterestRate: p.entryInterestRate,
-                        createdAtTimestamp: p.createdAtTimestamp,
-                        collateralValue: p.collateralValue,
-                        collateralToken: p.collateralToken,
-                        leverage: p.leverage,
-                        market: p.market,
-                        realizedPnl: p.realizedPnl,
-                        reserveAmount: p.reserveAmount,
-                        side: p.side,
-                        size: p.size,
-                        status: p.status,
-                    } as PositionData;
-                });
+
+                const dataPosition = res?.positions
+                    ?.filter((x: PositionData) => x.collateralValue !== '0')
+                    ?.map((p: PositionData) => {
+                        return {
+                            id: p.id,
+                            entryPrice: p.entryPrice,
+                            entryInterestRate: p.entryInterestRate,
+                            createdAtTimestamp: p.createdAtTimestamp,
+                            collateralValue: p.collateralValue,
+                            collateralToken: p.collateralToken,
+                            leverage: p.leverage,
+                            market: p.market,
+                            realizedPnl: p.realizedPnl,
+                            reserveAmount: p.reserveAmount,
+                            side: p.side,
+                            size: p.size,
+                            status: p.status,
+                        } as PositionData;
+                    });
 
                 const dataOrder = res?.orders?.map((p: Order) => {
                     return {
@@ -316,7 +319,7 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
                 </StyledItemRouter>
             </StyledRouter>
             <StyledBody>
-                {selector === 1 && <Position data={positions} loading={loading}  />}
+                {selector === 1 && <Position data={positions} loading={loading} />}
                 {selector === 2 && <Orders />}
                 {selector === 3 && (
                     <Suspense fallback={<></>}>

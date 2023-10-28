@@ -228,16 +228,20 @@ const PlaceOrderPanel: React.FC = () => {
             if (loading) {
                 return;
             }
-            setSizeChange(
-                (BigInt(levarage) * BigInt(value) * BigInt(1e22)) /
-                    BigInt(10 ** (collateralTokenConfig?.decimals || 0)),
-            );
-            setIndexAmount(
-                (BigInt(levarage) * BigInt(value) * BigInt(1e22)) /
-                    (priceIndex[indexToken] as bigint) /
-                    BigInt(10 ** (collateralTokenConfig?.decimals || 0)),
-            );
-            setCollateralValue(BigInt(value));
+            try {
+                setSizeChange(
+                    (BigInt(levarage) * BigInt(value) * BigInt(1e22)) /
+                        BigInt(10 ** (collateralTokenConfig?.decimals || 0)),
+                );
+                setIndexAmount(
+                    (BigInt(levarage) * BigInt(value) * BigInt(1e22)) /
+                        (priceIndex[indexToken] as bigint) /
+                        BigInt(10 ** (collateralTokenConfig?.decimals || 0))
+                );
+                setCollateralValue(BigInt(value));
+            } catch (error) {
+                console.log(error)
+            }
         },
         [
             levarage,
@@ -295,9 +299,9 @@ const PlaceOrderPanel: React.FC = () => {
                     contractApproveWrite?.write?.();
                     break;
                 default:
-                    if(orderType === OrderType.LIMIT && !price){
+                    if (orderType === OrderType.LIMIT && !price) {
                         showToast(`Please input limit price`, '', 'error');
-                        break
+                        break;
                     }
                     contractOMWrite?.write?.();
             }
@@ -441,7 +445,9 @@ const PlaceOrderPanel: React.FC = () => {
                     tokens={['BTC', 'ETH']}
                     disable={true}
                     pickToken={indexToken}
-                    value={parseFloat(formatUnits(indexAmount as bigint, 22)).toFixed(indexTokenConfig?.fractionDigits)}
+                    value={ indexAmount ? parseFloat(formatUnits(indexAmount as bigint, 22)).toFixed(
+                        indexTokenConfig?.fractionDigits 
+                    ) : '0.0'}
                 />
 
                 <StyledLeverageContainer>
@@ -470,7 +476,6 @@ const PlaceOrderPanel: React.FC = () => {
                                 value={collateralValue}
                                 decimals={8 + (collateralTokenConfig?.decimals || 0)}
                                 fractionDigits={2}
-
                                 currency="usd"
                             ></BigintDisplay>
                         </StyledRightItem>
