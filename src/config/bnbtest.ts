@@ -7,13 +7,13 @@ export const Config: ChainConfig = {
     etherscanName: 'BscScan',
     explorerUrl: 'https://testnet.bscscan.com/',
     oracle: '0x1E16D408a6ae4E2a867cd33F15cb7E17441139c1',
-    router:'0xeB20569A1A725522a761d535a20E6ef9a5552472',
-    orderManager: '0x8e174E71b7A3C2f16c1cD855AD02e55fD5F4987A',
+    router:'0xE74A23544563bfB0c62BC88b5273F370dDd9f3De',
+    orderManager: '0x42c39944Fb4e7678887FA1019615E461A83E1fCa',
     chartUrlHttp:'',
     chartUrlWs:'wss://ws-feed.pro.coinbase.com',
     graphql:'https://api.thegraph.com/subgraphs/name/deed3e/fdex',
     pool:{
-        address: '0x713B1c99A5871b6Ea58C890305DD7066FC01988b',
+        address: '0x8B8DC0A49f0F401f575f8DC3AA3641BbBCca9194',
         lp: 'FLP',
         assets:['ETH','BTC','WETH','USDC']
     },
@@ -21,7 +21,7 @@ export const Config: ChainConfig = {
     wrapNativeToken: 'WETH',
     tokens: {
         FLP:{
-            address: '0x6381F26F3A92CaAB563AF36731bC34832843682a',
+            address: '0xA6Da9eAcbD5390acf0D892Eb7D255258BC73Abf7',
             decimals: 18,
             fractionDigits: 3,
             priceFractionDigits: 2,
