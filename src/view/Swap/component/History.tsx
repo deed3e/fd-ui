@@ -83,7 +83,8 @@ function History() {
                                 threshold={0.00001}
                             />
                         </div>
-                        <div>{getTimeDistance(item.time)}</div>
+                       {/* // <div>{getTimeDistance(item.time)}</div> */}
+                        <div>-</div>
                     </StyledTableRow>
                 ))}
                 {loading && <ContentLoader.HistorySwap />}
