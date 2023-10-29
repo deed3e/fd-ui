@@ -1,5 +1,5 @@
-import { memo, useCallback, useMemo, useState } from 'react';
-import { Address, useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Address, useAccount, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 import {
     getAddressOrderManager,
     getSymbolByAddress,
@@ -11,15 +11,48 @@ import styled from 'styled-components';
 import { BigintDisplay } from '../../../../../component/BigIntDisplay';
 import { getAddress } from 'viem';
 import { useOracle } from '../../../../../hooks/useOracle';
+import { useShowToast } from '../../../../../hooks/useShowToast';
 
 const Position: React.FC<{ data: PositionData[]; loading: boolean }> = ({ data, loading }) => {
+    const [loadWrite, setLoadWrite] = useState(false)
+    const [loadSign, setLoadSign] = useState(false);
+
     //const priceIndex = useOracle(['BTC', 'ETH']);
     const { isConnected } = useAccount();
-    const {  isLoading, isSuccess, write } = useContractWrite({
+    const showToast = useShowToast();
+    const contractWrite = useContractWrite({
         address: getAddressOrderManager(),
         abi: OrderManager,
         functionName: 'placeOrder',
     });
+    const waitingContractWrite = useWaitForTransaction({
+        hash: contractWrite?.data?.hash,
+    });
+
+    useEffect(() => {
+        if (contractWrite?.isLoading && !loadSign) {
+            showToast(`Request sign transaction`, '', 'warning');
+            setLoadSign(true);
+        } else if (contractWrite?.isSuccess && loadSign) {
+            setLoadSign(false);
+        } else if (contractWrite?.isError && loadSign) {
+            showToast(`Sign failse`, '', 'error');
+            setLoadSign(false);
+        }
+    }, [loadSign, contractWrite?.isError, contractWrite?.isSuccess, contractWrite?.isLoading]);
+
+    useEffect(()=>{
+        if(waitingContractWrite?.isLoading && !loadWrite){
+            showToast(`Waiting request close position order`, '', 'warning');
+            setLoadWrite(true);
+        }else if(waitingContractWrite?.isSuccess && loadWrite){
+            showToast(`Success create close position order`, '', 'success');
+            setLoadWrite(false);
+        }else if(waitingContractWrite?.isError && loadWrite){
+            showToast(`Failse create close position order`, '', 'error');
+            setLoadWrite(false);
+        }
+    },[loadWrite,waitingContractWrite?.isError,waitingContractWrite?.isSuccess,waitingContractWrite?.isLoading])
 
     const status = useMemo(() => {
         if (!isConnected) {
@@ -35,7 +68,7 @@ const Position: React.FC<{ data: PositionData[]; loading: boolean }> = ({ data, 
     const handleWithdrawPosition = useCallback(
         (ev: any) => {
             console.log('ev.target.dataset', ev.target.dataset);
-            write?.({
+            contractWrite?.write?.({
                 args: [
                     1,
                     ev.target.dataset.side === 'LONG' ? 0 : 1,
@@ -49,7 +82,7 @@ const Position: React.FC<{ data: PositionData[]; loading: boolean }> = ({ data, 
                 value: BigInt(1e16)
             });
         },
-        [write],
+        [contractWrite?.write],
     );
 
     return (

@@ -1,5 +1,11 @@
-import { memo, useCallback, useMemo, useState } from 'react';
-import { Address, useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+    Address,
+    useAccount,
+    useContractWrite,
+    usePrepareContractWrite,
+    useWaitForTransaction,
+} from 'wagmi';
 import {
     getAddressOrderManager,
     getSymbolByAddress,
@@ -11,15 +17,48 @@ import styled from 'styled-components';
 import { BigintDisplay } from '../../../../../component/BigIntDisplay';
 import { getAddress } from 'viem';
 import { useOracle } from '../../../../../hooks/useOracle';
+import { useShowToast } from '../../../../../hooks/useShowToast';
 
 const Orders: React.FC<{ data: OrderData[]; loading: boolean }> = ({ data, loading }) => {
     //const priceIndex = useOracle(['BTC', 'ETH']);
+    const [loadWrite, setLoadWrite] = useState(false);
+    const [loadSign, setLoadSign] = useState(false);
     const { isConnected } = useAccount();
-    const { isLoading, isSuccess, write } = useContractWrite({
+    const showToast = useShowToast();
+    const contractWrite :any = useContractWrite({
         address: getAddressOrderManager(),
         abi: OrderManager,
         functionName: 'cancelOrder',
     });
+
+    const waitingContractWrite = useWaitForTransaction({
+        hash: contractWrite?.data?.hash,
+    });
+
+    useEffect(() => {
+        if (contractWrite?.isLoading && !loadSign) {
+            showToast(`Request sign transaction`, '', 'warning');
+            setLoadSign(true);
+        } else if (contractWrite?.isSuccess && loadSign) {
+            setLoadSign(false);
+        } else if (contractWrite?.isError && loadSign) {
+            showToast(`Sign failse`, '', 'error');
+            setLoadSign(false);
+        }
+    }, [loadSign, contractWrite?.isError, contractWrite?.isSuccess, contractWrite?.isLoading]);
+
+    useEffect(() => {
+        if (waitingContractWrite?.isLoading && !loadWrite) {
+            showToast(`Waiting transaction cancel order`, '', 'warning');
+            setLoadWrite(true);
+        } else if (waitingContractWrite?.isSuccess && loadWrite) {
+            showToast(`Cancel order success`, '', 'success');
+            setLoadWrite(false);
+        } else if (waitingContractWrite?.isError && loadWrite) {
+            showToast(`Cancel order failse`, '', 'error');
+            setLoadWrite(false);
+        }
+    }, [loadWrite, waitingContractWrite?.isError, waitingContractWrite?.isSuccess, waitingContractWrite?.isLoading]);
 
     const status = useMemo(() => {
         if (!isConnected) {
@@ -34,11 +73,11 @@ const Orders: React.FC<{ data: OrderData[]; loading: boolean }> = ({ data, loadi
 
     const handle = useCallback(
         (ev: any) => {
-            write?.({
+            contractWrite?.write?.({
                 args: [ev.target.dataset.id],
             });
         },
-        [write],
+        [contractWrite],
     );
 
     return (

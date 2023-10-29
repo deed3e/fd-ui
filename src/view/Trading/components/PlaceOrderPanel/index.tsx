@@ -70,6 +70,7 @@ const PlaceOrderPanel: React.FC = () => {
     const priceIndex = useOracle(['BTC', 'ETH']);
     const [insufficientBalance, setInsufficientBalance] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(false);
+    const [loadSign, setLoadSign] = useState<boolean>(false);
     const showToast = useShowToast();
 
     const pricecOm = useMemo(() => {
@@ -93,6 +94,19 @@ const PlaceOrderPanel: React.FC = () => {
     });
 
     const contractOMWrite = useContractWrite(prepareContractOMWrite.config);
+
+    useEffect(()=>{
+        if (contractOMWrite?.isLoading && !loadSign) {
+            showToast(`Request sign transaction`, '', 'warning');
+            setLoadSign(true);
+        } else if (contractOMWrite?.isSuccess && loadSign) {
+            setLoadSign(false);
+        } else if (contractOMWrite?.isError && loadSign) {
+            showToast(`Sign failse`, '', 'error');
+            setLoadSign(false);
+        }
+
+    },[loadSign, contractOMWrite?.isError, contractOMWrite?.isSuccess, contractOMWrite?.isLoading])
 
     const waitingTransactionPlaceOrder = useWaitForTransaction({
         hash: contractOMWrite?.data?.hash,
