@@ -18,7 +18,7 @@ const Orders: React.FC<{ data: OrderData[]; loading: boolean }> = ({ data, loadi
     const { isLoading, isSuccess, write } = useContractWrite({
         address: getAddressOrderManager(),
         abi: OrderManager,
-        functionName: 'placeOrder',
+        functionName: 'cancelOrder',
     });
 
     const status = useMemo(() => {
@@ -32,21 +32,10 @@ const Orders: React.FC<{ data: OrderData[]; loading: boolean }> = ({ data, loadi
         return 3;
     }, [data, loading, isConnected]);
 
-    const handleWithdrawPosition = useCallback(
+    const handle = useCallback(
         (ev: any) => {
-            console.log('ev.target.dataset', ev.target.dataset);
             write?.({
-                args: [
-                    1,
-                    ev.target.dataset.side === 'LONG' ? 0 : 1,
-                    ev.target.dataset.indextoken,
-                    ev.target.dataset.collateraltoken,
-                    ev.target.dataset.collateralamount,
-                    ev.target.dataset.sizechange,
-                    0,
-                    0,
-                ],
-                value: BigInt(1e16),
+                args: [ev.target.dataset.id],
             });
         },
         [write],
@@ -95,10 +84,8 @@ const Orders: React.FC<{ data: OrderData[]; loading: boolean }> = ({ data, loadi
                                         fractionDigits={2}
                                     />
                                 </StyledItem>
-                                <StyledItem>
-                                {item.positionType}
-                                </StyledItem>
-                              
+                                <StyledItem>{item.positionType}</StyledItem>
+
                                 <StyledItem>
                                     $
                                     <BigintDisplay
@@ -118,15 +105,7 @@ const Orders: React.FC<{ data: OrderData[]; loading: boolean }> = ({ data, loadi
                                     <div>{item.orderType}</div>
                                 </StyledItem>
                                 <StyledItem>
-                                    <div
-                                        className="action"
-                                        // data-side={item?.side}
-                                        // data-indexToken={item?.market}
-                                        // data-collateralToken={item?.collateralToken}
-                                        // data-collateralAmount={item?.reserveAmount}
-                                        // data-sizeChange={item?.size}
-                                        // onClick={handleWithdrawPosition}
-                                    >
+                                    <div className="action" data-id={item?.id} onClick={handle}>
                                         CANCEL
                                     </div>
                                 </StyledItem>

@@ -482,7 +482,7 @@ const PlaceOrderPanel: React.FC = () => {
                     </StyledRowInfo>
                     <StyledRowInfo>
                         <StyledLeftItem>Laverage</StyledLeftItem>
-                        <StyledRightItem>{levarage}</StyledRightItem>
+                        <StyledRightItem>x{levarage}</StyledRightItem>
                     </StyledRowInfo>
                     <StyledRowInfo>
                         <StyledLeftItem>Entry Price</StyledLeftItem>
