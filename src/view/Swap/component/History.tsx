@@ -41,8 +41,8 @@ function History() {
                 <div>Time</div>
             </StyledHeader>
             <StyledTableBody>
-                {swapQuery.data?.map((item: SwapType) => (
-                    <StyledTableRow key={item.time.toTimeString()}>
+                {swapQuery.data?.map((item: SwapType, index: any) => (
+                    <StyledTableRow key={index}>
                         <div className="token">
                             <div>
                                 <TokenSymbol
@@ -83,7 +83,8 @@ function History() {
                                 threshold={0.00001}
                             />
                         </div>
-                        <div>{getTimeDistance(item.time)}</div>
+                        {/* // <div>{getTimeDistance(item.time)}</div> */}
+                        <div>-</div>
                     </StyledTableRow>
                 ))}
                 {loading && <ContentLoader.HistorySwap />}
