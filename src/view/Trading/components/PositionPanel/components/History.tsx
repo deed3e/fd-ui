@@ -14,7 +14,7 @@ const History: React.FC = () => {
 
     const histories = useQuery({
         queryKey: ['GetHistories'],
-        queryFn: () => getHistories('0xF505f49B9B419A4DAaE61198173d3c2386Da5f48'),
+        queryFn: () => getHistories(address || ''),
     });
 
     console.log("his", histories.data);
