@@ -30,7 +30,7 @@ const History: React.FC = () => {
                 <StyledBody>
                     {histories?.data?.map((item: any, index: any) => (
                         <StyledRow key={index}>
-                            <StyledItem highlight>
+                            <StyledItem>
                                 {item?.collateralToken?.slice(0, 3) +
                                     '...' +
                                     item?.collateralToken?.slice(
@@ -38,7 +38,7 @@ const History: React.FC = () => {
                                         item?.collateralToken.length,
                                     )}
                             </StyledItem>
-                            <StyledItem highlight>
+                            <StyledItem>
                                 <BigintDisplay
                                     value={BigInt(item?.entryPrice || BigInt(0))}
                                     decimals={
@@ -51,7 +51,7 @@ const History: React.FC = () => {
                                     fractionDigits={2}
                                 />
                             </StyledItem>
-                            <StyledItem highlight>
+                            <StyledItem >
                                 {item?.indexToken?.slice(0, 3) +
                                     '...' +
                                     item?.indexToken?.slice(
@@ -68,8 +68,8 @@ const History: React.FC = () => {
                                     fractionDigits={2}
                                 />
                             </StyledItem>
-                            <StyledItem highlight>{item?.side}</StyledItem>
-                            <StyledItem highlight>
+                            <StyledItem>{item?.side}</StyledItem>
+                            <StyledItem>
                                 <BigintDisplay
                                     value={BigInt(item?.size || BigInt(0))}
                                     decimals={
