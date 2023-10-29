@@ -44,3 +44,8 @@ export const xAxisFormatterWallet = (value: any) => {
     if (!value || isNaN(value)) return '';
     return shortenAddress(value);
 };
+
+export const xAxisFormatterUser = (value: any) => {
+    if (!value || isNaN(value)) return '';
+    return 'Level ' + value;
+};

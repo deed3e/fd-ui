@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import FeeChart from './components/FeeChart';
 import { graphClient } from '../../utils/constant';
 import { gql } from 'graphql-request';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import VolumeUserRankChart from './components/VolumeUserRankChart';
 import NewUserChart from './components/NewUserChart';
 import OpenInterestChart from './components/OpenInterestChart';
@@ -94,6 +94,7 @@ export type ReferralData = {
 const Analytics: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<Fee[]>([]);
+    const [dataRef, setDataRef] = useState<ReferralData[]>([]);
     const [volumeByUserData, setVolumeByUserData] = useState<VolumeByUser[]>([]);
     const [newUserData, setNewUserData] = useState<NewUser[]>([]);
     const [openInterestData, setOpenInterestData] = useState<OpenInterest[]>([]);
@@ -166,7 +167,37 @@ const Analytics: React.FC = () => {
         queryFn: () => GetAnalyticsRef(),
     });
 
-    
+    useEffect(() => {
+        const func = async () => {
+            try {
+                const response = await fetch('https://api.fdex.me/api/User/GetReferralSystemAnalytics');
+                const data = await response.json();
+                setDataRef([
+                    {
+                        type: '0',
+                        value: data['level0'],
+                    },
+                    {
+                        type: '1',
+                        value: data['level1'],
+                    },
+                    {
+                        type: '2',
+                        value: data['level2'],
+                    },
+                    {
+                        type: '3',
+                        value: data['level3'],
+                    }
+                ] as ReferralData[]);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                // Xử lý lỗi nếu có
+            }
+        };
+        func();
+    }, []);
+console.log('dataRef',dataRef)
 
     return (
         <StyledContainer>
@@ -183,7 +214,7 @@ const Analytics: React.FC = () => {
                 <NewUserChart data={newUserData} loading={loading} />
             </StyledItem>
             <StyledItem>
-                <ReferralChart data={swapQuery?.data} />
+                <ReferralChart data={dataRef} />
             </StyledItem>
         </StyledContainer>
     );

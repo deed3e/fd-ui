@@ -13,28 +13,28 @@ import {
 } from 'recharts';
 import styled from 'styled-components';
 import { ReferralData } from '..';
-import { tooltipLabelFormatter } from '../../../utils/helpers';
+import { tooltipLabelFormatter, xAxisFormatterUser } from '../../../utils/helpers';
 import { COLORS } from './FeeChart';
 
 const ReferralChart: React.FC<{ data: ReferralData[] | undefined }> = ({ data }) => {
     const res: ReferralData[] = useMemo(() => {
         return data ?? ([
                   {
-                      type: 'level1',
+                      type: '0',
                       value: 0
                   },
                   {
-                      type: 'level2',
+                      type: '1',
                       value: 0
                   },
                   {
-                      type: 'level3',
+                      type: '2',
                       value: 0
                   },
                   {
-                      type: 'level4',
+                      type: '3',
                       value: 0
-                  },
+                  }
               ] as ReferralData[]);
     }, []);
 
@@ -45,7 +45,7 @@ const ReferralChart: React.FC<{ data: ReferralData[] | undefined }> = ({ data })
                 <ComposedChart
                     width={500}
                     height={300}
-                    data={res}
+                    data={data}
                     margin={{
                         top: 12,
                         right: 15,
@@ -55,8 +55,9 @@ const ReferralChart: React.FC<{ data: ReferralData[] | undefined }> = ({ data })
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <YAxis width={30} />
+                    <XAxis dataKey="type" tickFormatter={xAxisFormatterUser} minTickGap={30} />
                     <Tooltip
-                        labelFormatter={tooltipLabelFormatter}
+                      // labelFormatter={tooltipLabelFormatter}
                         contentStyle={{
                             backgroundColor: '#29292c',
                             textAlign: 'left',
@@ -72,9 +73,7 @@ const ReferralChart: React.FC<{ data: ReferralData[] | undefined }> = ({ data })
                             paddingBottom: 2,
                         }}
                     />
-                    <Bar dataKey="level1" name="Level 1" fill={COLORS[11]} />
-                    <Bar dataKey="level2" name="Level 2" fill={COLORS[8]} />
-                    <Bar dataKey="level3" name="Level 3" fill={COLORS[1]} />
+                    <Bar dataKey="value" name="Wallet" fill={COLORS[8]} />
                     <Legend />
                 </ComposedChart>
             </ResponsiveContainer>

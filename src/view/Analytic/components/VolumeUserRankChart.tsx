@@ -19,9 +19,13 @@ import {
     xAxisFormatterWallet,
     yAxisFormatter,
 } from '../../../utils/helpers';
-import {COLORS} from './FeeChart';
+import { COLORS } from './FeeChart';
 
-const VolumeUserRankChart: React.FC<{ data: VolumeByUser[]; loading: boolean }> = ({ data, loading }) => {
+const VolumeUserRankChart: React.FC<{ data: VolumeByUser[]; loading: boolean }> = ({
+    data,
+    loading,
+}) => {
+    console.log('data', data);
     return (
         <StyledContainer>
             <ContainerHeader>Top User Swap Volume</ContainerHeader>
@@ -39,10 +43,13 @@ const VolumeUserRankChart: React.FC<{ data: VolumeByUser[]; loading: boolean }> 
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <YAxis tickFormatter={yAxisFormatter} width={30} />
-                    <XAxis dataKey="wallet" tickFormatter={xAxisFormatterWallet} minTickGap={30} />
+                    <XAxis
+                        dataKey="wallet"
+                        tickFormatter={xAxisFormatterWallet}
+                        minTickGap={30}
+                    />
                     <Tooltip
-                             formatter={tooltipFormatter}
-                            // labelFormatter={tooltipLabelFormatter}
+                        formatter={tooltipFormatter}
                         contentStyle={{
                             backgroundColor: '#29292c',
                             textAlign: 'left',
@@ -58,7 +65,7 @@ const VolumeUserRankChart: React.FC<{ data: VolumeByUser[]; loading: boolean }> 
                             paddingBottom: 2,
                         }}
                     />
-                    <Legend/>
+                    <Legend />
                     <Bar dataKey="swap" stackId="a" name="Swap" fill={COLORS[4]} />
                 </ComposedChart>
             </ResponsiveContainer>
