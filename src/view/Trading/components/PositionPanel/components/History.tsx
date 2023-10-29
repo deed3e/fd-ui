@@ -9,7 +9,6 @@ import { getSymbolByAddress, getTokenConfig } from '../../../../../config';
 import { getAddress } from 'viem';
 
 const History: React.FC = () => {
-
     const { address, isConnected } = useAccount();
 
     const histories = useQuery({
@@ -17,76 +16,84 @@ const History: React.FC = () => {
         queryFn: () => getHistories(address || ''),
     });
 
-    console.log("his", histories.data);
+    console.log('his', histories.data);
 
-    return <>
-        <StyledContainer>
-            <StyledHeader>
-                <StyledHeaderItem>Collateral Token</StyledHeaderItem>
-                <StyledHeaderItem>Entry Price</StyledHeaderItem>
-                <StyledHeaderItem>Index Token</StyledHeaderItem>
-                <StyledHeaderItem>Pnl</StyledHeaderItem>
-                <StyledHeaderItem>Side</StyledHeaderItem>
-                <StyledHeaderItem>Size</StyledHeaderItem>
-            </StyledHeader>
-            <StyledBody>
-                {histories?.data?.map((item: any, index: any) => (
-                    <StyledRow key={index}>
-                        <StyledItem highlight>
-                            {item?.collateralToken?.slice(0, 3) +
-                                '...' +
-                                item?.collateralToken?.slice(item?.collateralToken.length - 4, item?.collateralToken.length)
-                            }
-                        </StyledItem>
-                        <StyledItem highlight>
-                            <BigintDisplay
-                                value={BigInt(item?.entryPrice || BigInt(0))}
-                                decimals={
-                                    30 -
-                                    (getTokenConfig(
-                                        getSymbolByAddress(getAddress(item?.indexToken)) ||
-                                        'BTC',
-                                    )?.decimals || 0)
-                                }
-                                fractionDigits={2}
-                            />
-                        </StyledItem>
-                        <StyledItem highlight>
-                            {item?.indexToken?.slice(0, 3) +
-                                '...' +
-                                item?.indexToken?.slice(item?.indexToken.length - 4, item?.indexToken.length)
-                            }
-                        </StyledItem>
-                        <StyledItem highlight>
-                            {item?.pnl.sig > 0 ? item?.pnl.abs : '-' + item?.pnl.abs}
-
-                        </StyledItem>
-                        <StyledItem highlight>
-                            {item?.side}
-                        </StyledItem>
-                        <StyledItem highlight>
-                            <BigintDisplay
-                                value={BigInt(item?.size || BigInt(0))}
-                                decimals={
-                                    30 -
-                                    (getTokenConfig(
-                                        getSymbolByAddress(getAddress(item?.collateralToken)) ||
-                                        'BTC',
-                                    )?.decimals || 0)
-                                }
-                                fractionDigits={2}
-                            />
-                        </StyledItem>
-
-                    </StyledRow>
-                ))}
-            </StyledBody>
-        </StyledContainer>
-    </>;
+    return (
+        <>
+            <StyledContainer>
+                <StyledHeader>
+                    <StyledHeaderItem>Collateral Token</StyledHeaderItem>
+                    <StyledHeaderItem>Entry Price</StyledHeaderItem>
+                    <StyledHeaderItem>Index Token</StyledHeaderItem>
+                    <StyledHeaderItem>Pnl</StyledHeaderItem>
+                    <StyledHeaderItem>Side</StyledHeaderItem>
+                    <StyledHeaderItem>Size</StyledHeaderItem>
+                </StyledHeader>
+                <StyledBody>
+                    {histories?.data?.map((item: any, index: any) => (
+                        <StyledRow key={index}>
+                            <StyledItem highlight>
+                                {item?.collateralToken?.slice(0, 3) +
+                                    '...' +
+                                    item?.collateralToken?.slice(
+                                        item?.collateralToken.length - 4,
+                                        item?.collateralToken.length,
+                                    )}
+                            </StyledItem>
+                            <StyledItem highlight>
+                                <BigintDisplay
+                                    value={BigInt(item?.entryPrice || BigInt(0))}
+                                    decimals={
+                                        30 -
+                                        (getTokenConfig(
+                                            getSymbolByAddress(getAddress(item?.indexToken)) ||
+                                                'BTC',
+                                        )?.decimals || 0)
+                                    }
+                                    fractionDigits={2}
+                                />
+                            </StyledItem>
+                            <StyledItem highlight>
+                                {item?.indexToken?.slice(0, 3) +
+                                    '...' +
+                                    item?.indexToken?.slice(
+                                        item?.indexToken.length - 4,
+                                        item?.indexToken.length,
+                                    )}
+                            </StyledItem>
+                            <StyledItem highlight>
+                                <BigintDisplay
+                                    value={BigInt(item?.pnl || BigInt(0))}
+                                    decimals={
+                                        30
+                                    }
+                                    fractionDigits={2}
+                                />
+                            </StyledItem>
+                            <StyledItem highlight>{item?.side}</StyledItem>
+                            <StyledItem highlight>
+                                <BigintDisplay
+                                    value={BigInt(item?.size || BigInt(0))}
+                                    decimals={
+                                        30 -
+                                        (getTokenConfig(
+                                            getSymbolByAddress(
+                                                getAddress(item?.collateralToken),
+                                            ) || 'BTC',
+                                        )?.decimals || 0)
+                                    }
+                                    fractionDigits={2}
+                                />
+                            </StyledItem>
+                        </StyledRow>
+                    ))}
+                </StyledBody>
+            </StyledContainer>
+        </>
+    );
 };
 
 export default memo(History);
-
 
 const StyledTextNotice = styled.div`
     color: rgba(255, 255, 255, 0.2);
@@ -103,7 +110,7 @@ const StyledHeaderItem = styled.div`
 
 const StyledHeader = styled.div`
     display: grid;
-    grid-template-columns:  2fr 2fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 2fr 1fr 1fr 1fr 1fr;
     padding-left: 20px;
     padding-top: 10px;
     color: rgba(255, 255, 255, 0.7);
@@ -150,4 +157,3 @@ const StyledItem = styled.div<{ highlight?: boolean; side?: boolean }>`
         }
     }
 `;
-
