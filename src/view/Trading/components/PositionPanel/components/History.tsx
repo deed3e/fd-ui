@@ -16,8 +16,6 @@ const History: React.FC = () => {
         queryFn: () => getHistories(address || ''),
     });
 
-    console.log('his', histories.data);
-
     return (
         <>
             <StyledContainer>
