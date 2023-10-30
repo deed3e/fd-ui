@@ -1,7 +1,9 @@
 .leader-board-container {
+    position: relative;
     padding: 120px 0px;
     width: 1000px;
     margin: auto;
+    z-index: 1;
 }
 
 .trader-position-tabs {

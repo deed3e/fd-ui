@@ -1,5 +1,7 @@
 import './leaderBoard.scss';
 
+import styled from 'styled-components';
+import LeaderboardBackground from '../../assets/image/bg_leaderboard.svg';
 import * as React from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import imgWallet from '../../assets/svg/img-wallet-lb.svg';
@@ -145,7 +147,8 @@ const LeaderBoard: React.FC = () => {
     const handleClickSortASC = _.debounce(handleClickDebounce, 1000);
 
     return (
-        <div className="leader-board-bg">
+        <div>
+            <StyledLeaderboardBackground></StyledLeaderboardBackground>
             <div className="leader-board-container">
                 <div className="trader-position-tabs">
                     <div
@@ -308,3 +311,20 @@ const LeaderBoard: React.FC = () => {
 };
 
 export default LeaderBoard;
+
+const StyledLeaderboardBackground = styled.div`
+    position: absolute;
+    background-image: url(${LeaderboardBackground});
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    filter: blur(120px);
+    z-index: -1;
+`;
