@@ -15,7 +15,7 @@ const Header: React.FC = () => {
     const [checkKeeperHealth, setCheckKeeperHealth] = useState<boolean>(false);
 
     const isHome = useMemo(() => {
-        if (location.pathname === '/') {
+        if (location.pathname === '/' || location.pathname === '/leaderboard') {
             return true;
         }
         return false;

@@ -149,151 +149,6 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
     }, [address, lastBlockUpdate]);
 
     return (
-        // <>
-        //     <div className="container-positon-panel">
-        //         <Box sx={{ width: '100%' }}>
-        //             <CustomTabPanel value={value} index={0}>
-        //                 <div className="padding-for-header-table">
-        //                     <div className="header-table-position">
-        //                         <div className="header-title-position">Position</div>
-        //                         <div className="header-title-position">Size</div>
-        //                         <div className="header-title-position">Net Value</div>
-        //                         <div className="header-title-position">Entry Price</div>
-        //                         <div className="header-title-position">Liquidation Price</div>
-        //                         <div className="header-title-position">Action</div>
-        //                     </div>
-        //                 </div>
-        //                 {positions.map((item, index) => (
-        //                     <div className="padding-for-body-table" key={index}>
-        //                         <div className="content-body-table">
-        //                             <div className="header-table-position header-table-position-2">
-        //                                 <div className="header-title-position">
-        //                                     <span className="token-positon">{getTokenConfig(
-        //                                         getSymbolByAddress(getAddress(item?.market)) || 'BTC',
-        //                                     )?.symbol}/USD</span>
-        //                                     <p className="long-shot-position">{item?.side}</p>
-        //                                 </div>
-        //                                 <div className="header-title-position">
-        //                                     <span className="size-position">
-        //                                         $
-        //                                         <BigintDisplay
-        //                                             value={BigInt(item?.size)}
-        //                                             decimals={30}
-        //                                             fractionDigits={2}
-        //                                         />
-        //                                     </span>
-        //                                 </div>
-        //                                 <div className="header-title-position">
-        //                                     <span className="net-value-top">
-        //                                         $
-        //                                         <BigintDisplay
-        //                                             value={BigInt(item?.collateralValue)}
-        //                                             decimals={30}
-        //                                             fractionDigits={2}
-        //                                         />
-        //                                     </span>
-        //                                     <span className="net-value-bottom">
-        //                                         $
-        //                                         <BigintDisplay
-        //                                             value={BigInt(item?.realizedPnl)}
-        //                                             decimals={30}
-        //                                             fractionDigits={2}
-        //                                         />
-        //                                     </span>
-        //                                 </div>
-        //                                 <div className="header-title-position">
-        //                                     <span className="entry-price-position">
-        //                                         {' '}
-        //                                         $
-        //                                         <BigintDisplay
-        //                                             value={BigInt(item?.entryPrice)}
-        //                                             decimals={
-        //                                                 30 -
-        //                                                 (getTokenConfig(
-        //                                                     getSymbolByAddress(getAddress(item?.market)) || 'BTC',
-        //                                                 )?.decimals || 0)
-        //                                             }
-        //                                             fractionDigits={2}
-        //                                         />
-        //                                     </span>
-        //                                 </div>
-        //                                 <div className="header-title-position">
-        //                                     <span className="liquidation-price-position">-</span>
-        //                                 </div>
-        //                                 <div className="header-title-position">Close</div>
-        //                             </div>
-        //                         </div>
-        //                     </div>
-        //                 ))}
-        //             </CustomTabPanel>
-        //             <CustomTabPanel value={value} index={1}>
-        //                 <div className="padding-for-header-table">
-        //                     <div className="header-table-position">
-        //                         <div className="header-title-position">Position</div>
-        //                         <div className="header-title-position">Size</div>
-        //                         <div className="header-title-position">Position Type</div>
-        //                         <div className="header-title-position">Mark Price</div>
-        //                         <div className="header-title-position">Order Type</div>
-        //                         <div className="header-title-position">Action</div>
-        //                     </div>
-        //                 </div>
-        //                 {orders.map((item, index) => (
-        //                     <div className="padding-for-body-table" key={index}>
-        //                         <div className="content-body-table">
-        //                             <div className="header-table-position header-table-position-2">
-        //                                 <div className="header-title-position">
-        //                                     <span className="token-positon">{getTokenConfig(
-        //                                         getSymbolByAddress(getAddress(item?.indexToken)) || 'BTC',
-        //                                     )?.symbol}/USD</span>
-        //                                     <span className="long-shot-position">{item.side}</span>
-        //                                 </div>
-        //                                 <div className="header-title-position">
-        //                                     <span className="size-position">
-        //                                         $
-        //                                         <BigintDisplay
-        //                                             value={BigInt(item?.sizeChange)}
-        //                                             decimals={30}
-        //                                             fractionDigits={2}
-        //                                         />
-        //                                     </span>
-        //                                 </div>
-
-        //                                 <div className="header-title-position">
-        //                                     <p className="entry-price-position">
-        //                                         {item.positionType}
-        //                                     </p>
-        //                                 </div>
-        //                                 <div className="header-title-position">
-        //                                     <p className="entry-price-position">
-        //                                         $
-        //                                         <BigintDisplay
-        //                                             value={BigInt(item?.price)}
-        //                                             decimals={
-        //                                                 30 -
-        //                                                 (getTokenConfig(
-        //                                                     getSymbolByAddress(getAddress(item?.indexToken)) || 'BTC',
-        //                                                 )?.decimals || 0)
-        //                                             }
-        //                                             fractionDigits={2}
-        //                                         />
-        //                                     </p>
-        //                                 </div>
-        //                                 <div className="header-title-position">
-        //                                     <p className="liquidation-price-position">{item.orderType}</p>
-        //                                 </div>
-        //                                 <div className="header-title-position">Cancel</div>
-        //                             </div>
-        //                         </div>
-        //                     </div>
-        //                 ))}
-        //             </CustomTabPanel>
-        //             <CustomTabPanel value={value} index={2}>
-        //                 Item Three
-        //             </CustomTabPanel>
-        //         </Box>
-        //     </div>
-        // </>
-
         <StyledContainer>
             <StyledRouter>
                 <StyledItemRouter
@@ -301,14 +156,15 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
                     active={selector === 1}
                     onClick={() => setSelector(1)}
                 >
-                    Positions
+                    Positions({positions?.length ?? ''})
+                    <StyledPointNum>123</StyledPointNum>
                 </StyledItemRouter>
                 <StyledItemRouter
                     width={48}
                     active={selector === 2}
                     onClick={() => setSelector(2)}
                 >
-                    Orders
+                    Orders({orders?.length ?? ''})
                 </StyledItemRouter>
                 <StyledItemRouter
                     width={68}
@@ -320,7 +176,7 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
             </StyledRouter>
             <StyledBody>
                 {selector === 1 && <Position data={positions} loading={loading} />}
-                {selector === 2 && <Orders  data={orders} loading={loading}/>}
+                {selector === 2 && <Orders data={orders} loading={loading} />}
                 {selector === 3 && (
                     <Suspense fallback={<></>}>
                         <History />
@@ -338,6 +194,15 @@ const StyledContainer = styled.div`
 `;
 const StyledBody = styled.div``;
 
+const StyledPointNum = styled.div`
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #fff;
+`;
+
 const StyledRouter = styled.div`
     width: 100%;
     display: flex;
@@ -354,6 +219,10 @@ const StyledItemRouter = styled.div<{ active?: boolean; width?: number }>`
     font-size: 14px;
     font-weight: ${(p) => (p.active ? '700' : '500')};
     width: ${(p) => (p.width ? `${p.width}px` : 'auto')};
+
+    display: relative;
+    /* width: 10px;
+    height: 10px; */
 `;
 
 export default memo(PositionPanel);

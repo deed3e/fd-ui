@@ -44,7 +44,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     const configSelectToken = getTokenConfig(selectToken);
     const [amount, setAmount] = useState('');
     const [subValue, setSubValue] = useState<BigInt>();
-    const [isSelectWETH,setIsSelectWETH] = useState(false);
+    const [isSelectWETH, setIsSelectWETH] = useState(false);
 
     const getPrice = useOracle(tokens); //['BTC','ETH']
 
@@ -82,7 +82,7 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
                 }
             }
         },
-        
+
         [amountChange, configSelectToken?.decimals],
     );
 
@@ -93,18 +93,20 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     }, [pickToken]);
 
     useEffect(() => {
-        const balanceUser = isSelectWETH ?  balanceWETH.data?.value ?? BigInt(0) :  balance?.data?.value ?? BigInt(0);
+        const balanceUser = isSelectWETH
+            ? balanceWETH.data?.value ?? BigInt(0)
+            : balance?.data?.value ?? BigInt(0);
         if (insufficientBalanceChange) {
             insufficientBalanceChange(
                 balanceUser < parseUnits(amount, configSelectToken?.decimals ?? 0),
             );
         }
-    }, [amount, balance,balanceWETH, insufficientBalanceChange, configSelectToken]);
+    }, [amount, balance, balanceWETH, insufficientBalanceChange, configSelectToken]);
 
     useEffect(() => {
         balance.refetch();
         balanceWETH.refetch();
-    }, [balance,balanceWETH, refresh]);
+    }, [balance, balanceWETH, refresh]);
 
     const onDropDownItemClick = useCallback((symbol: string) => {
         setSelectToken(symbol);
@@ -122,19 +124,24 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
     }, [amount, configSelectToken, getPrice, valueChange]);
 
     const overBalance = useMemo(() => {
-        if (disableOverBalance) {
-            return false;
-        }
-        if (balance.data || balanceWETH.data) {
-            return parseUnits(amount, configSelectToken?.decimals ?? 0) > (isSelectWETH ? balanceWETH.data?.value : balance.data?.value)
-        }
-        return true;
-    }, [amount, balance,balanceWETH, configSelectToken?.decimals]);
+        try {
+            if (disableOverBalance) {
+                return false;
+            }
+            if (balance.data || balanceWETH.data) {
+                return (
+                    parseUnits(amount, configSelectToken?.decimals ?? 0) >
+                    (isSelectWETH ? balanceWETH.data?.value : balance.data?.value)
+                );
+            }
+            return true;
+        } catch (error) {}
+    }, [amount, balance, balanceWETH, configSelectToken?.decimals]);
 
     useEffect(() => {
-        if(selectToken == 'WETH') {
+        if (selectToken == 'WETH') {
             setIsSelectWETH(true);
-        }else {
+        } else {
             setIsSelectWETH(false);
         }
     }, [selectToken]);
@@ -146,7 +153,11 @@ const InputTokenWithSelect: React.FC<InputTokenWithSelectProps> = ({
                 <StyledBalance>
                     Balance:{' '}
                     <BigintDisplay
-                        value={ isSelectWETH ? balanceWETH.data?.value as BigInt : balance.data?.value as BigInt}
+                        value={
+                            isSelectWETH
+                                ? (balanceWETH.data?.value as BigInt)
+                                : (balance.data?.value as BigInt)
+                        }
                         decimals={configSelectToken?.decimals ?? 1}
                         threshold={configSelectToken?.threshold}
                         fractionDigits={configSelectToken?.fractionDigits}
@@ -248,8 +259,8 @@ const StyledWrapInputAndSubValue = styled.div`
 `;
 
 const StyledAmount = styled.div`
-font-family: 'IBM Plex Mono', monospace;
-color: rgba(255, 255, 255, 0.8);
+    font-family: 'IBM Plex Mono', monospace;
+    color: rgba(255, 255, 255, 0.8);
 `;
 
 const StyledBalance = styled.div`
@@ -301,7 +312,7 @@ const StyledToken = styled.div`
         }
     }
 `;
-const StyledTokenSelect = styled(StyledToken) <{ pointer?: boolean }>`
+const StyledTokenSelect = styled(StyledToken)<{ pointer?: boolean }>`
     cursor: ${({ pointer }) => (pointer ? 'pointer' : 'auto')};
     :hover {
         border: 1px solid #515050;
