@@ -81,10 +81,46 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
     const [loading, setLoading] = useState(true);
     const [orders, setOrders] = useState<OrderData[]>([]);
     const [positions, setPositions] = useState<PositionData[]>([]);
+    const [lastCount, setLastCount] = useState<{ position: number; order: number }>({
+        position: 0,
+        order: 0,
+    });
     const { address } = useAccount();
     const lastBlockUpdate = useLastBlockUpdate();
 
     const [selector, setSelector] = useState(1);
+
+    useEffect(() => {
+        switch (selector) {
+            case 1:
+                setLastCount({
+                    position: positions?.length,
+                    order: lastCount.order,
+                });
+                break;
+            case 2:
+                setLastCount({
+                    position: lastCount.position,
+                    order: orders?.length,
+                });
+        }
+    }, [selector, orders?.length, positions?.length, lastCount.position, lastCount.order]);
+
+    const handleSetLastCount = (num: number) => {
+        switch (num) {
+            case 1:
+                setLastCount({
+                    position: positions?.length,
+                    order: lastCount.order,
+                });
+                break;
+            case 2:
+                setLastCount({
+                    position: lastCount.position,
+                    order: orders?.length,
+                });
+        }
+    };
 
     useEffect(() => {
         let mounted = true;
@@ -148,23 +184,40 @@ const PositionPanel: React.FC<MarketInfo> = ({ current }) => {
         };
     }, [address, lastBlockUpdate]);
 
+    console.log('lastCount', lastCount);
+
     return (
         <StyledContainer>
             <StyledRouter>
                 <StyledItemRouter
-                    width={85}
+                    width={95}
                     active={selector === 1}
-                    onClick={() => setSelector(1)}
+                    onClick={() => {
+                        handleSetLastCount(1);
+                        setSelector(1);
+                    }}
                 >
-                    Positions({positions?.length ?? ''})
-                    <StyledPointNum>123</StyledPointNum>
+                    <div>Positions</div>
+                    <StyledPointNum
+                        active={selector === 1 || positions?.length !== lastCount?.position}
+                    >
+                        <div>{positions?.length ?? ''}</div>
+                    </StyledPointNum>
                 </StyledItemRouter>
                 <StyledItemRouter
-                    width={48}
+                    width={68}
                     active={selector === 2}
-                    onClick={() => setSelector(2)}
+                    onClick={() => {
+                        handleSetLastCount(2);
+                        setSelector(2);
+                    }}
                 >
-                    Orders({orders?.length ?? ''})
+                    <div>Orders</div>
+                    <StyledPointNum
+                        active={selector === 2 || orders?.length !== lastCount?.order}
+                    >
+                        <div>{orders?.length ?? ''}</div>
+                    </StyledPointNum>
                 </StyledItemRouter>
                 <StyledItemRouter
                     width={68}
@@ -194,13 +247,16 @@ const StyledContainer = styled.div`
 `;
 const StyledBody = styled.div``;
 
-const StyledPointNum = styled.div`
-    height: 100px;
-    width: 100px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: #fff;
+const StyledPointNum = styled.div<{ active?: boolean }>`
+    background: ${(p) => (p.active ? '#6763E3' : 'rgba(255, 255, 255, 0.4)')};
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    color: ${(p) => (p.active ? '#fff' : 'rgba(255, 255, 255, 0.4)')};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
 `;
 
 const StyledRouter = styled.div`
@@ -219,10 +275,10 @@ const StyledItemRouter = styled.div<{ active?: boolean; width?: number }>`
     font-size: 14px;
     font-weight: ${(p) => (p.active ? '700' : '500')};
     width: ${(p) => (p.width ? `${p.width}px` : 'auto')};
-
-    display: relative;
-    /* width: 10px;
-    height: 10px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
 `;
 
 export default memo(PositionPanel);
