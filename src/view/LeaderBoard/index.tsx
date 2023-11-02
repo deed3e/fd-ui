@@ -6,6 +6,7 @@ import * as React from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import imgWallet from '../../assets/svg/img-wallet-lb.svg';
 import imgWallet2 from '../../assets/svg/wallet-icon-2.svg';
+import arrowNoColor from '../../assets/image/arrow-no-color.svg';
 import arrowBottom from '../../assets/image/arrow-bottom.png';
 import { useCallback, useState, useEffect } from 'react';
 import { get } from 'lodash';
@@ -207,58 +208,102 @@ const LeaderBoard: React.FC = () => {
 
                 <div className="table-leader-board-container">
                     <div className="header-table-leader-board">
-                        <div className="item-header-leader-board">
-                            Wallet
-                            <img src={arrowBottom} alt="arrow" />
-                        </div>
+                        <div className="item-header-leader-board">Wallet</div>
                         <div className="item-header-leader-board">
                             Trading Vol.
-                            <img
-                                onClick={() => handleClickSortASC(2)}
-                                src={arrowBottom}
-                                alt="arrow"
-                                className={`rotate-on-click ${
-                                    IsTradingVolumnAsc ? 'rotated' : ''
-                                }`}
-                            />
+                            {IsTradingVolumnAsc != null && (
+                                <img
+                                    onClick={() => handleClickSortASC(2)}
+                                    src={arrowBottom}
+                                    alt="arrow"
+                                    className={`rotate-on-click ${
+                                        IsTradingVolumnAsc ? 'rotated' : ''
+                                    }`}
+                                />
+                            )}
+                            {IsTradingVolumnAsc === null && (
+                                <img
+                                    onClick={() => handleClickSortASC(2)}
+                                    src={arrowNoColor}
+                                    alt=""
+                                />
+                            )}
                         </div>
                         <div className="item-header-leader-board">
                             Avg. Leverage
-                            <img
-                                onClick={() => handleClickSortASC(3)}
-                                src={arrowBottom}
-                                alt="arrow"
-                                className={`rotate-on-click ${
-                                    IsAvgLeverageAsc ? 'rotated' : ''
-                                }`}
-                            />
+                            {IsAvgLeverageAsc != null && (
+                                <img
+                                    onClick={() => handleClickSortASC(3)}
+                                    src={arrowBottom}
+                                    alt="arrow"
+                                    className={`rotate-on-click ${
+                                        IsAvgLeverageAsc ? 'rotated' : ''
+                                    }`}
+                                />
+                            )}
+                            {IsAvgLeverageAsc === null && (
+                                <img
+                                    onClick={() => handleClickSortASC(3)}
+                                    src={arrowNoColor}
+                                    alt=""
+                                />
+                            )}
                         </div>
                         <div className="item-header-leader-board">
                             Win
-                            <img
-                                onClick={() => handleClickSortASC(4)}
-                                src={arrowBottom}
-                                alt="arrow"
-                                className={`rotate-on-click ${IsWinAsc ? 'rotated' : ''}`}
-                            />
+                            {IsWinAsc != null && (
+                                <img
+                                    onClick={() => handleClickSortASC(4)}
+                                    src={arrowBottom}
+                                    alt="arrow"
+                                    className={`rotate-on-click ${IsWinAsc ? 'rotated' : ''}`}
+                                />
+                            )}
+                            {IsWinAsc === null && (
+                                <img
+                                    onClick={() => handleClickSortASC(4)}
+                                    src={arrowNoColor}
+                                    alt=""
+                                />
+                            )}
                         </div>
                         <div className="item-header-leader-board">
                             Loss
-                            <img
-                                onClick={() => handleClickSortASC(5)}
-                                src={arrowBottom}
-                                alt="arrow"
-                                className={`rotate-on-click ${IsLossAsc ? 'rotated' : ''}`}
-                            />
+                            {IsLossAsc != null && (
+                                <img
+                                    onClick={() => handleClickSortASC(5)}
+                                    src={arrowBottom}
+                                    alt="arrow"
+                                    className={`rotate-on-click ${IsLossAsc ? 'rotated' : ''}`}
+                                />
+                            )}
+                            {IsLossAsc === null && (
+                                <img
+                                    onClick={() => handleClickSortASC(5)}
+                                    src={arrowNoColor}
+                                    alt=""
+                                />
+                            )}
                         </div>
                         <div className="item-header-leader-board">
                             PNL w. Fees
-                            <img
-                                onClick={() => handleClickSortASC(6)}
-                                src={arrowBottom}
-                                alt="arrow"
-                                className={`rotate-on-click ${IsPNLwFeesAsc ? 'rotated' : ''}`}
-                            />
+                            {IsPNLwFeesAsc != null && (
+                                <img
+                                    onClick={() => handleClickSortASC(6)}
+                                    src={arrowBottom}
+                                    alt="arrow"
+                                    className={`rotate-on-click ${
+                                        IsPNLwFeesAsc ? 'rotated' : ''
+                                    }`}
+                                />
+                            )}
+                            {IsPNLwFeesAsc === null && (
+                                <img
+                                    onClick={() => handleClickSortASC(6)}
+                                    src={arrowNoColor}
+                                    alt=""
+                                />
+                            )}
                         </div>
                     </div>
                     <div className="body-table-leader-board-container">
